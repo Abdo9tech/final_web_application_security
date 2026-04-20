@@ -1,0 +1,146 @@
+@model Project_DEPI.ViewModels.PaymentViewModel
+@{
+    ViewData["Title"] = "Payment";
+}
+
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Complete Your Payment</h1>
+            <p class="text-gray-600">Secure payment powered by Stripe</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Payment Form -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Payment Details</h2>
+                    
+                    <form id="payment-form">
+                        <div id="card-element" class="p-4 border border-gray-300 rounded-lg mb-6"></div>
+                        <div id="card-errors" class="text-red-500 text-sm mb-4"></div>
+
+                        <button type="submit" id="submit-button"
+                                class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-lg transition duration-200 text-lg">
+                            <span id="button-text">Pay $@Model.Amount</span>
+                            <span id="spinner" class="hidden">Processing...</span>
+                        </button>
+                    </form>
+
+                    <div class="mt-6 flex items-center justify-center text-gray-500 text-sm">
+                        <i class="fas fa-lock mr-2"></i>
+                        <span>Secured by Stripe</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Booking Summary</h3>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <div class="text-sm text-gray-500 mb-1">Room</div>
+                            <div class="font-semibold text-gray-900">@Model.RoomType - Room @Model.RoomNumber</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500 mb-1">Check-in</div>
+                            <div class="font-semibold text-gray-900">@Model.CheckInDate.ToString("MMM dd, yyyy")</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500 mb-1">Check-out</div>
+                            <div class="font-semibold text-gray-900">@Model.CheckOutDate.ToString("MMM dd, yyyy")</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500 mb-1">Nights</div>
+                            <div class="font-semibold text-gray-900">@Model.NumberOfNights</div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-200 pt-4 space-y-3">
+                        <div class="flex justify-between text-gray-600">
+                            <span>$@Model.PricePerNight × @Model.NumberOfNights nights</span>
+                            <span class="font-semibold">$@(Model.PricePerNight * Model.NumberOfNights)</span>
+                        </div>
+                        <div class="flex justify-between text-xl font-bold text-gray-900 pt-3 border-t">
+                            <span>Total</span>
+                            <span>$@Model.Amount</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('@Model.PublishableKey');
+        const elements = stripe.elements();
+        const cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#32325d',
+                    fontFamily: 'Inter, sans-serif',
+                    '::placeholder': { color: '#aab7c4' }
+                }
+            }
+        });
+        cardElement.mount('#card-element');
+
+        const form = document.getElementById('payment-form');
+        const submitButton = document.getElementById('submit-button');
+        const buttonText = document.getElementById('button-text');
+        const spinner = document.getElementById('spinner');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitButton.disabled = true;
+            buttonText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+
+            try {
+                const response = await fetch('@Url.Action("CreatePaymentIntent", "Payment")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        bookingId: @Model.BookingId,
+                        amount: @Model.Amount,
+                        currency: 'usd'
+                    })
+                });
+
+                const { clientSecret } = await response.json();
+                const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: { card: cardElement }
+                });
+
+                if (error) {
+                    document.getElementById('card-errors').textContent = error.message;
+                    submitButton.disabled = false;
+                    buttonText.classList.remove('hidden');
+                    spinner.classList.add('hidden');
+                } else {
+                    await fetch('@Url.Action("ConfirmPayment", "Payment")', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            bookingId: @Model.BookingId,
+                            paymentIntentId: paymentIntent.id
+                        })
+                    });
+                    window.location.href = '@Url.Action("Success", "Payment", new { bookingId = Model.BookingId })';
+                }
+            } catch (err) {
+                document.getElementById('card-errors').textContent = 'Payment failed. Please try again.';
+                submitButton.disabled = false;
+                buttonText.classList.remove('hidden');
+                spinner.classList.add('hidden');
+            }
+        });
+    </script>
+}

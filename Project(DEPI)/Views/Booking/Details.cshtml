@@ -1,0 +1,134 @@
+@model BookifyHotel.Model.Booking
+@{
+    ViewData["Title"] = "Booking Details";
+}
+
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <a asp-action="Index" class="inline-flex items-center text-indigo-600 hover:text-indigo-700 mb-4">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Bookings
+            </a>
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Booking #@Model.BookingId</h1>
+            <p class="text-gray-600">Booking details and information</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Details -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Guest Information -->
+                <div class="bg-white rounded-2xl shadow-xl p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Guest Information</h2>
+                    <div class="space-y-4">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Full Name</span>
+                            <span class="font-semibold text-gray-900">@(Model.UserProfile?.FullName ?? "N/A")</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Email</span>
+                            <span class="font-semibold text-gray-900">@(Model.UserProfile?.Email ?? "N/A")</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Phone</span>
+                            <span class="font-semibold text-gray-900">@(Model.UserProfile?.PhoneNumber ?? "N/A")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Room Information -->
+                <div class="bg-white rounded-2xl shadow-xl p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Room Information</h2>
+                    <div class="space-y-4">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Room Number</span>
+                            <span class="font-semibold text-gray-900">@(Model.Room?.RoomNumber ?? 0)</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Room Type</span>
+                            <span class="font-semibold text-gray-900">@(Model.Room?.RoomType?.Name ?? "N/A")</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Floor</span>
+                            <span class="font-semibold text-gray-900">@(Model.Room?.Floor ?? 0)</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Price per Night</span>
+                            <span class="font-semibold text-gray-900">$@(Model.Room?.RoomType?.PricePerNight ?? 0)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stay Information -->
+                <div class="bg-white rounded-2xl shadow-xl p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Stay Information</h2>
+                    <div class="space-y-4">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Check-in Date</span>
+                            <span class="font-semibold text-gray-900">@Model.CheckInDate.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Check-out Date</span>
+                            <span class="font-semibold text-gray-900">@Model.CheckOutDate.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Number of Nights</span>
+                            <span class="font-semibold text-gray-900">@((Model.CheckOutDate - Model.CheckInDate).Days)</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Booking Date</span>
+                            <span class="font-semibold text-gray-900">@Model.BookingDate.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Booking Summary</h3>
+                    
+                    <div class="mb-6">
+                        <span class="px-4 py-2 rounded-full text-sm font-semibold
+                            @(Model.Status == "Confirmed" ? "bg-emerald-100 text-emerald-700" :
+                              Model.Status == "Pending" ? "bg-amber-100 text-amber-700" :
+                              Model.Status == "Cancelled" ? "bg-red-100 text-red-700" :
+                              "bg-gray-100 text-gray-700")">
+                            @Model.Status
+                        </span>
+                    </div>
+
+                    <div class="border-t border-gray-200 pt-4 mb-6">
+                        <div class="flex justify-between text-2xl font-bold text-gray-900">
+                            <span>Total</span>
+                            <span class="text-indigo-600">$@Model.TotalPrice</span>
+                        </div>
+                    </div>
+
+                    @if (Model.PaymentIntentId != null)
+                    {
+                        <div class="mb-6 p-3 bg-emerald-50 rounded-lg">
+                            <div class="flex items-center text-emerald-700">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                <span class="text-sm font-semibold">Payment Completed</span>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="space-y-3">
+                        <a asp-action="Edit" asp-route-id="@Model.BookingId" 
+                           class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 text-center">
+                            <i class="fas fa-edit mr-2"></i>Edit Booking
+                        </a>
+                        <form asp-action="Delete" asp-route-id="@Model.BookingId" method="post" onsubmit="return confirm('Are you sure you want to delete this booking?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                                <i class="fas fa-trash mr-2"></i>Delete Booking
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

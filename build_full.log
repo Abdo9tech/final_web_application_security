@@ -1,0 +1,8 @@
+E:\المبادرة\Graduation_project_last_update\Project(DEPI)\Project(DEPI)\Views\Booking\Edit.cshtml(212,18): error RZ1006: The section block is missing a closing "}" character.  Make sure you have a matching "}" character for all the "{" characters within this block, and that none of the "}" characters are being interpreted as markup. [E:\المبادرة\Graduation_project_last_update\Project(DEPI)\Project(DEPI)\Project(DEPI).csproj]
+E:\المبادرة\Graduation_project_last_update\Project(DEPI)\Project(DEPI)\Views\User\Create.cshtml(233,18): error RZ1006: The section block is missing a closing "}" character.  Make sure you have a matching "}" character for all the "{" characters within this block, and that none of the "}" characters are being interpreted as markup. [E:\المبادرة\Graduation_project_last_update\Project(DEPI)\Project(DEPI)\Project(DEPI).csproj]
+
+Build FAILED.
+    13 Warning(s)
+    2 Error(s)
+
+Time Elapsed 00:00:01.92

@@ -1,0 +1,209 @@
+@model Project_DEPI.ViewModels.PaymentViewModel
+@{
+    ViewData["Title"] = "Payment";
+}
+
+<!-- Payment Section -->
+<section class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full mb-4">
+                <i class="fas fa-lock text-3xl text-white"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Secure Payment</h1>
+            <p class="text-lg text-gray-600">Complete your booking with our secure payment system</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Payment Form -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+                    <!-- Booking Summary Header -->
+                    <div class="mb-8 pb-6 border-b border-gray-200">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4">Booking Details</h2>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-600">Room Number:</span>
+                                <span class="font-medium text-gray-900 ml-2">@Model.RoomNumber</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Room Type:</span>
+                                <span class="font-medium text-gray-900 ml-2">@Model.RoomType</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Check-in:</span>
+                                <span class="font-medium text-gray-900 ml-2">@Model.CheckInDate.ToString("MMM dd, yyyy")</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Check-out:</span>
+                                <span class="font-medium text-gray-900 ml-2">@Model.CheckOutDate.ToString("MMM dd, yyyy")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stripe Payment Form -->
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-6">Payment Information</h3>
+                        
+                        <form id="payment-form">
+                            <div id="payment-element" class="mb-6">
+                                <!-- Stripe.js injects the Payment Element here -->
+                            </div>
+
+                            <div id="payment-message" class="hidden mb-4 p-4 rounded-lg"></div>
+
+                            <button type="submit" 
+                                    id="submit-button"
+                                    class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-2">
+                                <i class="fas fa-lock"></i>
+                                <span id="button-text">Pay $@Model.Amount.ToString("F2")</span>
+                                <div id="spinner" class="hidden">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </button>
+                        </form>
+
+                        <!-- Test Card Info -->
+                        <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                            <h4 class="font-semibold text-amber-900 mb-2 flex items-center">
+                                <i class="fas fa-info-circle mr-2"></i> Test Card Information
+                            </h4>
+                            <p class="text-sm text-amber-800 mb-2">Use these test cards for payment:</p>
+                            <ul class="text-sm text-amber-800 space-y-1">
+                                <li><strong>Success:</strong> 4242 4242 4242 4242</li>
+                                <li><strong>Requires Auth:</strong> 4000 0025 0000 3155</li>
+                                <li><strong>Declined:</strong> 4000 0000 0000 9995</li>
+                                <li>Use any future expiry date and any 3-digit CVC</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-24">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Order Summary</h3>
+
+                    <!-- Price Breakdown -->
+                    <div class="space-y-4 mb-6 pb-6 border-b border-gray-200">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">@Model.NumberOfNights night(s)</span>
+                            <span class="font-medium text-gray-900">$@((Model.PricePerNight * Model.NumberOfNights).ToString("F2"))</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Price per night</span>
+                            <span class="font-medium text-gray-900">$@Model.PricePerNight.ToString("F2")</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Tax (10%)</span>
+                            <span class="font-medium text-gray-900">$@((Model.Amount * 0.1m / 1.1m).ToString("F2"))</span>
+                        </div>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-gray-900">Total Amount</span>
+                            <span class="text-2xl font-bold text-primary-600">$@Model.Amount.ToString("F2")</span>
+                        </div>
+                    </div>
+
+                    <!-- Security Badges -->
+                    <div class="space-y-3 pt-6 border-t border-gray-200">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i class="fas fa-shield-alt text-emerald-600 mr-2"></i>
+                            <span>256-bit SSL Encryption</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i class="fab fa-cc-stripe text-primary-600 mr-2"></i>
+                            <span>Powered by Stripe</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i class="fas fa-check-circle text-sky-600 mr-2"></i>
+                            <span>PCI DSS Compliant</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('@Model.PublishableKey');
+        const options = {
+            clientSecret: '@Model.ClientSecret',
+            appearance: {
+                theme: 'stripe',
+                variables: {
+                    colorPrimary: '#6366f1',
+                    colorBackground: '#ffffff',
+                    colorText: '#1f2937',
+                    colorDanger: '#ef4444',
+                    fontFamily: 'Inter, system-ui, sans-serif',
+                    spacingUnit: '4px',
+                    borderRadius: '8px'
+                }
+            }
+        };
+
+        const elements = stripe.elements(options);
+        const paymentElement = elements.create('payment');
+        paymentElement.mount('#payment-element');
+
+        const form = document.getElementById('payment-form');
+        const submitButton = document.getElementById('submit-button');
+        const buttonText = document.getElementById('button-text');
+        const spinner = document.getElementById('spinner');
+        const messageContainer = document.getElementById('payment-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            setLoading(true);
+
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: window.location.origin + '/BookNow/Success/@Model.BookingId',
+                },
+            });
+
+            if (error) {
+                showMessage(error.message, 'error');
+                setLoading(false);
+            }
+        });
+
+        function setLoading(isLoading) {
+            submitButton.disabled = isLoading;
+            if (isLoading) {
+                spinner.classList.remove('hidden');
+                buttonText.classList.add('hidden');
+            } else {
+                spinner.classList.add('hidden');
+                buttonText.classList.remove('hidden');
+            }
+        }
+
+        function showMessage(message, type = 'error') {
+            messageContainer.textContent = message;
+            messageContainer.classList.remove('hidden');
+            
+            if (type === 'error') {
+                messageContainer.classList.add('bg-red-50', 'text-red-800', 'border', 'border-red-200');
+                messageContainer.classList.remove('bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+            } else {
+                messageContainer.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
+                messageContainer.classList.remove('bg-red-50', 'text-red-800', 'border-red-200');
+            }
+
+            setTimeout(() => {
+                messageContainer.classList.add('hidden');
+            }, 5000);
+        }
+    </script>
+}
