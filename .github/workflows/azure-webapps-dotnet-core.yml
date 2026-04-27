@@ -16,7 +16,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'  # Change this to your .NET version
+          dotnet-version: '8.0.x'
       
       - name: Restore dependencies
         run: dotnet restore HotelEcommerce.sln
@@ -28,7 +28,7 @@ jobs:
         run: dotnet publish HotelEcommerce.sln --configuration Release --output ./publish --no-build
       
       - name: Deploy to MonsterASP
-        uses: rasmusbuchholdt/simply-web-deploy@v2.1.0
+        uses: rasmusbuchholdt/simply-web-deploy@2.2.0
         with:
           website-name: ${{ secrets.WEBSITE_NAME }}
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
