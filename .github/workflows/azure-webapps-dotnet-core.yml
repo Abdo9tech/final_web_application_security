@@ -25,8 +25,7 @@ jobs:
         run: dotnet build HotelEcommerce.sln --configuration Release --no-restore
       
       - name: Publish
-        # Change "YourWebProject.csproj" to your actual web project file!
-        run: dotnet publish HotelEcomm.csproj --configuration Release --output ./publish --no-build
+        run: dotnet publish "Project(DEPI)/HotelEcomm.csproj" --configuration Release --output ./publish --no-build
       
       - name: Deploy to MonsterASP
         uses: rasmusbuchholdt/simply-web-deploy@2.2.0
