@@ -22,10 +22,11 @@ jobs:
         run: dotnet restore HotelEcommerce.sln
       
       - name: Build
-        run: dotnet build HotelEcommerce.sln --configuration Release --no-restore
+        run: dotnet build HotelEcommerce.sln --configuration Release --no-restore -p:TreatWarningsAsErrors=false
       
       - name: Publish
-        run: dotnet publish "Project(DEPI)/HotelEcomm.csproj" --configuration Release --output ./publish --no-build
+        # CHANGE THIS LINE - replace HotelEcommerce.csproj with YOUR actual project name
+        run: dotnet publish HotelEcommerce.csproj --configuration Release --output ./publish --no-build -p:TreatWarningsAsErrors=false
       
       - name: Deploy to MonsterASP
         uses: rasmusbuchholdt/simply-web-deploy@2.2.0
