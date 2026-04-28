@@ -14,39 +14,10 @@ using System.Threading.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-if (string.IsNullOrEmpty(connectionString))
+if (string.IsNullOrWhiteSpace(connectionString))
 {
-   
-    var possibleConnections = new[]
-    {
-        "Server=.\\SQLEXPRESS;Database=BookifyHotelDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;",
-        "Server=(localdb)\\MSSQLLocalDB;Database=BookifyHotelDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;",
-        "Server=localhost;Database=BookifyHotelDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;",
-        "Data Source=.;Initial Catalog=BookifyHotelDB;Integrated Security=True;TrustServerCertificate=True;"
-    };
-
-    foreach (var conn in possibleConnections)
-    {
-        try
-        {
-            using var testConn = new Microsoft.Data.SqlClient.SqlConnection(conn);
-            testConn.Open();
-            connectionString = conn;
-            Console.WriteLine($"? Using connection: {conn}");
-            break;
-        }
-        catch
-        {
-        }
-    }
-}
-
-if (string.IsNullOrEmpty(connectionString))
-{
-
-    connectionString = "Data Source=BookifyHotel.db";
-    Console.WriteLine("?? Using SQLite as fallback database");
+    throw new InvalidOperationException(
+        "Database connection string is missing. Set ConnectionStrings__DefaultConnection as an environment variable.");
 }
 
 builder.Services.AddDbContext<BookifyHotelDbContext>(options =>
@@ -55,6 +26,10 @@ builder.Services.AddDbContext<BookifyHotelDbContext>(options =>
         sqlServerOptions => sqlServerOptions.MigrationsAssembly("Project(DEPI)"))
     .UseLazyLoadingProxies());
 Console.WriteLine($"? Configured for SQL Server: {connectionString}");
+
+builder.Services
+    .AddHealthChecks()
+    .AddDbContextCheck<BookifyHotelDbContext>("sqlserver");
 
 
 // SECURITY [Anti-Forgery / CSRF Protection]: Registers AutoValidateAntiforgeryTokenAttribute globally
@@ -463,12 +438,6 @@ async Task CreateDefaultUsersAndRoles(IServiceProvider services)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllers();
 
 app.Run();
-
-
-
-
-
-
-
