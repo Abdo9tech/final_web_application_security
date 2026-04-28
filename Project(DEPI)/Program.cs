@@ -27,9 +27,7 @@ builder.Services.AddDbContext<BookifyHotelDbContext>(options =>
     .UseLazyLoadingProxies());
 Console.WriteLine($"? Configured for SQL Server: {connectionString}");
 
-builder.Services
-    .AddHealthChecks()
-    .AddDbContextCheck<BookifyHotelDbContext>("sqlserver");
+builder.Services.AddHealthChecks();
 
 
 // SECURITY [Anti-Forgery / CSRF Protection]: Registers AutoValidateAntiforgeryTokenAttribute globally

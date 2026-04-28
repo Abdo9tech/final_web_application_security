@@ -1,0 +1,89 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Project(DEPI)/Dockerfile
+    image: bookifyhotel:local
+    container_name: bookifyhotel-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Server=mssql,1433;Database=${SQL_DATABASE};User Id=${SQL_USER};Password=${SQL_PASSWORD};Encrypt=${SQL_ENCRYPT};TrustServerCertificate=${SQL_TRUST_SERVER_CERTIFICATE};MultipleActiveResultSets=true
+      ConnectionStrings__Redis: ${REDIS_CONNECTION}
+      Redis__ConnectionString: ${REDIS_CONNECTION}
+      Stripe__PublishableKey: ${STRIPE_PUBLISHABLE_KEY}
+      Stripe__SecretKey: ${STRIPE_SECRET_KEY}
+      Stripe__WebhookSecret: ${STRIPE_WEBHOOK_SECRET}
+      DefaultUsers__Admin__Email: ${ADMIN_EMAIL}
+      DefaultUsers__Admin__Password: ${ADMIN_PASSWORD}
+      DefaultUsers__Admin__PhoneNumber: ${ADMIN_PHONE}
+      DefaultUsers__User__Email: ${USER_EMAIL}
+      DefaultUsers__User__Password: ${USER_PASSWORD}
+      DefaultUsers__User__PhoneNumber: ${USER_PHONE}
+      AllowedHosts: ${ALLOWED_HOSTS:-*}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    depends_on:
+      mssql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+    networks:
+      - bookify-network
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: bookifyhotel-sql
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: ${MSSQL_PID:-Developer}
+      MSSQL_SA_PASSWORD: ${SQL_PASSWORD}
+    ports:
+      - "${SQL_PORT:-1433}:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${SQL_USER} -P \"${SQL_PASSWORD}\" -Q \"SELECT 1\" -C || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+    networks:
+      - bookify-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: bookifyhotel-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"${REDIS_PASSWORD}\" ping | grep PONG || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    networks:
+      - bookify-network
+
+networks:
+  bookify-network:
+    name: bookify-network
+    driver: bridge
+
+volumes:
+  mssql_data:
+  redis_data:

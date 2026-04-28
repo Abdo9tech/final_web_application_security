@@ -1,0 +1,52 @@
+app = "bookifyhotel"
+primary_region = "fra"
+kill_signal = "SIGINT"
+kill_timeout = "30s"
+
+[build]
+  dockerfile = "Project(DEPI)/Dockerfile"
+
+[env]
+  ASPNETCORE_ENVIRONMENT = "Production"
+  ASPNETCORE_URLS = "http://+:8080"
+  ASPNETCORE_HTTP_PORTS = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 3
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 80
+    hard_limit = 120
+
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "15s"
+    method = "GET"
+    path = "/health/live"
+    protocol = "http"
+    timeout = "5s"
+    tls_skip_verify = false
+
+  [[http_service.checks]]
+    grace_period = "45s"
+    interval = "20s"
+    method = "GET"
+    path = "/health/ready"
+    protocol = "http"
+    timeout = "5s"
+    tls_skip_verify = false
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 1024
+
+[metrics]
+  port = 8080
+  path = "/health/live"
