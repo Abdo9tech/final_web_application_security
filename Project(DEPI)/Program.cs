@@ -10,6 +10,8 @@ using Stripe;
 using Project_DEPI_.Middleware;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using System.IO;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +25,7 @@ if (string.IsNullOrWhiteSpace(connectionString))
 builder.Services.AddDbContext<BookifyHotelDbContext>(options =>
     options.UseSqlServer(
         connectionString,
-        sqlServerOptions => sqlServerOptions.MigrationsAssembly("Project(DEPI)"))
+        sqlServerOptions => sqlServerOptions.MigrationsAssembly("HotelEcomm"))
     .UseLazyLoadingProxies());
 Console.WriteLine($"? Configured for SQL Server: {connectionString}");
 
@@ -69,8 +71,10 @@ else
 
 // SECURITY [Data Protection API]: ASP.NET Core Data Protection is used to encrypt
 // sensitive data such as anti-forgery tokens, authentication cookies, and TempData.
-// Keys are persisted automatically and rotated every 90 days by default.
-builder.Services.AddDataProtection();
+// Keys are persisted to a directory that should be mapped to a Docker volume
+// to ensure they survive container restarts.
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"));
 
 // SECURITY [Strong Password Policy]: Weak passwords are the #1 cause of account compromise.
 // Requirements: minimum 8 characters, at least 1 digit, 1 uppercase, 1 lowercase, 1 special character.
@@ -120,11 +124,13 @@ builder.Services.ConfigureApplicationCookie(options =>
     // SECURITY [HttpOnly Cookies]: Prevents JavaScript access to the session cookie.
     options.Cookie.HttpOnly = true;
 
-    // SECURITY [Secure Cookies (HTTPS Only)]: Only transmit cookie over encrypted connections.
-    options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+    // SECURITY [Secure Cookies (HTTPS Only)]: Only transmit cookie over encrypted connections in production.
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
+        ? Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest 
+        : Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
 
-    // SECURITY [SameSite Cookie Policy]: Strict prevents cross-site request forgery via cookies.
-    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+    // SECURITY [SameSite Cookie Policy]: Lax is more compatible for local development while still providing protection.
+    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
 
     options.Cookie.Name = ".BookifyHotel.Auth";
     options.Cookie.IsEssential = true;
@@ -139,11 +145,13 @@ builder.Services.AddSession(options =>
     // SECURITY [HttpOnly Cookies]: Session cookie is not accessible via JavaScript.
     options.Cookie.HttpOnly = true;
 
-    // SECURITY [Secure Cookies (HTTPS Only)]: Session cookie only sent over HTTPS.
-    options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+    // SECURITY [Secure Cookies (HTTPS Only)]: Only transmit cookie over encrypted connections in production.
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
+        ? Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest 
+        : Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
 
-    // SECURITY [SameSite Cookie Policy]: Prevent session cookie in cross-site requests.
-    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+    // SECURITY [SameSite Cookie Policy]: Lax is more compatible for local development.
+    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
 
     options.Cookie.IsEssential = true;
     options.Cookie.Name = ".BookifyHotel.Session";
@@ -228,8 +236,13 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine("🚀 INITIALIZING APPLICATION");
         Console.WriteLine("========================================");
 
-        // Just create default users - database should already exist from migrations
+        var dbContext = services.GetRequiredService<BookifyHotelDbContext>();
+        Console.WriteLine("Applying database migrations...");
+        await dbContext.Database.MigrateAsync();
+        
+        // Just create default users
         await CreateDefaultUsersAndRoles(services);
+        await CreateSampleData(services);
     }
     catch (Exception ex)
     {
@@ -430,6 +443,102 @@ async Task CreateDefaultUsersAndRoles(IServiceProvider services)
     Console.WriteLine("========================================");
     Console.WriteLine("✅ USER INITIALIZATION COMPLETED");
     Console.WriteLine("========================================\n");
+}
+
+async Task CreateSampleData(IServiceProvider services)
+{
+    var dbContext = services.GetRequiredService<BookifyHotelDbContext>();
+    
+    // Add Room Types
+    if (!dbContext.RoomTypes.Any())
+    {
+        Console.WriteLine("🌱 Seeding Room Types...");
+        var standardType = new BookifyHotel.Model.RoomType { Name = "Standard", Description = "A comfortable standard room.", PricePerNight = 100, Capacity = 2 };
+        var deluxeType = new BookifyHotel.Model.RoomType { Name = "Deluxe", Description = "A luxurious deluxe room.", PricePerNight = 200, Capacity = 3 };
+        var suiteType = new BookifyHotel.Model.RoomType { Name = "Suite", Description = "A premium suite.", PricePerNight = 400, Capacity = 5 };
+        
+        dbContext.RoomTypes.AddRange(standardType, deluxeType, suiteType);
+        await dbContext.SaveChangesAsync();
+        Console.WriteLine("✅ Room Types seeded");
+    }
+    else
+    {
+        // Ensure capacity is set for existing room types
+        var existingTypes = dbContext.RoomTypes.Where(t => t.Capacity == 0).ToList();
+        if (existingTypes.Any())
+        {
+            Console.WriteLine("🔄 Updating existing Room Type capacities...");
+            foreach (var type in existingTypes)
+            {
+                type.Capacity = type.Name switch
+                {
+                    "Standard" => 2,
+                    "Deluxe" => 3,
+                    "Suite" => 5,
+                    _ => 2
+                };
+            }
+            await dbContext.SaveChangesAsync();
+            Console.WriteLine("✅ Room Type capacities updated");
+        }
+    }
+
+    // Add Rooms
+    if (dbContext.Rooms.Any(r => string.IsNullOrWhiteSpace(r.Location)))
+    {
+        Console.WriteLine("⚠️ Found rooms with invalid data. Re-seeding...");
+        dbContext.Rooms.RemoveRange(dbContext.Rooms);
+        await dbContext.SaveChangesAsync();
+    }
+
+    if (!dbContext.Rooms.Any())
+    {
+        Console.WriteLine("🌱 Seeding Rooms...");
+        // Need to get the types again or use existing if we just created them
+        var standardType = dbContext.RoomTypes.First(t => t.Name == "Standard");
+        var deluxeType = dbContext.RoomTypes.First(t => t.Name == "Deluxe");
+        var suiteType = dbContext.RoomTypes.First(t => t.Name == "Suite");
+
+        var rooms = new List<BookifyHotel.Model.Room>
+        {
+            new BookifyHotel.Model.Room { RoomNumber = 101, Floor = 1, Status = "Available", IsAvailable = true, RoomTypeId = standardType.RoomTypeId, ImageUrl = "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1000&auto=format&fit=crop", Location = "Manchester, City Centre" },
+            new BookifyHotel.Model.Room { RoomNumber = 102, Floor = 1, Status = "Available", IsAvailable = true, RoomTypeId = standardType.RoomTypeId, ImageUrl = "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=1000&auto=format&fit=crop", Location = "Manchester, City Centre" },
+            new BookifyHotel.Model.Room { RoomNumber = 201, Floor = 2, Status = "Available", IsAvailable = true, RoomTypeId = deluxeType.RoomTypeId, ImageUrl = "https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=1000&auto=format&fit=crop", Location = "Manchester, City Centre" },
+            new BookifyHotel.Model.Room { RoomNumber = 202, Floor = 2, Status = "Available", IsAvailable = true, RoomTypeId = deluxeType.RoomTypeId, ImageUrl = "https://images.unsplash.com/photo-1590490360182-c33d59735188?q=80&w=1000&auto=format&fit=crop", Location = "Manchester, City Centre" },
+            new BookifyHotel.Model.Room { RoomNumber = 301, Floor = 3, Status = "Available", IsAvailable = true, RoomTypeId = suiteType.RoomTypeId, ImageUrl = "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=1000&auto=format&fit=crop", Location = "Manchester, City Centre" }
+        };
+        
+        dbContext.Rooms.AddRange(rooms);
+        await dbContext.SaveChangesAsync();
+        Console.WriteLine("✅ Rooms seeded");
+    }
+    // Ensure all rooms are available and have a location for demo purposes
+    var allRooms = dbContext.Rooms.ToList();
+    if (allRooms.Any())
+    {
+        Console.WriteLine("🔄 Synchronizing room availability and locations...");
+        foreach (var room in allRooms)
+        {
+            room.IsAvailable = true;
+            room.Status = "Available";
+            room.Location = "Manchester, City Centre";
+
+            if (room.ImageUrl == "/images/default-room.jpg" || string.IsNullOrEmpty(room.ImageUrl))
+            {
+                room.ImageUrl = room.RoomNumber switch
+                {
+                    101 => "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1000&auto=format&fit=crop",
+                    102 => "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=1000&auto=format&fit=crop",
+                    201 => "https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=1000&auto=format&fit=crop",
+                    202 => "https://images.unsplash.com/photo-1590490360182-c33d59735188?q=80&w=1000&auto=format&fit=crop",
+                    301 => "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=1000&auto=format&fit=crop",
+                    _ => "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1000&auto=format&fit=crop"
+                };
+            }
+        }
+        await dbContext.SaveChangesAsync();
+        Console.WriteLine("✅ All rooms synchronized");
+    }
 }
 
 

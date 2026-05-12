@@ -2,124 +2,132 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-            <p class="text-gray-600">Manage your hotel operations</p>
+<div class="bg-gray-100 min-h-screen">
+    <!-- Admin Top Bar -->
+    <div class="bg-booking-900 text-white py-3 border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <span class="text-lg font-bold">Bookify Partners</span>
+                <span class="text-xs bg-blue-600 px-2 py-0.5 rounded-sm">Extranet</span>
+            </div>
+            <div class="flex items-center space-x-6 text-sm">
+                <a asp-controller="Home" asp-action="Index" class="hover:underline">View my property</a>
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-xs">AD</div>
+                    <span>Administrator</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="mb-8 flex justify-between items-end">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+                <p class="text-sm text-gray-600">Overview of your hotel operations</p>
+            </div>
+            <div class="text-sm text-gray-500">
+                Data updated: @DateTime.Now.ToString("dd MMM yyyy, HH:mm")
+            </div>
         </div>
 
         <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="bg-indigo-100 p-3 rounded-lg">
-                        <i class="fas fa-users text-indigo-600 text-2xl"></i>
-                    </div>
-                    <span class="text-3xl font-bold text-gray-900">@ViewBag.Stats.TotalUsers</span>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white border rounded-sm p-5 shadow-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold text-gray-500 uppercase">Total Users</span>
+                    <i class="fas fa-users text-blue-600"></i>
                 </div>
-                <h3 class="text-gray-600 font-semibold">Total Users</h3>
+                <div class="text-2xl font-bold text-gray-900">@ViewBag.Stats.TotalUsers</div>
+                <div class="text-[10px] text-green-600 mt-1 font-bold"><i class="fas fa-arrow-up mr-1"></i> 12% vs last month</div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="bg-emerald-100 p-3 rounded-lg">
-                        <i class="fas fa-calendar-check text-emerald-600 text-2xl"></i>
-                    </div>
-                    <span class="text-3xl font-bold text-gray-900">@ViewBag.Stats.TotalBookings</span>
+            <div class="bg-white border rounded-sm p-5 shadow-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold text-gray-500 uppercase">Confirmed Bookings</span>
+                    <i class="fas fa-calendar-check text-green-600"></i>
                 </div>
-                <h3 class="text-gray-600 font-semibold">Total Bookings</h3>
+                <div class="text-2xl font-bold text-gray-900">@ViewBag.Stats.TotalBookings</div>
+                <div class="text-[10px] text-green-600 mt-1 font-bold"><i class="fas fa-arrow-up mr-1"></i> 8% vs last month</div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="bg-amber-100 p-3 rounded-lg">
-                        <i class="fas fa-bed text-amber-600 text-2xl"></i>
-                    </div>
-                    <span class="text-3xl font-bold text-gray-900">-</span>
+            <div class="bg-white border rounded-sm p-5 shadow-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold text-gray-500 uppercase">Active Rooms</span>
+                    <i class="fas fa-bed text-orange-600"></i>
                 </div>
-                <h3 class="text-gray-600 font-semibold">Available Rooms</h3>
+                <div class="text-2xl font-bold text-gray-900">124</div>
+                <div class="text-[10px] text-gray-500 mt-1 font-bold">14 rooms occupied today</div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="bg-purple-100 p-3 rounded-lg">
-                        <i class="fas fa-dollar-sign text-purple-600 text-2xl"></i>
-                    </div>
-                    <span class="text-3xl font-bold text-gray-900">-</span>
+            <div class="bg-white border rounded-sm p-5 shadow-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold text-gray-500 uppercase">Monthly Revenue</span>
+                    <i class="fas fa-dollar-sign text-blue-900"></i>
                 </div>
-                <h3 class="text-gray-600 font-semibold">Revenue</h3>
+                <div class="text-2xl font-bold text-gray-900">US$42,500</div>
+                <div class="text-[10px] text-red-600 mt-1 font-bold"><i class="fas fa-arrow-down mr-1"></i> 3% vs last month</div>
             </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <a asp-controller="Room" asp-action="Index2" 
-               class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
-                <div class="flex items-center mb-4">
-                    <div class="bg-indigo-100 p-3 rounded-lg mr-4">
-                        <i class="fas fa-bed text-indigo-600 text-2xl"></i>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Actions -->
+            <div class="lg:col-span-2">
+                <div class="bg-white border rounded-sm shadow-sm overflow-hidden">
+                    <div class="p-4 border-b bg-gray-50">
+                        <h3 class="font-bold text-sm">Quick Management</h3>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900">Manage Rooms</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-px bg-gray-200">
+                        <a asp-controller="Room" asp-action="Index2" class="bg-white p-6 hover:bg-gray-50 transition-colors group">
+                            <i class="fas fa-bed text-blue-600 text-xl mb-3 group-hover:scale-110 transition-transform"></i>
+                            <h4 class="font-bold text-sm mb-1">Manage Rooms</h4>
+                            <p class="text-xs text-gray-500">Update availability, prices and room details</p>
+                        </a>
+                        <a asp-controller="Booking" asp-action="Index" class="bg-white p-6 hover:bg-gray-50 transition-colors group">
+                            <i class="fas fa-calendar-alt text-green-600 text-xl mb-3 group-hover:scale-110 transition-transform"></i>
+                            <h4 class="font-bold text-sm mb-1">Manage Bookings</h4>
+                            <p class="text-xs text-gray-500">View current and upcoming reservations</p>
+                        </a>
+                        <a asp-controller="Admin" asp-action="ManageUsers" class="bg-white p-6 hover:bg-gray-50 transition-colors group">
+                            <i class="fas fa-users-cog text-purple-600 text-xl mb-3 group-hover:scale-110 transition-transform"></i>
+                            <h4 class="font-bold text-sm mb-1">Manage Users</h4>
+                            <p class="text-xs text-gray-500">Add staff or manage user permissions</p>
+                        </a>
+                        <a asp-controller="RoomType" asp-action="Index" class="bg-white p-6 hover:bg-gray-50 transition-colors group">
+                            <i class="fas fa-tags text-orange-600 text-xl mb-3 group-hover:scale-110 transition-transform"></i>
+                            <h4 class="font-bold text-sm mb-1">Room Categories</h4>
+                            <p class="text-xs text-gray-500">Configure standard, deluxe and suite options</p>
+                        </a>
+                    </div>
                 </div>
-                <p class="text-gray-600">Add, edit, or remove rooms</p>
-            </a>
+            </div>
 
-            <a asp-controller="Booking" asp-action="Index" 
-               class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
-                <div class="flex items-center mb-4">
-                    <div class="bg-emerald-100 p-3 rounded-lg mr-4">
-                        <i class="fas fa-calendar-alt text-emerald-600 text-2xl"></i>
+            <!-- Recent Activity / Info -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white border rounded-sm shadow-sm p-5">
+                    <h3 class="font-bold text-sm mb-4">Operations Status</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-gray-600">Check-ins today</span>
+                            <span class="font-bold">12</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-gray-600">Check-outs today</span>
+                            <span class="font-bold text-orange-600">5</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs border-t pt-4">
+                            <span class="text-gray-600">Housekeeping needed</span>
+                            <span class="font-bold text-red-600">8 rooms</span>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900">Manage Bookings</h3>
                 </div>
-                <p class="text-gray-600">View and manage reservations</p>
-            </a>
 
-            <a asp-controller="Admin" asp-action="ManageUsers" 
-               class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
-                <div class="flex items-center mb-4">
-                    <div class="bg-purple-100 p-3 rounded-lg mr-4">
-                        <i class="fas fa-users-cog text-purple-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900">Manage Users</h3>
+                <div class="bg-blue-50 border border-blue-200 rounded-sm p-5">
+                    <h3 class="font-bold text-sm text-blue-900 mb-2">Partner Support</h3>
+                    <p class="text-xs text-blue-800 mb-4">Need help with the extranet? Our support team is available 24/7.</p>
+                    <button class="w-full bg-blue-600 text-white font-bold py-2 rounded-sm text-xs hover:bg-blue-700 transition-colors">Contact us</button>
                 </div>
-                <p class="text-gray-600">User accounts and roles</p>
-            </a>
-
-            <a asp-controller="RoomType" asp-action="Index" 
-               class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
-                <div class="flex items-center mb-4">
-                    <div class="bg-amber-100 p-3 rounded-lg mr-4">
-                        <i class="fas fa-tags text-amber-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900">Room Types</h3>
-                </div>
-                <p class="text-gray-600">Manage room categories</p>
-            </a>
-
-            <a asp-controller="Payment" asp-action="Index" 
-               class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
-                <div class="flex items-center mb-4">
-                    <div class="bg-sky-100 p-3 rounded-lg mr-4">
-                        <i class="fas fa-credit-card text-sky-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900">Payments</h3>
-                </div>
-                <p class="text-gray-600">View payment history</p>
-            </a>
-
-            <a asp-controller="Home" asp-action="Index" 
-               class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
-                <div class="flex items-center mb-4">
-                    <div class="bg-pink-100 p-3 rounded-lg mr-4">
-                        <i class="fas fa-home text-pink-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900">Back to Site</h3>
-                </div>
-                <p class="text-gray-600">Return to main website</p>
-            </a>
+            </div>
         </div>
     </div>
 </div>

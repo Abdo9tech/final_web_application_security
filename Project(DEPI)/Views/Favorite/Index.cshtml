@@ -3,56 +3,78 @@
     ViewData["Title"] = "My Favorite Rooms";
 }
 
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12">
+<div class="bg-gray-50 min-h-screen py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">My Favorite Rooms</h1>
-            <p class="text-gray-600">Rooms you've saved for later</p>
+        
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Saved</h1>
+                <p class="text-sm text-gray-600 mt-1">Found @(Model?.Count() ?? 0) items</p>
+            </div>
+            <div class="flex gap-3">
+                <button class="px-4 py-2 border border-blue-600 text-blue-600 font-bold rounded-sm text-sm hover:bg-blue-50 transition-colors">
+                    Create a list
+                </button>
+            </div>
         </div>
 
         @if (Model != null && Model.Any())
         {
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="space-y-4">
                 @foreach (var room in Model)
                 {
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition duration-300">
-                        <div class="relative h-64">
-                            <img src="@(room.ImageUrl ?? "/images/default-room.jpg")" 
-                                 alt="Room @room.RoomNumber" 
-                                 class="w-full h-full object-cover">
-                            @if (room.IsAvailable)
-                            {
-                                <span class="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                                    Available
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                                    Booked
-                                </span>
-                            }
-                            <button onclick="toggleFavorite(@room.RoomId, this)" 
-                                    class="absolute top-4 left-4 bg-white/90 hover:bg-white p-3 rounded-full transition">
-                                <i class="fas fa-heart text-red-500 text-xl"></i>
+                    <div class="bg-white border rounded-md overflow-hidden flex flex-col md:flex-row shadow-sm hover:shadow-md transition-shadow relative">
+                        <!-- Property Image -->
+                        <div class="md:w-64 h-52 flex-shrink-0 relative">
+                            <img src="@(string.IsNullOrEmpty(room.ImageUrl) ? "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=800" : room.ImageUrl)" 
+                                 class="w-full h-full object-cover" alt="Property Image">
+                            
+                            <!-- Heart Icon (Already saved) -->
+                            <button onclick="toggleFavorite(@room.RoomId, this)" class="absolute top-2 right-2 p-2 bg-white/90 rounded-full hover:bg-white transition-colors">
+                                <i class="fas fa-heart text-red-600"></i>
                             </button>
                         </div>
-                        <div class="p-6">
-                            <div class="flex justify-between items-start mb-3">
-                                <h3 class="text-xl font-bold text-gray-900">Room @room.RoomNumber</h3>
-                                <span class="text-sm text-gray-500">Floor @room.Floor</span>
+
+                        <!-- Property Content -->
+                        <div class="flex-1 p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <div class="flex items-center space-x-1 mb-1">
+                                            <div class="flex text-yellow-400 text-[10px]">
+                                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-blue-600 hover:text-orange-700 cursor-pointer">
+                                            Room @room.RoomNumber - @(room.RoomType?.Name ?? "Standard Room")
+                                        </h3>
+                                        <p class="text-xs text-blue-600 underline mt-1 cursor-pointer">Manchester, City Centre</p>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="text-right">
+                                            <div class="text-sm font-bold text-gray-900">Wonderful</div>
+                                            <div class="text-[10px] text-gray-500">856 reviews</div>
+                                        </div>
+                                        <div class="w-8 h-8 bg-booking-900 rounded-tr-lg rounded-bl-lg rounded-tl-lg flex items-center justify-center text-white font-bold text-sm">
+                                            9.2
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-xs text-gray-700 space-y-1 mt-4">
+                                    <p class="text-green-700 font-bold">Free cancellation</p>
+                                    <p class="text-gray-500">@(room.RoomType?.Description?.Substring(0, Math.Min(room.RoomType.Description.Length, 150)) ?? "Luxury and comfort await you in our modern hotel rooms.")</p>
+                                </div>
                             </div>
-                            <p class="text-indigo-600 font-semibold mb-2">@(room.RoomType?.Name ?? "Standard")</p>
-                            <p class="text-gray-600 text-sm mb-4">@(room.RoomType?.Description ?? "Comfortable room with modern amenities")</p>
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <span class="text-3xl font-bold text-gray-900">$@(room.RoomType?.PricePerNight ?? 0)</span>
-                                    <span class="text-gray-500 text-sm">/night</span>
+
+                            <div class="flex justify-end items-end mt-4 pt-4 border-t">
+                                <div class="text-right mr-6">
+                                    <p class="text-[10px] text-gray-500">Price for 1 night</p>
+                                    <p class="text-xl font-bold text-gray-900">US$@(room.RoomType?.PricePerNight ?? 0)</p>
                                 </div>
                                 <a asp-controller="Room" asp-action="Details" asp-route-id="@room.RoomId" 
-                                   class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
-                                    View Details
+                                   class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-sm text-sm transition-colors">
+                                    See availability
                                 </a>
                             </div>
                         </div>
@@ -62,13 +84,17 @@
         }
         else
         {
-            <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
-                <i class="fas fa-heart text-gray-300 text-6xl mb-4"></i>
-                <h3 class="text-2xl font-semibold text-gray-700 mb-2">No Favorite Rooms Yet</h3>
-                <p class="text-gray-500 mb-6">Start exploring and save your favorite rooms</p>
+            <div class="bg-white border rounded-md p-12 text-center shadow-sm">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="far fa-heart text-gray-400 text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">No saved items yet</h3>
+                <p class="text-gray-600 mb-8 max-w-sm mx-auto">
+                    Tap the heart icon on any property to save it to your list.
+                </p>
                 <a asp-controller="Room" asp-action="Index" 
-                   class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-200">
-                    Browse Rooms
+                   class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-sm transition-colors text-sm">
+                    Find a place to stay
                 </a>
             </div>
         }

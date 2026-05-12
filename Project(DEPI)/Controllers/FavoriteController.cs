@@ -91,7 +91,7 @@ namespace Project_DEPI.Controllers
                     return Json(new { success = true, action = "added" });
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log the exception
                 return Json(new { success = false, message = "An error occurred while updating favorites." });

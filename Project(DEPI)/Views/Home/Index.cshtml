@@ -3,404 +3,158 @@
     ViewData["Title"] = "Home";
 }
 
-<!-- Ultra-Modern Hero Section -->
-<section class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 text-white overflow-hidden min-h-screen flex items-center">
-    <!-- Animated Gradient Background -->
-    <div class="absolute inset-0 holographic-bg opacity-30"></div>
-    
-    <!-- Floating Orbs -->
-    <div class="absolute inset-0 overflow-hidden">
-        <div class="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-full filter blur-3xl opacity-40 animate-pulse morph-shape"></div>
-        <div class="absolute top-40 right-20 w-96 h-96 bg-gradient-to-br from-sky-400 to-blue-400 rounded-full filter blur-3xl opacity-40 animate-pulse morph-shape" style="animation-delay: 1.5s;"></div>
-        <div class="absolute bottom-20 left-1/3 w-80 h-80 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full filter blur-3xl opacity-40 animate-pulse morph-shape" style="animation-delay: 3s;"></div>
-        <div class="absolute top-1/2 right-1/4 w-64 h-64 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full filter blur-3xl opacity-40 animate-pulse morph-shape" style="animation-delay: 4.5s;"></div>
-    </div>
+<!-- Booking.com Style Hero Section -->
+<section class="bg-[#003580] pt-12 pb-20 relative overflow-hidden">
+    <!-- Decorative background elements -->
+    <div class="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-96 h-96 bg-booking-400/10 rounded-full blur-3xl"></div>
 
-    <!-- Cyber Grid -->
-    <div class="absolute inset-0 cyber-grid opacity-10"></div>
-
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32 w-full">
-        <div class="text-center mb-16">
-            <!-- Ultra-Modern Title -->
-            <div class="mb-8">
-                <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-4 animate-fade-in">
-                    <span class="inline-block bg-gradient-to-r from-white via-emerald-200 to-white bg-clip-text text-transparent animate-gradient">
-                        Welcome to
-                    </span>
-                </h1>
-                <h2 class="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black animate-slide-up">
-                    <span class="inline-block bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300 bg-clip-text text-transparent neon-text">
-                        Bookify
-                    </span>
-                    <span class="inline-block bg-gradient-to-r from-amber-300 via-orange-200 to-pink-300 bg-clip-text text-transparent neon-text">
-                        Hotel
-                    </span>
-                </h2>
-            </div>
-            
-            <!-- Subtitle with Glow -->
-            <p class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 animate-slide-up" style="animation-delay: 0.2s;">
-                <span class="inline-block bg-gradient-to-r from-white to-purple-100 bg-clip-text text-transparent">
-                    Experience Luxury & Comfort
-                </span>
-            </p>
-            <p class="text-lg sm:text-xl text-purple-100 mb-12 animate-slide-up" style="animation-delay: 0.3s;">
-                <span class="inline-flex items-center space-x-2">
-                    <i class="fas fa-map-marker-alt text-emerald-300"></i>
-                    <span>In the heart of the city</span>
-                </span>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="mb-10 text-center md:text-left">
+            <h1 class="text-5xl md:text-6xl font-black text-white mb-6 tracking-tight leading-tight">
+                Find your next stay
+            </h1>
+            <p class="text-xl md:text-2xl text-white font-bold max-w-2xl drop-shadow-sm">
+                Search deals on hotels, homes, and much more...
             </p>
         </div>
 
-        <!-- Ultra-Modern Glassmorphism Booking Form -->
-        <div class="max-w-6xl mx-auto glass backdrop-blur-2xl bg-white/10 border-2 border-white/20 rounded-3xl shadow-2xl p-8 sm:p-10 animate-slide-up hover-lift" style="animation-delay: 0.4s;">
-            <form asp-controller="Room" asp-action="Index" method="get" class="space-y-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Location with Gradient Icon -->
-                    <div class="group">
-                        <label for="location" class="flex items-center text-sm font-bold text-white mb-3">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center mr-2 group-hover:scale-110 transition-transform shadow-lg">
-                                <i class="fas fa-map-marker-alt text-white text-sm"></i>
-                            </div>
-                            <span class="bg-gradient-to-r from-emerald-200 to-teal-200 bg-clip-text text-transparent">Destination</span>
-                        </label>
-                        <input type="text" 
-                               id="location" 
-                               name="location" 
-                               placeholder="Where to?" 
-                               class="w-full px-5 py-4 bg-white/90 backdrop-blur-sm border-2 border-white/30 rounded-xl focus:ring-4 focus:ring-emerald-400/50 focus:border-emerald-400 transition-all text-gray-900 placeholder-gray-500 font-medium shadow-lg hover:shadow-emerald-400/30">
-                    </div>
+        <!-- Signature Booking.com Search Bar -->
+        <div class="relative transform -translate-y-4 md:translate-y-0">
+            <form asp-controller="Room" asp-action="Index" method="get" 
+                  class="bg-[#febb02] p-1.5 rounded-lg shadow-2xl flex flex-col md:flex-row gap-1 border-4 border-[#febb02]">
+                
+                <!-- Destination -->
+                <div class="flex-1 bg-white rounded-md flex items-center px-4 py-4 group focus-within:ring-2 focus-within:ring-blue-500 transition-all">
+                    <i class="fas fa-bed text-gray-400 mr-3 text-lg group-focus-within:text-blue-500 transition-colors"></i>
+                    <input type="text" 
+                           id="location" 
+                           name="location" 
+                           placeholder="Where are you going?" 
+                           class="w-full text-base font-medium text-gray-950 placeholder-gray-400 focus:outline-none bg-transparent">
+                </div>
 
-                    <!-- Check-in with Gradient Icon -->
-                    <div class="group">
-                        <label for="checkIn" class="flex items-center text-sm font-bold text-white mb-3">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-400 to-blue-400 flex items-center justify-center mr-2 group-hover:scale-110 transition-transform shadow-lg">
-                                <i class="fas fa-calendar-alt text-white text-sm"></i>
-                            </div>
-                            <span class="bg-gradient-to-r from-sky-200 to-blue-200 bg-clip-text text-transparent">Check-in</span>
-                        </label>
-                        <input type="date" 
-                               id="checkIn" 
-                               name="checkIn" 
+                <!-- Dates -->
+                <div class="md:w-80 bg-white rounded-md flex items-center px-4 py-4 group focus-within:ring-2 focus-within:ring-blue-500 transition-all">
+                    <i class="fas fa-calendar text-gray-400 mr-3 text-lg group-focus-within:text-blue-500 transition-colors"></i>
+                    <div class="flex items-center text-sm font-bold text-gray-950 w-full">
+                        <input type="date" id="checkIn" name="checkIn" 
                                min="@DateTime.Now.ToString("yyyy-MM-dd")"
-                               class="w-full px-5 py-4 bg-white/90 backdrop-blur-sm border-2 border-white/30 rounded-xl focus:ring-4 focus:ring-sky-400/50 focus:border-sky-400 transition-all text-gray-900 font-medium shadow-lg hover:shadow-sky-400/30">
-                    </div>
-
-                    <!-- Check-out with Gradient Icon -->
-                    <div class="group">
-                        <label for="checkOut" class="flex items-center text-sm font-bold text-white mb-3">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center mr-2 group-hover:scale-110 transition-transform shadow-lg">
-                                <i class="fas fa-calendar-check text-white text-sm"></i>
-                            </div>
-                            <span class="bg-gradient-to-r from-purple-200 to-pink-200 bg-clip-text text-transparent">Check-out</span>
-                        </label>
-                        <input type="date" 
-                               id="checkOut" 
-                               name="checkOut" 
+                               class="focus:outline-none bg-transparent w-full">
+                        <span class="mx-2 text-gray-300">—</span>
+                        <input type="date" id="checkOut" name="checkOut" 
                                min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")"
-                               class="w-full px-5 py-4 bg-white/90 backdrop-blur-sm border-2 border-white/30 rounded-xl focus:ring-4 focus:ring-purple-400/50 focus:border-purple-400 transition-all text-gray-900 font-medium shadow-lg hover:shadow-purple-400/30">
-                    </div>
-
-                    <!-- Guests with Gradient Icon -->
-                    <div class="group">
-                        <label for="guests" class="flex items-center text-sm font-bold text-white mb-3">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-400 flex items-center justify-center mr-2 group-hover:scale-110 transition-transform shadow-lg">
-                                <i class="fas fa-users text-white text-sm"></i>
-                            </div>
-                            <span class="bg-gradient-to-r from-amber-200 to-orange-200 bg-clip-text text-transparent">Guests</span>
-                        </label>
-                        <select id="guests" 
-                                name="guests" 
-                                class="w-full px-5 py-4 bg-white/90 backdrop-blur-sm border-2 border-white/30 rounded-xl focus:ring-4 focus:ring-amber-400/50 focus:border-amber-400 transition-all text-gray-900 font-medium shadow-lg hover:shadow-amber-400/30">
-                            <option value="1">1 Guest</option>
-                            <option value="2">2 Guests</option>
-                            <option value="3">3 Guests</option>
-                            <option value="4">4 Guests</option>
-                            <option value="5">5+ Guests</option>
-                        </select>
+                               class="focus:outline-none bg-transparent w-full">
                     </div>
                 </div>
 
-                <!-- Ultra-Modern Search Button -->
-                <div class="pt-4">
-                    <button type="submit" 
-                            class="group relative w-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 text-white font-black text-lg py-5 px-8 rounded-2xl shadow-2xl hover:shadow-emerald-500/50 transform hover:-translate-y-1 hover:scale-105 transition-all duration-300 overflow-hidden">
-                        <span class="relative z-10 flex items-center justify-center space-x-3">
-                            <i class="fas fa-search text-xl group-hover:rotate-12 transition-transform"></i>
-                            <span>Search Available Rooms</span>
-                            <i class="fas fa-arrow-right text-xl group-hover:translate-x-2 transition-transform"></i>
-                        </span>
-                        <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="absolute inset-0 shimmer"></div>
-                    </button>
+                <!-- Guests/Rooms -->
+                <div class="md:w-72 bg-white rounded-md flex items-center px-4 py-4 group focus-within:ring-2 focus-within:ring-blue-500 transition-all">
+                    <i class="fas fa-user text-gray-400 mr-3 text-lg group-focus-within:text-blue-500 transition-colors"></i>
+                    <select id="guests" name="guests" 
+                            class="w-full text-sm font-bold text-gray-950 focus:outline-none bg-transparent appearance-none">
+                        <option value="1">1 adult · 0 children · 1 room</option>
+                        <option value="2">2 adults · 0 children · 1 room</option>
+                        <option value="3">3 adults · 0 children · 1 room</option>
+                        <option value="4">4 adults · 0 children · 1 room</option>
+                    </select>
                 </div>
+
+                <!-- Search Button -->
+                <button type="submit" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-black px-10 py-4 rounded-md transition-all text-xl shadow-inner active:scale-95">
+                    Search
+                </button>
             </form>
         </div>
-
-        <!-- Ultra-Modern Trust Badges -->
-        <div class="mt-16 flex flex-wrap justify-center gap-6 animate-slide-up" style="animation-delay: 0.6s;">
-            <div class="group flex items-center space-x-3 px-6 py-4 glass backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl hover:bg-white/20 transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg hover:shadow-emerald-400/30">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center group-hover:rotate-12 transition-transform shadow-lg">
-                    <i class="fas fa-shield-alt text-2xl text-white"></i>
-                </div>
-                <span class="font-bold text-lg text-white">Secure Booking</span>
-            </div>
-            <div class="group flex items-center space-x-3 px-6 py-4 glass backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl hover:bg-white/20 transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg hover:shadow-amber-400/30">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 flex items-center justify-center group-hover:rotate-12 transition-transform shadow-lg">
-                    <i class="fas fa-star text-2xl text-white"></i>
-                </div>
-                <span class="font-bold text-lg text-white">5-Star Rated</span>
-            </div>
-            <div class="group flex items-center space-x-3 px-6 py-4 glass backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl hover:bg-white/20 transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg hover:shadow-sky-400/30">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-400 to-blue-400 flex items-center justify-center group-hover:rotate-12 transition-transform shadow-lg">
-                    <i class="fas fa-headset text-2xl text-white"></i>
-                </div>
-                <span class="font-bold text-lg text-white">24/7 Support</span>
-            </div>
-        </div>
     </div>
 </section>
 
-<!-- Scroll Indicator -->
-<div class="relative -mt-16 flex justify-center animate-bounce">
-    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center shadow-2xl shadow-emerald-400/50 cursor-pointer hover:scale-110 transition-transform">
-        <i class="fas fa-chevron-down text-2xl text-white"></i>
-    </div>
-</div>
-                <i class="fas fa-headset text-2xl text-sky-300"></i>
-                <span class="font-medium">24/7 Support</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Featured Rooms -->
-<section class="py-16 sm:py-24 bg-white">
+<!-- Featured Section -->
+<section class="py-12 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Featured Rooms</h2>
-            <p class="text-lg text-gray-600">Discover our most popular accommodations</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            @if (Model?.FeaturedRooms != null && Model.FeaturedRooms.Any())
-            {
-                @foreach (var room in Model.FeaturedRooms.Take(6))
-                {
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 group">
-                        <!-- Image -->
-                        <div class="relative h-64 overflow-hidden">
-                            @if (!string.IsNullOrEmpty(room.ImageUrl))
-                            {
-                                <img src="@room.ImageUrl" 
-                                     alt="Room @room.RoomNumber" 
-                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                            }
-                            else
-                            {
-                                <div class="w-full h-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
-                                    <i class="fas fa-bed text-6xl text-white opacity-50"></i>
-                                </div>
-                            }
-                            
-                            <!-- Price Badge -->
-                            <div class="absolute top-4 right-4 bg-white rounded-lg px-4 py-2 shadow-lg">
-                                <span class="text-2xl font-bold text-primary-600">$@(room.RoomType?.PricePerNight ?? 199)</span>
-                                <span class="text-sm text-gray-600">/night</span>
-                            </div>
-                            
-                            <!-- Favorite Button -->
-                            @if (User.Identity?.IsAuthenticated == true)
-                            {
-                                <button onclick="toggleFavorite(@room.RoomId, this)" 
-                                        class="absolute top-4 left-4 w-12 h-12 bg-white hover:bg-gray-50 rounded-full shadow-lg flex items-center justify-center transition-all group">
-                                    <i class="far fa-heart text-2xl text-red-500 group-hover:scale-110 transition-transform"></i>
-                                </button>
-                            }
-                        </div>
-
-                        <!-- Content -->
-                        <div class="p-6">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
-                                    @(room.RoomType?.Name ?? "Luxury Room")
-                                </span>
-                                <span class="text-sm text-gray-500">Floor @room.Floor</span>
-                            </div>
-
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">Room @room.RoomNumber</h3>
-                            <p class="text-gray-600 mb-4 line-clamp-2">
-                                @(room.RoomType?.Description ?? "Experience comfort and luxury in this beautifully designed room.")
-                            </p>
-
-                            <!-- Amenities -->
-                            <div class="flex flex-wrap gap-3 mb-4 text-sm text-gray-600">
-                                <span><i class="fas fa-users text-primary-600 mr-1"></i> 2-4 Guests</span>
-                                <span><i class="fas fa-wifi text-emerald-600 mr-1"></i> Free WiFi</span>
-                                <span><i class="fas fa-tv text-sky-600 mr-1"></i> Smart TV</span>
-                            </div>
-
-                            <!-- Actions -->
-                            <div class="flex gap-2">
-                                <a asp-controller="Room" asp-action="Details" asp-route-id="@room.RoomId"
-                                   class="flex-1 bg-primary-600 hover:bg-primary-700 text-white text-center py-3 rounded-lg font-medium transition-colors">
-                                    View Details
-                                </a>
-                                <a asp-controller="BookNow" asp-action="Index" asp-route-id="@room.RoomId"
-                                   class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-lg transition-colors">
-                                    <i class="fas fa-arrow-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="col-span-full text-center py-12">
-                    <i class="fas fa-bed text-6xl text-gray-300 mb-4"></i>
-                    <p class="text-xl text-gray-500">No rooms available at the moment</p>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Trending destinations</h2>
+        <p class="text-gray-600 mb-8">Most popular choices for travelers from Manchester</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Egypt Card -->
+            <div class="relative group cursor-pointer overflow-hidden rounded-lg h-64 shadow-md">
+                <img src="https://images.unsplash.com/photo-1572120360610-d971b9d7767c?auto=format&fit=crop&q=80&w=800" 
+                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="Egypt">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div class="absolute bottom-4 left-4 text-white">
+                    <h3 class="text-xl font-bold flex items-center">
+                        Sharm El Sheikh
+                        <img src="https://flagcdn.com/w20/eg.png" class="ml-2 w-5 h-auto rounded-sm" alt="Egypt Flag">
+                    </h3>
+                    <p class="text-sm opacity-90">Experience the Red Sea Riviera</p>
                 </div>
-            }
-        </div>
-
-        <div class="text-center mt-12">
-            <a asp-controller="Room" asp-action="Index" 
-               class="inline-block bg-gray-900 hover:bg-gray-800 text-white font-bold py-4 px-8 rounded-lg transition-colors">
-                View All Rooms
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- Amenities -->
-<section class="py-16 sm:py-24 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Premium Amenities</h2>
-            <p class="text-lg text-gray-600">Everything you need for a perfect stay</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <!-- Amenity 1 -->
-            <div class="bg-white rounded-xl p-8 text-center hover:shadow-xl transition-shadow group">
-                <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-wifi text-3xl text-white"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">High-Speed WiFi</h3>
-                <p class="text-gray-600 text-sm">Stay connected with complimentary high-speed internet</p>
             </div>
 
-            <!-- Amenity 2 -->
-            <div class="bg-white rounded-xl p-8 text-center hover:shadow-xl transition-shadow group">
-                <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-swimming-pool text-3xl text-white"></i>
+            <!-- London Card -->
+            <div class="relative group cursor-pointer overflow-hidden rounded-lg h-64 shadow-md">
+                <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=800" 
+                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="London">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div class="absolute bottom-4 left-4 text-white">
+                    <h3 class="text-xl font-bold flex items-center">
+                        London
+                        <img src="https://flagcdn.com/w20/gb.png" class="ml-2 w-5 h-auto rounded-sm" alt="UK Flag">
+                    </h3>
+                    <p class="text-sm opacity-90">The historic capital awaits</p>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Infinity Pool</h3>
-                <p class="text-gray-600 text-sm">Relax in our stunning rooftop infinity pool</p>
             </div>
 
-            <!-- Amenity 3 -->
-            <div class="bg-white rounded-xl p-8 text-center hover:shadow-xl transition-shadow group">
-                <div class="w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-utensils text-3xl text-white"></i>
+            <!-- Dubai Card -->
+            <div class="relative group cursor-pointer overflow-hidden rounded-lg h-64 shadow-md">
+                <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=800" 
+                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="Dubai">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div class="absolute bottom-4 left-4 text-white">
+                    <h3 class="text-xl font-bold flex items-center">
+                        Dubai
+                        <img src="https://flagcdn.com/w20/ae.png" class="ml-2 w-5 h-auto rounded-sm" alt="UAE Flag">
+                    </h3>
+                    <p class="text-sm opacity-90">Luxury and adventure combined</p>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Fine Dining</h3>
-                <p class="text-gray-600 text-sm">Enjoy gourmet cuisine at our restaurant</p>
-            </div>
-
-            <!-- Amenity 4 -->
-            <div class="bg-white rounded-xl p-8 text-center hover:shadow-xl transition-shadow group">
-                <div class="w-16 h-16 bg-gradient-to-br from-sky-500 to-sky-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-spa text-3xl text-white"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Spa & Wellness</h3>
-                <p class="text-gray-600 text-sm">Rejuvenate at our world-class spa</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Testimonials -->
-<section class="py-16 sm:py-24 bg-white">
+<!-- Offers Section -->
+<section class="py-12 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">What Our Guests Say</h2>
-            <p class="text-lg text-gray-600">Real experiences from real guests</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Testimonial 1 -->
-            <div class="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow">
-                <div class="flex items-center mb-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
-                        SJ
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-900">Sarah Johnson</h4>
-                        <div class="flex text-amber-400">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Offers</h2>
+        <p class="text-gray-600 mb-6">Promotions, deals, and special offers for you</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white border rounded-lg p-6 flex items-center shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex-1">
+                    <h3 class="text-lg font-bold mb-2">Fly away to your dream holiday</h3>
+                    <p class="text-sm text-gray-600 mb-4">Get inspired, compare and book flights with more flexibility</p>
+                    <a href="/Room" class="bg-blue-600 text-white px-4 py-2 rounded-sm text-sm font-bold hover:bg-blue-700 transition-colors">Search flights</a>
                 </div>
-                <p class="text-gray-600 italic">
-                    "Absolutely stunning hotel! The service was impeccable and the room was beautiful. Highly recommended!"
-                </p>
+                <div class="ml-6 hidden sm:block">
+                    <img src="https://images.unsplash.com/photo-1436491865332-7a61a109c0f3?auto=format&fit=crop&q=80&w=200" class="w-32 h-32 object-cover rounded-lg" alt="Offer">
+                </div>
             </div>
 
-            <!-- Testimonial 2 -->
-            <div class="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow">
-                <div class="flex items-center mb-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
-                        MC
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-900">Michael Chen</h4>
-                        <div class="flex text-amber-400">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
+            <div class="bg-white border rounded-lg p-6 flex items-center shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex-1">
+                    <h3 class="text-lg font-bold mb-2">Seize the moment</h3>
+                    <p class="text-sm text-gray-600 mb-4">Save 15% or more when you book and stay before 1 October 2024</p>
+                    <a href="/Room" class="bg-blue-600 text-white px-4 py-2 rounded-sm text-sm font-bold hover:bg-blue-700 transition-colors">Find Getaway Deals</a>
                 </div>
-                <p class="text-gray-600 italic">
-                    "Best hotel experience ever! From check-in to checkout, everything exceeded my expectations."
-                </p>
-            </div>
-
-            <!-- Testimonial 3 -->
-            <div class="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow">
-                <div class="flex items-center mb-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-sky-500 to-sky-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
-                        ER
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-900">Emily Rodriguez</h4>
-                        <div class="flex text-amber-400">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
+                <div class="ml-6 hidden sm:block">
+                    <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=200" class="w-32 h-32 object-cover rounded-lg" alt="Offer">
                 </div>
-                <p class="text-gray-600 italic">
-                    "Perfect location and wonderful staff. The breakfast was delicious. Will definitely come back!"
-                </p>
             </div>
         </div>
     </div>
 </section>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Date validation
         document.addEventListener('DOMContentLoaded', function() {
@@ -420,61 +174,6 @@
                 });
             }
         });
-
-        // Favorite toggle function
-        function toggleFavorite(roomId, button) {
-            const icon = button.querySelector('i');
-            const isFavorited = icon.classList.contains('fas');
-
-            fetch('/Favorite/Toggle', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
-                },
-                body: JSON.stringify({ roomId: roomId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Toggle heart icon
-                    if (data.action === 'added') {
-                        icon.classList.remove('far');
-                        icon.classList.add('fas');
-                        showToast('Added to favorites!', 'success');
-                    } else {
-                        icon.classList.remove('fas');
-                        icon.classList.add('far');
-                        showToast('Removed from favorites', 'info');
-                    }
-                } else {
-                    showToast(data.message || 'Failed to update favorites', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('An error occurred', 'error');
-            });
-        }
-
-        function showToast(message, type) {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                }
-            });
-
-            Toast.fire({
-                icon: type,
-                title: message
-            });
-        }
     </script>
 }
 

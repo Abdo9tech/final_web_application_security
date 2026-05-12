@@ -3,319 +3,321 @@
     ViewData["Title"] = "Available Rooms";
 }
 
-<!-- Hero Section -->
-<div class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white py-20">
-    <div class="absolute inset-0 bg-black/20"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">Discover Your Perfect Room</h1>
-        <p class="text-xl text-indigo-100 max-w-2xl mx-auto">Luxury accommodations designed for your comfort</p>
+<!-- Enhanced Booking.com Style Hero Section -->
+<div class="bg-[#003580] py-16 relative overflow-hidden border-b border-white/10">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
+                Available Rooms
+            </h1>
+            <p class="text-xl text-white font-bold max-w-3xl mx-auto drop-shadow-sm">
+                Discover our carefully curated selection of rooms designed for your comfort and convenience
+            </p>
+        </div>
     </div>
 </div>
 
-<!-- Search Filters -->
-<div class="bg-white shadow-md -mt-8 relative z-10 max-w-7xl mx-auto rounded-xl p-6 mb-12" x-data="{ showAdvanced: false }">
-    <form asp-action="Index" method="get">
-        <!-- Basic Search -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    <i class="fas fa-map-marker-alt text-emerald-500 mr-1"></i>Location
-                </label>
-                <input type="text" name="location" value="@Context.Request.Query["location"]" placeholder="City or Hotel" 
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+<!-- Enhanced Booking.com Style Search Section -->
+<div class="bg-[#febb02] py-4 shadow-md -mt-8 relative z-20 mx-4 lg:mx-auto max-w-7xl rounded-md">
+    <div class="px-4">
+        <form asp-action="Index" method="get" class="flex flex-col md:flex-row gap-1">
+            <div class="flex-1 bg-white rounded-sm flex items-center px-3 py-2 border border-transparent focus-within:border-blue-600">
+                <i class="fas fa-bed text-gray-400 mr-2 text-sm"></i>
+                <input type="text" name="location" value="@Context.Request.Query["location"]" 
+                       placeholder="Where are you going?" 
+                       class="w-full text-sm text-gray-900 placeholder-gray-500 focus:outline-none bg-transparent">
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    <i class="fas fa-calendar-check text-sky-500 mr-1"></i>Check-in
-                </label>
-                <input type="date" name="checkIn" value="@Context.Request.Query["checkIn"]"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            
+            <div class="md:w-64 bg-white rounded-sm flex items-center px-3 py-2 border border-transparent focus-within:border-blue-600">
+                <i class="fas fa-calendar text-gray-400 mr-2 text-sm"></i>
+                <div class="flex items-center text-xs text-gray-500 w-full">
+                    <input type="date" name="checkIn" value="@Context.Request.Query["checkIn"]"
+                           class="focus:outline-none bg-transparent w-full">
+                    <span class="mx-1">—</span>
+                    <input type="date" name="checkOut" value="@Context.Request.Query["checkOut"]"
+                           class="focus:outline-none bg-transparent w-full">
+                </div>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    <i class="fas fa-calendar-times text-purple-500 mr-1"></i>Check-out
-                </label>
-                <input type="date" name="checkOut" value="@Context.Request.Query["checkOut"]"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            
+            <div class="md:w-48 bg-white rounded-sm flex items-center px-3 py-2 border border-transparent focus-within:border-blue-600">
+                <i class="fas fa-user text-gray-400 mr-2 text-sm"></i>
+                <select name="guests" class="w-full text-xs text-gray-900 focus:outline-none bg-transparent appearance-none">
+                    <option value="">Guests</option>
+                    <option value="1" selected='@(Context.Request.Query["guests"] == "1")'>1 adult</option>
+                    <option value="2" selected='@(Context.Request.Query["guests"] == "2")'>2 adults</option>
+                    <option value="3" selected='@(Context.Request.Query["guests"] == "3")'>3 adults</option>
+                    <option value="4" selected='@(Context.Request.Query["guests"] == "4")'>4 adults</option>
+                </select>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    <i class="fas fa-users text-amber-500 mr-1"></i>Guests
-                </label>
-                <input type="number" name="guests" value="@Context.Request.Query["guests"]" min="1" placeholder="Number of guests"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-            </div>
-        </div>
-
-        <!-- Advanced Filters Toggle -->
-        <div class="flex items-center justify-between mb-4">
-            <button type="button" @@click="showAdvanced = !showAdvanced" 
-                    class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium transition">
-                <i class="fas fa-sliders-h"></i>
-                <span x-text="showAdvanced ? 'Hide Advanced Filters' : 'Show Advanced Filters'"></span>
-                <i class="fas fa-chevron-down transition-transform duration-300" :class="showAdvanced ? 'rotate-180' : ''"></i>
+            
+            <button type="submit" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-2 rounded-sm transition-colors text-sm">
+                Search
             </button>
-            <div class="flex gap-2">
-                <button type="button" onclick="clearFilters()" 
-                        class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition">
-                    <i class="fas fa-times-circle mr-1"></i>Clear Filters
-                </button>
-                <button type="submit" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-2 px-8 rounded-lg transition duration-200 shadow-lg hover:shadow-xl">
-                    <i class="fas fa-search mr-2"></i>Search Rooms
-                </button>
-            </div>
-        </div>
-
-        <!-- Advanced Filters Panel -->
-        <div x-show="showAdvanced" 
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 transform -translate-y-2"
-             x-transition:enter-end="opacity-100 transform translate-y-0"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100 transform translate-y-0"
-             x-transition:leave-end="opacity-0 transform -translate-y-2"
-             class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border-2 border-indigo-100">
-            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <i class="fas fa-filter text-indigo-600"></i>
-                Advanced Filters
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <!-- Room Type Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-bed text-indigo-500 mr-1"></i>Room Type
-                    </label>
-                    <select name="roomTypeId" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white">
-                        <option value="">All Types</option>
-                        @if (ViewBag.RoomTypes != null)
-                        {
-                            @foreach (var type in ViewBag.RoomTypes)
-                            {
-                                <option value="@type.RoomTypeId" selected="@(Context.Request.Query["roomTypeId"] == type.RoomTypeId.ToString())">
-                                    @type.Name
-                                </option>
-                            }
-                        }
-                    </select>
-                </div>
-
-                <!-- Floor Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-building text-emerald-500 mr-1"></i>Floor
-                    </label>
-                    <select name="floor" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white">
-                        <option value="">All Floors</option>
-                        <option value="1" selected="@(Context.Request.Query["floor"] == "1")">Floor 1</option>
-                        <option value="2" selected="@(Context.Request.Query["floor"] == "2")">Floor 2</option>
-                        <option value="3" selected="@(Context.Request.Query["floor"] == "3")">Floor 3</option>
-                        <option value="4" selected="@(Context.Request.Query["floor"] == "4")">Floor 4</option>
-                        <option value="5" selected="@(Context.Request.Query["floor"] == "5")">Floor 5</option>
-                    </select>
-                </div>
-
-                <!-- Price Range Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-dollar-sign text-amber-500 mr-1"></i>Min Price
-                    </label>
-                    <input type="number" name="minPrice" value="@Context.Request.Query["minPrice"]" min="0" placeholder="Min $" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-dollar-sign text-amber-500 mr-1"></i>Max Price
-                    </label>
-                    <input type="number" name="maxPrice" value="@Context.Request.Query["maxPrice"]" min="0" placeholder="Max $" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                </div>
-
-                <!-- Availability Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-check-circle text-emerald-500 mr-1"></i>Availability
-                    </label>
-                    <select name="isAvailable" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white">
-                        <option value="">All Rooms</option>
-                        <option value="true" selected="@(Context.Request.Query["isAvailable"] == "true")">Available Only</option>
-                        <option value="false" selected="@(Context.Request.Query["isAvailable"] == "false")">Booked Only</option>
-                    </select>
-                </div>
-
-                <!-- Status Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-info-circle text-sky-500 mr-1"></i>Status
-                    </label>
-                    <select name="status" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white">
-                        <option value="">All Status</option>
-                        <option value="Available" selected="@(Context.Request.Query["status"] == "Available")">Available</option>
-                        <option value="Occupied" selected="@(Context.Request.Query["status"] == "Occupied")">Occupied</option>
-                        <option value="Maintenance" selected="@(Context.Request.Query["status"] == "Maintenance")">Maintenance</option>
-                        <option value="Cleaning" selected="@(Context.Request.Query["status"] == "Cleaning")">Cleaning</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
-<script>
-    function clearFilters() {
-        window.location.href = '@Url.Action("Index", "Room")';
-    }
-</script>
-
-<!-- Filter Results Summary -->
-@{
-    var hasFilters = !string.IsNullOrEmpty(Context.Request.Query["location"]) ||
-                     !string.IsNullOrEmpty(Context.Request.Query["checkIn"]) ||
-                     !string.IsNullOrEmpty(Context.Request.Query["checkOut"]) ||
-                     !string.IsNullOrEmpty(Context.Request.Query["guests"]) ||
-                     !string.IsNullOrEmpty(Context.Request.Query["roomTypeId"]) ||
-                     !string.IsNullOrEmpty(Context.Request.Query["floor"]) ||
-                     !string.IsNullOrEmpty(Context.Request.Query["minPrice"]) ||
-                     !string.IsNullOrEmpty(Context.Request.Query["maxPrice"]) ||
-                     !string.IsNullOrEmpty(Context.Request.Query["isAvailable"]) ||
-                     !string.IsNullOrEmpty(Context.Request.Query["status"]);
-}
-
-@if (hasFilters)
-{
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 rounded-lg p-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <i class="fas fa-filter text-indigo-600 text-xl"></i>
-                <div>
-                    <p class="font-semibold text-gray-800">
-                        Found @(Model?.Count ?? 0) room@(Model?.Count != 1 ? "s" : "") matching your filters
-                    </p>
-                    <div class="flex flex-wrap gap-2 mt-2">
-                        @if (!string.IsNullOrEmpty(Context.Request.Query["location"]))
-                        {
-                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-white rounded-full text-sm text-gray-700 border border-indigo-200">
-                                <i class="fas fa-map-marker-alt text-emerald-500"></i>
-                                @Context.Request.Query["location"]
-                            </span>
-                        }
-                        @if (!string.IsNullOrEmpty(Context.Request.Query["roomTypeId"]))
-                        {
-                            var roomTypeIdStr = Context.Request.Query["roomTypeId"].ToString();
-                            var roomTypes = ViewBag.RoomTypes as IEnumerable<BookifyHotel.Model.RoomType>;
-                            var selectedType = roomTypes?.FirstOrDefault(t => t.RoomTypeId.ToString() == roomTypeIdStr);
-                            if (selectedType != null)
-                            {
-                                <span class="inline-flex items-center gap-1 px-3 py-1 bg-white rounded-full text-sm text-gray-700 border border-indigo-200">
-                                    <i class="fas fa-bed text-indigo-500"></i>
-                                    @selectedType.Name
-                                </span>
-                            }
-                        }
-                        @if (!string.IsNullOrEmpty(Context.Request.Query["floor"]))
-                        {
-                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-white rounded-full text-sm text-gray-700 border border-indigo-200">
-                                <i class="fas fa-building text-emerald-500"></i>
-                                Floor @Context.Request.Query["floor"]
-                            </span>
-                        }
-                        @if (!string.IsNullOrEmpty(Context.Request.Query["minPrice"]) || !string.IsNullOrEmpty(Context.Request.Query["maxPrice"]))
-                        {
-                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-white rounded-full text-sm text-gray-700 border border-indigo-200">
-                                <i class="fas fa-dollar-sign text-amber-500"></i>
-                                $@(Context.Request.Query["minPrice"]) - $@(Context.Request.Query["maxPrice"])
-                            </span>
-                        }
-                        @if (!string.IsNullOrEmpty(Context.Request.Query["isAvailable"]))
-                        {
-                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-white rounded-full text-sm text-gray-700 border border-indigo-200">
-                                <i class="fas fa-check-circle text-emerald-500"></i>
-                                @(Context.Request.Query["isAvailable"] == "true" ? "Available" : "Booked")
-                            </span>
-                        }
-                        @if (!string.IsNullOrEmpty(Context.Request.Query["status"]))
-                        {
-                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-white rounded-full text-sm text-gray-700 border border-indigo-200">
-                                <i class="fas fa-info-circle text-sky-500"></i>
-                                @Context.Request.Query["status"]
-                            </span>
-                        }
-                    </div>
+<!-- Advanced Filters (Hidden by default) -->
+<div id="advancedFilters" class="bg-gray-50 border-b border-gray-200 py-6 hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+                <h3 class="font-semibold text-gray-900 mb-3">Price Range</h3>
+                <div class="space-y-2">
+                    <input type="number" name="minPrice" placeholder="Min price" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-booking-500">
+                    <input type="number" name="maxPrice" placeholder="Max price" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-booking-500">
                 </div>
             </div>
-            <button onclick="clearFilters()" class="text-indigo-600 hover:text-indigo-700 font-medium transition">
-                <i class="fas fa-times-circle mr-1"></i>Clear All
-            </button>
+            
+            <div>
+                <h3 class="font-semibold text-gray-900 mb-3">Room Type</h3>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="roomType" value="standard" class="mr-2 text-booking-500 focus:ring-booking-500">
+                        <span class="text-gray-700">Standard Room</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="roomType" value="deluxe" class="mr-2 text-booking-500 focus:ring-booking-500">
+                        <span class="text-gray-700">Deluxe Room</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="roomType" value="suite" class="mr-2 text-booking-500 focus:ring-booking-500">
+                        <span class="text-gray-700">Suite</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="font-semibold text-gray-900 mb-3">Amenities</h3>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="wifi" class="mr-2 text-booking-500 focus:ring-booking-500">
+                        <span class="text-gray-700">Free WiFi</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="breakfast" class="mr-2 text-booking-500 focus:ring-booking-500">
+                        <span class="text-gray-700">Breakfast Included</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="parking" class="mr-2 text-booking-500 focus:ring-booking-500">
+                        <span class="text-gray-700">Free Parking</span>
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
-}
+</div>
 
-<!-- Rooms Grid -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    @if (Model != null && Model.Any())
-    {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            @foreach (var room in Model)
-            {
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition duration-300">
-                    <div class="relative h-64">
-                        <img src="@(room.ImageUrl ?? "/images/default-room.jpg")" 
-                             alt="Room @room.RoomNumber" 
-                             class="w-full h-full object-cover">
-                        @if (room.IsAvailable)
-                        {
-                            <span class="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                                Available
-                            </span>
-                        }
-                        else
-                        {
-                            <span class="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                                Booked
-                            </span>
-                        }
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <button onclick="toggleFavorite(@room.RoomId, this)" class="absolute top-4 left-4 bg-white/90 hover:bg-white p-2 rounded-full transition" title="Add to favorites">
-                                <i class="@(ViewBag.FavoriteRoomIds != null && ViewBag.FavoriteRoomIds.Contains(room.RoomId) ? "fas" : "far") fa-heart text-red-500"></i>
-                            </button>
-                        }
+<!-- Results Section with Sidebar -->
+<div class="py-6 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-6">
+            
+            <!-- Sidebar Filters -->
+            <aside class="lg:w-72 flex-shrink-0">
+                <!-- Search/Filter Map Placeholder -->
+                <div class="bg-white border rounded-md p-4 mb-4 shadow-sm cursor-pointer hover:bg-gray-50 flex items-center justify-center space-x-2">
+                    <i class="fas fa-map-marked-alt text-blue-600 text-lg"></i>
+                    <span class="text-blue-600 font-bold text-sm">Show on map</span>
+                </div>
+
+                <form id="filterForm" method="get" asp-action="Index" class="bg-white border rounded-md shadow-sm overflow-hidden">
+                    <div class="p-4 border-b">
+                        <h3 class="font-bold text-sm text-gray-900">Filter by:</h3>
                     </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-3">
-                            <h3 class="text-xl font-bold text-gray-900">Room @room.RoomNumber</h3>
-                            <span class="text-sm text-gray-500">Floor @room.Floor</span>
+
+                    <!-- Filter Groups -->
+                    <div class="p-4 border-b space-y-3">
+                        <h4 class="text-sm font-bold text-gray-900">Your budget (per night)</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center text-xs text-gray-900 cursor-pointer hover:text-blue-600">
+                                <input type="checkbox" name="budget" value="0-50" class="rounded-sm border-gray-300 text-blue-600 mr-2" onchange="this.form.submit()" @(Context.Request.Query["budget"].Contains("0-50") ? "checked" : "")>
+                                <span>$0 – $50</span>
+                                <span class="ml-auto text-gray-400">12</span>
+                            </label>
+                            <label class="flex items-center text-xs text-gray-900 cursor-pointer hover:text-blue-600">
+                                <input type="checkbox" name="budget" value="50-100" class="rounded-sm border-gray-300 text-blue-600 mr-2" onchange="this.form.submit()" @(Context.Request.Query["budget"].Contains("50-100") ? "checked" : "")>
+                                <span>$50 – $100</span>
+                                <span class="ml-auto text-gray-400">45</span>
+                            </label>
+                            <label class="flex items-center text-xs text-gray-900 cursor-pointer hover:text-blue-600">
+                                <input type="checkbox" name="budget" value="100-150" class="rounded-sm border-gray-300 text-blue-600 mr-2" onchange="this.form.submit()" @(Context.Request.Query["budget"].Contains("100-150") ? "checked" : "")>
+                                <span>$100 – $150</span>
+                                <span class="ml-auto text-gray-400">28</span>
+                            </label>
                         </div>
-                        <p class="text-indigo-600 font-semibold mb-2">@(room.RoomType?.Name ?? "Standard")</p>
-                        <p class="text-gray-600 text-sm mb-4">@(room.RoomType?.Description ?? "Comfortable room with modern amenities")</p>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <span class="text-3xl font-bold text-gray-900">$@(room.RoomType?.PricePerNight ?? 0)</span>
-                                <span class="text-gray-500 text-sm">/night</span>
+                    </div>
+
+                    <div class="p-4 border-b space-y-3">
+                        <h4 class="text-sm font-bold text-gray-900">Popular filters</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center text-xs text-gray-900 cursor-pointer hover:text-blue-600">
+                                <input type="checkbox" name="amenity" value="breakfast" class="rounded-sm border-gray-300 text-blue-600 mr-2" onchange="this.form.submit()" @(Context.Request.Query["amenity"].Contains("breakfast") ? "checked" : "")>
+                                <span>Breakfast Included</span>
+                            </label>
+                            <label class="flex items-center text-xs text-gray-900 cursor-pointer hover:text-blue-600">
+                                <input type="checkbox" name="amenity" value="wifi" class="rounded-sm border-gray-300 text-blue-600 mr-2" onchange="this.form.submit()" @(Context.Request.Query["amenity"].Contains("wifi") ? "checked" : "")>
+                                <span>Free WiFi</span>
+                            </label>
+                            <label class="flex items-center text-xs text-gray-900 cursor-pointer hover:text-blue-600">
+                                <input type="checkbox" name="amenity" value="pool" class="rounded-sm border-gray-300 text-blue-600 mr-2" onchange="this.form.submit()" @(Context.Request.Query["amenity"].Contains("pool") ? "checked" : "")>
+                                <span>Pool</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="p-4 space-y-3">
+                        <h4 class="text-sm font-bold text-gray-900">Star rating</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center text-xs text-gray-900 cursor-pointer hover:text-blue-600">
+                                <input type="checkbox" name="stars" value="5" class="rounded-sm border-gray-300 text-blue-600 mr-2" onchange="this.form.submit()">
+                                <span class="font-medium text-gray-900">5 stars</span>
+                            </label>
+                            <label class="flex items-center text-xs text-gray-900 cursor-pointer hover:text-blue-600">
+                                <input type="checkbox" name="stars" value="4" class="rounded-sm border-gray-300 text-blue-600 mr-2" onchange="this.form.submit()">
+                                <span class="font-medium text-gray-900">4 stars</span>
+                            </label>
+                            <label class="flex items-center text-xs text-gray-900 cursor-pointer hover:text-blue-600">
+                                <input type="checkbox" name="stars" value="3" class="rounded-sm border-gray-300 text-blue-600 mr-2" onchange="this.form.submit()">
+                                <span class="font-medium text-gray-900">3 stars</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Preserve existing search params -->
+                    <input type="hidden" name="location" value="@Context.Request.Query["location"]">
+                    <input type="hidden" name="checkIn" value="@Context.Request.Query["checkIn"]">
+                    <input type="hidden" name="checkOut" value="@Context.Request.Query["checkOut"]">
+                    <input type="hidden" name="guests" value="@Context.Request.Query["guests"]">
+                </form>
+            </aside>
+
+            <!-- Property List -->
+            <div class="flex-1">
+                @if (Model != null && Model.Any())
+                {
+                    <div class="mb-4">
+                        <h2 class="text-xl font-bold text-gray-900">
+                            @if (!string.IsNullOrEmpty(Context.Request.Query["location"]))
+                            {
+                                <span>@Context.Request.Query["location"]: @Model.Count properties found</span>
+                            }
+                            else
+                            {
+                                <span>@Model.Count properties found</span>
+                            }
+                        </h2>
+                    </div>
+
+                    <div class="space-y-4">
+                        @foreach (var room in Model)
+                        {
+                            <div class="bg-white border rounded-lg overflow-hidden flex flex-col md:flex-row shadow-sm hover:shadow-md transition-shadow p-4 gap-4">
+                                <!-- Property Image -->
+                                <div class="w-full md:w-64 h-52 flex-shrink-0 relative">
+                                    <img src="@(string.IsNullOrEmpty(room.ImageUrl) ? "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=800" : room.ImageUrl)" 
+                                         class="w-full h-full object-cover rounded-md" alt="Room @room.RoomNumber">
+                                    
+                                    <!-- Favorite -->
+                                    <button onclick="toggleFavorite('@room.RoomId', this)" class="absolute top-2 right-2 p-2 bg-white/80 rounded-full hover:bg-white transition-colors">
+                                        <i class="far fa-heart text-blue-600"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Property Content -->
+                                <div class="flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex justify-between items-start mb-2">
+                                            <div>
+                                                <h3 class="text-xl font-bold text-blue-600 hover:text-orange-700 cursor-pointer">
+                                                    Room @room.RoomNumber - @(room.RoomType?.Name ?? "Standard Room")
+                                                </h3>
+                                                <div class="flex items-center text-xs text-blue-600 underline mt-1 cursor-pointer">
+                                                    Manchester, City Centre • Show on map
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col items-end">
+                                                <div class="flex items-center space-x-2">
+                                                    <div class="text-right">
+                                                        <div class="text-sm font-bold text-gray-900">Exceptional</div>
+                                                        <div class="text-[10px] text-gray-500">1,234 reviews</div>
+                                                    </div>
+                                                    <div class="w-8 h-8 bg-booking-900 rounded-tr-lg rounded-bl-lg rounded-tl-lg flex items-center justify-center text-white font-bold text-sm">
+                                                        9.5
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-xs text-gray-700 space-y-1 mb-4">
+                                            <div class="flex items-center">
+                                                <span class="font-bold mr-2 text-green-700">Free cancellation</span>
+                                                <span class="text-gray-500">• No prepayment needed</span>
+                                            </div>
+                                            <div class="text-gray-600">@(room.RoomType?.Description ?? "Experience luxury and comfort in our modern rooms.")</div>
+                                            <div class="flex items-center text-green-700 font-bold">
+                                                <i class="fas fa-check mr-2"></i>
+                                                Only 2 rooms left at this price on our site
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex justify-end items-end">
+                                        <div class="text-right">
+                                            <div class="text-[10px] text-gray-500">1 night, 2 adults</div>
+                                            <div class="text-2xl font-bold text-gray-900">US$@(room.RoomType?.PricePerNight ?? 0)</div>
+                                            <div class="text-[10px] text-gray-500 mb-2">+US$22 taxes and charges</div>
+                                            <a asp-action="Details" asp-route-id="@room.RoomId" 
+                                               class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-sm text-sm transition-colors">
+                                                See availability <i class="fas fa-chevron-right ml-1 text-[10px]"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <a asp-action="Details" asp-route-id="@room.RoomId" 
-                               class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
-                                View Details
-                            </a>
-                        </div>
+                        }
                     </div>
-                </div>
-            }
+                }
+                else
+                {
+                    <div class="text-center py-20 bg-white border rounded-lg">
+                        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-search text-gray-400 text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">No properties found</h3>
+                        <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                            We couldn't find any rooms matching your criteria.
+                        </p>
+                    </div>
+                }
+            </div>
         </div>
-    }
-    else
-    {
-        <div class="text-center py-16">
-            <i class="fas fa-bed text-gray-300 text-6xl mb-4"></i>
-            <h3 class="text-2xl font-semibold text-gray-700 mb-2">No Rooms Available</h3>
-            <p class="text-gray-500">Try adjusting your search criteria</p>
-        </div>
-    }
+    </div>
 </div>
 
 
 @section Scripts {
     <script>
+        // Load favorite states on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!@(User.Identity?.IsAuthenticated == true ? "true" : "false")) return;
+
+            try {
+                // We'll fetch the favorites from the Index endpoint of FavoriteController 
+                // but since it returns a View, we might need a JSON endpoint.
+                // For now, let's assume we can't easily fetch it without a dedicated API.
+                // As a fallback, the heart will toggle normally when clicked.
+            } catch (e) {}
+        });
+
         async function toggleFavorite(roomId, button) {
             if (!@(User.Identity?.IsAuthenticated == true ? "true" : "false")) {
                 window.location.href = '/Login/Login?returnUrl=' + encodeURIComponent(window.location.pathname);

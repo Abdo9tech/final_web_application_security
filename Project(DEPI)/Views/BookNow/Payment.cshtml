@@ -4,125 +4,125 @@
 }
 
 <!-- Payment Section -->
-<section class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full mb-4">
-                <i class="fas fa-lock text-3xl text-white"></i>
+<!-- Booking Progress Steps -->
+<div class="bg-white border-b py-4 mb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between max-w-3xl mx-auto">
+            <div class="flex items-center text-green-600 font-bold text-sm">
+                <span class="w-6 h-6 rounded-full bg-green-600 text-white flex items-center justify-center mr-2 text-xs"><i class="fas fa-check"></i></span>
+                Your selection
             </div>
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">Secure Payment</h1>
-            <p class="text-lg text-gray-600">Complete your booking with our secure payment system</p>
+            <div class="h-[1px] flex-1 bg-green-200 mx-4"></div>
+            <div class="flex items-center text-blue-600 font-bold text-sm">
+                <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center mr-2 text-xs">2</span>
+                Final details
+            </div>
+            <div class="h-[1px] flex-1 bg-gray-200 mx-4"></div>
+            <div class="flex items-center text-gray-400 font-bold text-sm">
+                <span class="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center mr-2 text-xs">3</span>
+                Confirmation
+            </div>
         </div>
+    </div>
+</div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Payment Form -->
-            <div class="lg:col-span-2">
-                <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-                    <!-- Booking Summary Header -->
-                    <div class="mb-8 pb-6 border-b border-gray-200">
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4">Booking Details</h2>
-                        <div class="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <span class="text-gray-600">Room Number:</span>
-                                <span class="font-medium text-gray-900 ml-2">@Model.RoomNumber</span>
+<section class="bg-gray-50 min-h-screen py-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col lg:flex-row gap-6">
+            <!-- Sidebar Summary -->
+            <aside class="lg:w-80 flex-shrink-0 order-1 lg:order-1">
+                <div class="bg-white border rounded-sm overflow-hidden shadow-sm">
+                    <div class="p-4 border-b">
+                        <h3 class="font-bold text-sm">Your booking summary</h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="mb-4">
+                            <h4 class="font-bold text-sm text-gray-900">Room @Model.RoomNumber</h4>
+                            <p class="text-xs text-gray-500">@Model.RoomType</p>
+                        </div>
+
+                        <div class="space-y-3 py-4 border-t text-xs">
+                            <div class="flex justify-between">
+                                <span class="font-bold">Check-in:</span>
+                                <span class="text-gray-600">@Model.CheckInDate.ToString("ddd, dd MMM yyyy")</span>
                             </div>
-                            <div>
-                                <span class="text-gray-600">Room Type:</span>
-                                <span class="font-medium text-gray-900 ml-2">@Model.RoomType</span>
+                            <div class="flex justify-between">
+                                <span class="font-bold">Check-out:</span>
+                                <span class="text-gray-600">@Model.CheckOutDate.ToString("ddd, dd MMM yyyy")</span>
                             </div>
-                            <div>
-                                <span class="text-gray-600">Check-in:</span>
-                                <span class="font-medium text-gray-900 ml-2">@Model.CheckInDate.ToString("MMM dd, yyyy")</span>
+                            <div class="flex justify-between">
+                                <span class="font-bold">Total stay:</span>
+                                <span class="text-gray-600">@Model.NumberOfNights night(s)</span>
                             </div>
-                            <div>
-                                <span class="text-gray-600">Check-out:</span>
-                                <span class="font-medium text-gray-900 ml-2">@Model.CheckOutDate.ToString("MMM dd, yyyy")</span>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 -mx-4 -mb-4 mt-4">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <p class="text-lg font-bold">Total Price</p>
+                                    <p class="text-[10px] text-gray-500">Includes taxes and charges</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-2xl font-bold text-gray-900">US$@Model.Amount.ToString("F2")</p>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="bg-white border rounded-sm p-4 mt-4 shadow-sm text-xs text-gray-600">
+                    <h4 class="font-bold text-gray-900 mb-2">Cancellation Policy</h4>
+                    <p class="text-green-700 font-bold mb-2"><i class="fas fa-check mr-1"></i> Free cancellation anytime!</p>
+                    <p>Risk-free: You can cancel later, so lock in this great price today.</p>
+                </div>
+            </aside>
+
+            <!-- Payment Content -->
+            <div class="flex-1 order-2 lg:order-2">
+                <div class="bg-white border rounded-sm p-6 shadow-sm mb-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">How do you want to pay?</h2>
+                    
+                    <div class="flex items-center space-x-4 mb-8 bg-gray-50 p-3 rounded-sm">
+                        <i class="fas fa-lock text-gray-400"></i>
+                        <span class="text-xs text-gray-600">Your payment is secure and your card details are protected.</span>
+                    </div>
 
                     <!-- Stripe Payment Form -->
-                    <div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-6">Payment Information</h3>
-                        
+                    <div class="max-w-xl">
                         <form id="payment-form">
                             <div id="payment-element" class="mb-6">
                                 <!-- Stripe.js injects the Payment Element here -->
                             </div>
 
-                            <div id="payment-message" class="hidden mb-4 p-4 rounded-lg"></div>
+                            <div id="payment-message" class="hidden mb-6 p-4 rounded-sm text-xs font-bold"></div>
 
-                            <button type="submit" 
-                                    id="submit-button"
-                                    class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-2">
-                                <i class="fas fa-lock"></i>
-                                <span id="button-text">Pay $@Model.Amount.ToString("F2")</span>
-                                <div id="spinner" class="hidden">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                </div>
-                            </button>
+                            <div class="pt-6 border-t">
+                                <button type="submit" id="submit-button"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-sm transition-colors text-sm flex items-center justify-center space-x-2 w-full md:w-auto shadow-sm">
+                                    <i class="fas fa-lock text-[10px]"></i>
+                                    <span id="button-text">Book and Pay US$@Model.Amount.ToString("F2")</span>
+                                    <div id="spinner" class="hidden"><i class="fas fa-spinner fa-spin"></i></div>
+                                </button>
+                                <p class="text-[10px] text-gray-500 mt-4">
+                                    By clicking "Book and Pay", you agree to our <span class="text-blue-600 underline">Terms and Conditions</span> and <span class="text-blue-600 underline">Privacy Policy</span>.
+                                </p>
+                            </div>
                         </form>
-
-                        <!-- Test Card Info -->
-                        <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                            <h4 class="font-semibold text-amber-900 mb-2 flex items-center">
-                                <i class="fas fa-info-circle mr-2"></i> Test Card Information
-                            </h4>
-                            <p class="text-sm text-amber-800 mb-2">Use these test cards for payment:</p>
-                            <ul class="text-sm text-amber-800 space-y-1">
-                                <li><strong>Success:</strong> 4242 4242 4242 4242</li>
-                                <li><strong>Requires Auth:</strong> 4000 0025 0000 3155</li>
-                                <li><strong>Declined:</strong> 4000 0000 0000 9995</li>
-                                <li>Use any future expiry date and any 3-digit CVC</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Order Summary -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-24">
-                    <h3 class="text-xl font-bold text-gray-900 mb-6">Order Summary</h3>
-
-                    <!-- Price Breakdown -->
-                    <div class="space-y-4 mb-6 pb-6 border-b border-gray-200">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600">@Model.NumberOfNights night(s)</span>
-                            <span class="font-medium text-gray-900">$@((Model.PricePerNight * Model.NumberOfNights).ToString("F2"))</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600">Price per night</span>
-                            <span class="font-medium text-gray-900">$@Model.PricePerNight.ToString("F2")</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600">Tax (10%)</span>
-                            <span class="font-medium text-gray-900">$@((Model.Amount * 0.1m / 1.1m).ToString("F2"))</span>
-                        </div>
                     </div>
 
-                    <!-- Total -->
-                    <div class="mb-6">
-                        <div class="flex justify-between items-center">
-                            <span class="text-lg font-bold text-gray-900">Total Amount</span>
-                            <span class="text-2xl font-bold text-primary-600">$@Model.Amount.ToString("F2")</span>
-                        </div>
-                    </div>
-
-                    <!-- Security Badges -->
-                    <div class="space-y-3 pt-6 border-t border-gray-200">
-                        <div class="flex items-center text-sm text-gray-600">
-                            <i class="fas fa-shield-alt text-emerald-600 mr-2"></i>
-                            <span>256-bit SSL Encryption</span>
-                        </div>
-                        <div class="flex items-center text-sm text-gray-600">
-                            <i class="fab fa-cc-stripe text-primary-600 mr-2"></i>
-                            <span>Powered by Stripe</span>
-                        </div>
-                        <div class="flex items-center text-sm text-gray-600">
-                            <i class="fas fa-check-circle text-sky-600 mr-2"></i>
-                            <span>PCI DSS Compliant</span>
+                    <!-- Test Card Info -->
+                    <div class="mt-12 p-4 border border-blue-200 bg-blue-50 rounded-sm">
+                        <h4 class="font-bold text-sm text-blue-900 mb-2">Test Card Information</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-blue-800">
+                            <div>
+                                <p class="font-bold">Success:</p>
+                                <p>4242 4242 4242 4242</p>
+                            </div>
+                            <div>
+                                <p class="font-bold">Declined:</p>
+                                <p>4000 0000 0000 9995</p>
+                            </div>
                         </div>
                     </div>
                 </div>

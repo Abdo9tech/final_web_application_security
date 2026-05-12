@@ -3,129 +3,135 @@
     ViewData["Title"] = $"Room {Model.RoomNumber} Details";
 }
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Back Button -->
-    <a asp-action="Index" class="inline-flex items-center text-indigo-600 hover:text-indigo-700 mb-6">
-        <i class="fas fa-arrow-left mr-2"></i>Back to Rooms
-    </a>
+<div class="bg-gray-50 border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav class="flex text-xs text-blue-600 mb-4" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li><a href="/" class="hover:underline">Home</a></li>
+                <li class="flex items-center"><i class="fas fa-chevron-right text-[8px] mx-1 text-gray-400"></i><a href="/Room" class="hover:underline">Hotels</a></li>
+                <li class="flex items-center"><i class="fas fa-chevron-right text-[8px] mx-1 text-gray-400"></i><span class="text-gray-500">Room @Model.RoomNumber</span></li>
+            </ol>
+        </nav>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <!-- Image Gallery -->
-        <div>
-            <div class="relative rounded-2xl overflow-hidden shadow-2xl mb-4">
-                <img src="@(Model.ImageUrl ?? "/images/default-room.jpg")" 
-                     alt="Room @Model.RoomNumber" 
-                     class="w-full h-96 object-cover">
-                @if (Model.IsAvailable)
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <div class="flex items-center space-x-2 mb-1">
+                    <span class="bg-gray-500 text-white text-[10px] font-bold px-1 rounded-sm">HOTEL</span>
+                    <div class="flex text-yellow-400 text-xs">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900">Room @Model.RoomNumber - @(Model.RoomType?.Name ?? "Luxury Suite")</h1>
+                <p class="text-sm text-blue-600 flex items-center mt-1">
+                    <i class="fas fa-map-marker-alt mr-1"></i> 123 Luxury Avenue, Manchester, M1 1BE, United Kingdom – <span class="underline cursor-pointer">Excellent location – show map</span>
+                </p>
+            </div>
+            <div class="flex items-center space-x-4">
+                @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <span class="absolute top-4 right-4 bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                        Available Now
-                    </span>
-                }
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <button onclick="toggleFavorite(@Model.RoomId, this)" class="absolute top-4 left-4 bg-white/90 hover:bg-white p-3 rounded-full transition" title="@(ViewBag.IsFavorited ? "Remove from favorites" : "Add to favorites")">
-                        <i class="@(ViewBag.IsFavorited ? "fas" : "far") fa-heart text-red-500 text-xl"></i>
+                    <button onclick="toggleFavorite('@Model.RoomId', this)" class="text-blue-600 hover:text-red-500 transition-colors">
+                        <i class="@(ViewBag.IsFavorited ? "fas" : "far") fa-heart text-2xl"></i>
                     </button>
                 }
+                <a href="#booking-section" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-sm transition-colors shadow-sm">
+                    Reserve
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2">
+            <!-- Image Grid -->
+            <div class="grid grid-cols-4 gap-2 mb-8 h-[400px]">
+                <div class="col-span-3 row-span-2 relative overflow-hidden rounded-l-md">
+                    <img src="@(Model.ImageUrl ?? "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=1200")" 
+                         class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" alt="Room View">
+                </div>
+                <div class="col-span-1 relative overflow-hidden rounded-tr-md">
+                    <img src="https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&q=80&w=400" 
+                         class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" alt="Detail 1">
+                </div>
+                <div class="col-span-1 relative overflow-hidden rounded-br-md">
+                    <img src="https://images.unsplash.com/photo-1590490359683-658d3d23f972?auto=format&fit=crop&q=80&w=400" 
+                         class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" alt="Detail 2">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <span class="text-white font-bold">+15 photos</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="prose prose-sm max-w-none text-gray-700 mb-8">
+                <p class="text-base leading-relaxed">
+                    @(Model.RoomType?.Description ?? "Located in the heart of Manchester, this room offers unparalleled luxury and convenience. Featuring state-of-the-art facilities and elegant interior design, it provides the perfect sanctuary for both leisure and business travelers.")
+                </p>
+                <div class="bg-blue-50 border-l-4 border-blue-600 p-4 my-6">
+                    <p class="text-sm font-bold text-gray-900 mb-1">Most popular facilities</p>
+                    <div class="flex flex-wrap gap-4 text-green-700 text-xs">
+                        <span class="flex items-center"><i class="fas fa-wifi mr-1"></i> Free WiFi</span>
+                        <span class="flex items-center"><i class="fas fa-parking mr-1"></i> Free parking</span>
+                        <span class="flex items-center"><i class="fas fa-swimmer mr-1"></i> Swimming pool</span>
+                        <span class="flex items-center"><i class="fas fa-dumbbell mr-1"></i> Fitness centre</span>
+                        <span class="flex items-center"><i class="fas fa-utensils mr-1"></i> Restaurant</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Room Details -->
-        <div>
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h1 class="text-4xl font-bold text-gray-900 mb-2">Room @Model.RoomNumber</h1>
-                    <p class="text-xl text-indigo-600 font-semibold">@(Model.RoomType?.Name ?? "Standard Room")</p>
+        <!-- Sticky Sidebar Booking Box -->
+        <div class="lg:col-span-1">
+            <div id="booking-section" class="bg-blue-50 border border-blue-200 rounded-md p-4 sticky top-24">
+                <h3 class="font-bold text-gray-900 mb-4">Property Highlights</h3>
+                <div class="space-y-4 mb-6">
+                    <div class="flex items-start">
+                        <i class="fas fa-heart text-gray-400 mt-1 mr-3"></i>
+                        <p class="text-sm font-bold text-gray-700">Perfect for a 1-night stay!</p>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-map-marker-alt text-gray-400 mt-1 mr-3"></i>
+                        <p class="text-sm text-gray-700">Top location: Highly rated by recent guests (9.5)</p>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-bed text-gray-400 mt-1 mr-3"></i>
+                        <p class="text-sm text-gray-700">Want a great night's sleep? This hotel was highly rated for its very comfy beds.</p>
+                    </div>
                 </div>
-                <div class="text-right">
-                    <div class="text-4xl font-bold text-gray-900">$@(Model.RoomType?.PricePerNight ?? 0)</div>
-                    <div class="text-gray-500">per night</div>
+
+                <div class="border-t border-blue-200 pt-4 mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-lg font-bold">US$@(Model.RoomType?.PricePerNight ?? 0)</span>
+                        <span class="text-xs text-gray-500">per night</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500 mb-4">Includes taxes and charges</p>
+                    
+                    @if (Model.IsAvailable)
+                    {
+                        <a asp-controller="BookNow" asp-action="Index" asp-route-roomId="@Model.RoomId" 
+                           class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-bold py-3 rounded-sm transition-colors mb-3">
+                            Reserve
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="bg-red-100 text-red-700 text-sm p-3 rounded-sm text-center font-bold mb-3">
+                            Currently Unavailable
+                        </div>
+                    }
+                    <button onclick="toggleFavorite('@Model.RoomId', this)" 
+                            class="w-full border border-blue-600 text-blue-600 font-bold py-2 rounded-sm text-sm hover:bg-blue-50 transition-colors">
+                        <i class="@(ViewBag.IsFavorited == true ? "fas" : "far") fa-heart mr-2"></i> 
+                        <span class="favorite-text">@(ViewBag.IsFavorited == true ? "Saved" : "Save to list")</span>
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <p class="text-[10px] text-gray-500">You won't be charged yet</p>
                 </div>
             </div>
-
-            <div class="border-t border-b border-gray-200 py-6 my-6">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="flex items-center">
-                        <i class="fas fa-layer-group text-indigo-600 text-xl mr-3"></i>
-                        <div>
-                            <div class="text-sm text-gray-500">Floor</div>
-                            <div class="font-semibold">@Model.Floor</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-door-open text-indigo-600 text-xl mr-3"></i>
-                        <div>
-                            <div class="text-sm text-gray-500">Status</div>
-                            <div class="font-semibold">@Model.Status</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-users text-indigo-600 text-xl mr-3"></i>
-                        <div>
-                            <div class="text-sm text-gray-500">Capacity</div>
-                            <div class="font-semibold">2 Guests</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-bed text-indigo-600 text-xl mr-3"></i>
-                        <div>
-                            <div class="text-sm text-gray-500">Bed Type</div>
-                            <div class="font-semibold">Queen Bed</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-8">
-                <h3 class="text-xl font-bold text-gray-900 mb-4">Description</h3>
-                <p class="text-gray-600 leading-relaxed">
-                    @(Model.RoomType?.Description ?? "Experience luxury and comfort in this beautifully appointed room. Featuring modern amenities and elegant decor, this space is perfect for both business and leisure travelers.")
-                </p>
-            </div>
-
-            <div class="mb-8">
-                <h3 class="text-xl font-bold text-gray-900 mb-4">Amenities</h3>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="flex items-center text-gray-700">
-                        <i class="fas fa-wifi text-indigo-600 mr-2"></i>Free WiFi
-                    </div>
-                    <div class="flex items-center text-gray-700">
-                        <i class="fas fa-tv text-indigo-600 mr-2"></i>Smart TV
-                    </div>
-                    <div class="flex items-center text-gray-700">
-                        <i class="fas fa-snowflake text-indigo-600 mr-2"></i>Air Conditioning
-                    </div>
-                    <div class="flex items-center text-gray-700">
-                        <i class="fas fa-coffee text-indigo-600 mr-2"></i>Coffee Maker
-                    </div>
-                    <div class="flex items-center text-gray-700">
-                        <i class="fas fa-bath text-indigo-600 mr-2"></i>Private Bathroom
-                    </div>
-                    <div class="flex items-center text-gray-700">
-                        <i class="fas fa-concierge-bell text-indigo-600 mr-2"></i>Room Service
-                    </div>
-                </div>
-            </div>
-
-            @if (Model.IsAvailable)
-            {
-                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 text-white">
-                    <h3 class="text-xl font-bold mb-4">Ready to Book?</h3>
-                    <p class="mb-4">This room is available for immediate booking</p>
-                    <a asp-controller="BookNow" asp-action="Index" asp-route-roomId="@Model.RoomId" 
-                       class="inline-block bg-white text-indigo-600 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition duration-200">
-                        Book Now
-                    </a>
-                </div>
-            }
-            else
-            {
-                <div class="bg-gray-100 rounded-xl p-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">Currently Unavailable</h3>
-                    <p class="text-gray-600">This room is currently booked. Please check other available rooms.</p>
-                </div>
-            }
         </div>
     </div>
 </div>
@@ -153,10 +159,13 @@
                 
                 if (result.success) {
                     const icon = button.querySelector('i');
+                    const textSpan = button.querySelector('.favorite-text');
+                    
                     if (result.action === 'added') {
-                        icon.classList.remove('far');
-                        icon.classList.add('fas');
-                        button.title = 'Remove from favorites';
+                        icon?.classList.remove('far');
+                        icon?.classList.add('fas');
+                        if (textSpan) textSpan.textContent = 'Saved';
+                        
                         if (typeof Swal !== 'undefined') {
                             Swal.fire({
                                 icon: 'success',
@@ -168,9 +177,10 @@
                             });
                         }
                     } else {
-                        icon.classList.remove('fas');
-                        icon.classList.add('far');
-                        button.title = 'Add to favorites';
+                        icon?.classList.remove('fas');
+                        icon?.classList.add('far');
+                        if (textSpan) textSpan.textContent = 'Save to list';
+                        
                         if (typeof Swal !== 'undefined') {
                             Swal.fire({
                                 icon: 'info',

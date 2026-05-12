@@ -1,5 +1,6 @@
 using BookifyHotel.Data;
 using BookifyHotel.Model;
+using BookifyHotel.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
