@@ -1,0 +1,70 @@
+🌐 Permanent URLs
+Service URL Notes
+Web Application http://localhost:5280   Main hotel e-commerce website
+Database GUI (Adminer)  http://localhost:8082   Web interface to manage SQL data
+Health Checks   http://localhost:5280/health    Verify app status
+🔑 Login Credentials
+Web App Access
+Role    Email   Password
+Admin   admin@bookify.com   Admin@123456!
+Demo User   user@bookify.com    User@123456!
+
+    Other roles available: Manager, Receptionist
+
+Database GUI (Adminer) Access
+Field   Value
+System  MS SQL
+Server  sqlserver (container name, not localhost)
+Username    sa
+Password    BookifyHotel@2024!
+Database    BookifyHotelDb
+🖥️ Access from Kali Linux VM (Bridged Mode)
+
+Your Windows host IP is: 192.168.1.5
+Service URL for Kali
+Web App http://192.168.1.5:5280
+Database GUI    http://192.168.1.5:8082
+
+    ⚠️ Firewall Note: If access fails, ensure Windows Firewall allows ports 5280 and 8082.
+
+🗄️ Connect via SSMS / Visual Studio (Local)
+Setting Value
+Server Name localhost
+Authentication  SQL Server Authentication
+Login   sa
+Password    BookifyHotel@2024!
+Trust Server Certificate    True (Important!)
+Database    BookifyHotelDb
+📦 Database Contents (Pre-seeded)
+Item    Details
+Roles   Admin, User, Manager, Receptionist
+Room Types  Standard, Deluxe, Suite
+Rooms   5 rooms (all with high-quality Unsplash images)
+Images  Professional photos for Standard, Deluxe, Suite (auto-fixed from old placeholders)
+
+    ✅ The database is dynamic — changes in the GUI reflect immediately in the app.
+
+🛠️ Useful Docker Commands
+Action  Command
+Check web logs  docker compose logs -f web
+Stop all containers docker compose down
+Restart everything  docker compose up -d
+📁 Docker File Locations
+File    Path
+Dockerfile  f:\New folder\Dockerfile
+Docker Compose  f:\New folder\docker-compose.yml
+Docker Ignore   f:\New folder\.dockerignore
+
+    ℹ️ Files are placed one level above the web project to access all solution projects (DEPI, DAL, PLL).
+
+🚀 Quick Start Summary
+
+    Open http://localhost:5280 in your browser
+
+    Login as Admin (admin@bookify.com / Admin@123456!)
+
+    Manage database via http://localhost:8082 (Adminer)
+
+    From Kali VM, use http://192.168.1.5:5280
+
+Everything is live, dynamic, and ready to use! 🏨

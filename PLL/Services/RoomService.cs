@@ -1,4 +1,4 @@
-﻿using BookifyHotel.Data;
+using BookifyHotel.Data;
 using BookifyHotel.Model;
 using DAL.DataBase;
 using Microsoft.EntityFrameworkCore;
@@ -97,7 +97,7 @@ namespace PLL.Services
                 .Include(r => r.RoomType)
                 .Where(r => r.IsAvailable && r.Status == "Available");
 
-            if (!string.IsNullOrEmpty(location))
+            if (!string.IsNullOrWhiteSpace(location))
             {
                 query = query.Where(r => r.Location.Contains(location));
             }
@@ -113,6 +113,11 @@ namespace PLL.Services
                     .ToList();
 
                 query = query.Where(r => !bookedRoomIds.Contains(r.RoomId));
+            }
+
+            if (guests.HasValue && guests.Value > 0)
+            {
+                query = query.Where(r => r.RoomType != null && r.RoomType.Capacity >= guests.Value);
             }
 
             return query.ToList();

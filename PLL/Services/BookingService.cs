@@ -1,4 +1,4 @@
-﻿using BookifyHotel.Data;
+using BookifyHotel.Data;
 using BookifyHotel.Model;
 using DAL.DataBase;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +53,7 @@ namespace PLL.Services
         }
 
         // إنشاء حجز جديد
-        public async Task<Booking>? CreateBookingAsync(int userId, int roomId, DateTime checkIn, DateTime checkOut, int guests)
+        public Task<Booking>? CreateBookingAsync(int userId, int roomId, DateTime checkIn, DateTime checkOut, int guests)
         {
             // حساب السعر (هنا نستدعي RoomService للحصول على السعر)
             // لكن أولاً ننشئ الحجز
@@ -70,7 +70,7 @@ namespace PLL.Services
 
             _repo.Add(booking);
             _repo.Save();
-            return booking;
+            return Task.FromResult(booking);
         }
 
         // تحديث حالة الحجز

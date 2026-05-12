@@ -29,9 +29,9 @@ namespace PLL.Services
 
             return new ProfileViewModel
             {
-                FullName = user.UserName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
+                FullName = user.UserName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                PhoneNumber = user.PhoneNumber ?? string.Empty,
                 // Add ProfilePhotoPath to AppUser if needed
             };
         }
