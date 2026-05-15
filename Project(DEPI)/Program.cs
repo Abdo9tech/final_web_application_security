@@ -270,11 +270,11 @@ async Task CreateDefaultUsersAndRoles(IServiceProvider services)
         if (!await roleManager.RoleExistsAsync(role))
         {
             await roleManager.CreateAsync(new IdentityRole(role));
-            Console.WriteLine($"✅ Role '{role}' created");
+            Console.WriteLine($" Role '{role}' created");
         }
         else
         {
-            Console.WriteLine($"ℹ️  Role '{role}' already exists");
+            Console.WriteLine($" Role '{role}' already exists");
         }
     }
 
@@ -319,15 +319,15 @@ async Task CreateDefaultUsersAndRoles(IServiceProvider services)
             await dbContext.SaveChangesAsync();
 
             Console.WriteLine("========================================");
-            Console.WriteLine("✅ ADMIN ACCOUNT CREATED SUCCESSFULLY!");
+            Console.WriteLine(" ADMIN ACCOUNT CREATED SUCCESSFULLY!");
             Console.WriteLine("========================================");
-            Console.WriteLine($"📧 Email: {adminEmail}");
-            Console.WriteLine($"👤 Role: Admin");
+            Console.WriteLine($"Email: {adminEmail}");
+            Console.WriteLine($" Role: Admin");
             Console.WriteLine("========================================");
         }
         else
         {
-            Console.WriteLine("❌ Failed to create admin user:");
+            Console.WriteLine("Failed to create admin user:");
             foreach (var error in result.Errors)
             {
                 Console.WriteLine($"   - {error.Description}");
@@ -367,10 +367,10 @@ async Task CreateDefaultUsersAndRoles(IServiceProvider services)
         }
 
         Console.WriteLine("========================================");
-        Console.WriteLine("ℹ️  EXISTING ADMIN CREDENTIALS:");
+        Console.WriteLine("  EXISTING ADMIN CREDENTIALS:");
         Console.WriteLine("========================================");
-        Console.WriteLine($"📧 Email: {adminEmail}");
-        Console.WriteLine($"👤 Role: Admin");
+        Console.WriteLine($" Email: {adminEmail}");
+        Console.WriteLine($"Role: Admin");
         Console.WriteLine("========================================");
     }
 
@@ -441,7 +441,7 @@ async Task CreateDefaultUsersAndRoles(IServiceProvider services)
     }
 
     Console.WriteLine("========================================");
-    Console.WriteLine("✅ USER INITIALIZATION COMPLETED");
+    Console.WriteLine(" USER INITIALIZATION COMPLETED");
     Console.WriteLine("========================================\n");
 }
 
@@ -459,7 +459,7 @@ async Task CreateSampleData(IServiceProvider services)
         
         dbContext.RoomTypes.AddRange(standardType, deluxeType, suiteType);
         await dbContext.SaveChangesAsync();
-        Console.WriteLine("✅ Room Types seeded");
+        Console.WriteLine(" Room Types seeded");
     }
     else
     {
@@ -479,21 +479,21 @@ async Task CreateSampleData(IServiceProvider services)
                 };
             }
             await dbContext.SaveChangesAsync();
-            Console.WriteLine("✅ Room Type capacities updated");
+            Console.WriteLine(" Room Type capacities updated");
         }
     }
 
     // Add Rooms
     if (dbContext.Rooms.Any(r => string.IsNullOrWhiteSpace(r.Location)))
     {
-        Console.WriteLine("⚠️ Found rooms with invalid data. Re-seeding...");
+        Console.WriteLine(" Found rooms with invalid data. Re-seeding...");
         dbContext.Rooms.RemoveRange(dbContext.Rooms);
         await dbContext.SaveChangesAsync();
     }
 
     if (!dbContext.Rooms.Any())
     {
-        Console.WriteLine("🌱 Seeding Rooms...");
+        Console.WriteLine(" Seeding Rooms...");
         // Need to get the types again or use existing if we just created them
         var standardType = dbContext.RoomTypes.First(t => t.Name == "Standard");
         var deluxeType = dbContext.RoomTypes.First(t => t.Name == "Deluxe");
@@ -510,13 +510,13 @@ async Task CreateSampleData(IServiceProvider services)
         
         dbContext.Rooms.AddRange(rooms);
         await dbContext.SaveChangesAsync();
-        Console.WriteLine("✅ Rooms seeded");
+        Console.WriteLine(" Rooms seeded");
     }
     // Ensure all rooms are available and have a location for demo purposes
     var allRooms = dbContext.Rooms.ToList();
     if (allRooms.Any())
     {
-        Console.WriteLine("🔄 Synchronizing room availability and locations...");
+        Console.WriteLine(" Synchronizing room availability and locations...");
         foreach (var room in allRooms)
         {
             room.IsAvailable = true;
@@ -537,7 +537,7 @@ async Task CreateSampleData(IServiceProvider services)
             }
         }
         await dbContext.SaveChangesAsync();
-        Console.WriteLine("✅ All rooms synchronized");
+        Console.WriteLine(" All rooms synchronized");
     }
 }
 
@@ -548,3 +548,5 @@ app.MapControllerRoute(
 app.MapControllers();
 
 app.Run();
+
+
