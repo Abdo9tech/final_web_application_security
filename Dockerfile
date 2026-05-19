@@ -21,6 +21,9 @@ RUN dotnet publish "Project(DEPI)/HotelEcomm.csproj" -c Release -o /app/publish 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 
+# Create the keys directory and assign ownership to the app user
+RUN mkdir -p /app/keys && chown -R app:app /app/keys
+
 # Create and switch to non-root user (MINIMAL CHANGE)
 USER app
 # aspnet:9.0 image already has 'app' user (UID 1000)

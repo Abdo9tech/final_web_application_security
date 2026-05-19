@@ -68,3 +68,58 @@ Docker Ignore   f:\New folder\.dockerignore
     From Kali VM, use http://192.168.1.5:5280
 
 Everything is live, dynamic, and ready to use! 🏨
+
+
+
+# Start in detached mode (runs in background)
+docker compose up -d
+
+# Start and watch logs (attached mode)
+docker compose up
+
+
+
+# Stop all containers (preserves data)
+docker compose down
+
+# Stop and remove volumes (WARNING: deletes database data)
+docker compose down -v
+
+
+
+# Quick restart
+docker compose restart
+
+# Full restart (stop, then start)
+docker compose down && docker compose up -d
+
+
+
+# Check if containers are running
+docker compose ps
+
+# View live logs
+docker compose logs -f
+
+# View logs for specific service
+docker compose logs -f web
+docker compose logs -f sqlserver
+
+
+
+
+
+
+# Stop specific container
+docker stop bookify-web-1 bookify-sqlserver-1
+
+# Start specific container
+docker start bookify-web-1 bookify-sqlserver-1
+
+# List all running containers
+docker ps
+
+# List all containers (including stopped)
+docker ps -a
+
+

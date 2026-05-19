@@ -53,11 +53,9 @@ namespace BookifyHotel.Data
             modelBuilder.ApplyConfiguration(new UserConfiguration());
 
 
-            // ❌ احذف هذه السطور
-            // modelBuilder.ApplyConfiguration(new RoleConfiguration());
-            // modelBuilder.ApplyConfiguration(new PermissionConfiguration());
 
-            // ✅ إعداد العلاقات الجديدة
+
+          
             modelBuilder.Entity<User_Role>()
                 .HasKey(ur => new { ur.UserProfileId, ur.RoleId });
 
@@ -99,7 +97,6 @@ namespace BookifyHotel.Data
 
 
 
-            // ✅ بدلاً منه، عرف العلاقة يدوياً
             modelBuilder.Entity<ReservationCart>()
                 .HasOne(rc => rc.Room)
                 .WithMany() // إذا كان Room ليس له ICollection<ReservationCart>

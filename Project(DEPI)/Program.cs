@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Data.SqlClient;
 using BookifyHotel.Data;
 using PLL.Services;
 using DAL.DataBase;
@@ -25,8 +26,13 @@ if (string.IsNullOrWhiteSpace(connectionString))
 builder.Services.AddDbContext<BookifyHotelDbContext>(options =>
     options.UseSqlServer(
         connectionString,
-        sqlServerOptions => sqlServerOptions.MigrationsAssembly("HotelEcomm"))
-    .UseLazyLoadingProxies());
+        sqlServerOptions => {
+            sqlServerOptions.MigrationsAssembly("HotelEcomm");
+            sqlServerOptions.EnableRetryOnFailure();
+        })
+    .UseLazyLoadingProxies()
+    .ConfigureWarnings(warnings =>
+        warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
 Console.WriteLine($"? Configured for SQL Server: {connectionString}");
 
 builder.Services.AddHealthChecks();
@@ -236,18 +242,48 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine("🚀 INITIALIZING APPLICATION");
         Console.WriteLine("========================================");
 
+        // Step 1: Ensure the database exists by connecting to 'master' first
+        await EnsureDatabaseExistsAsync(connectionString);
+
+        // Step 2: Now run EF Core migrations (database already exists, so no 4060 error)
         var dbContext = services.GetRequiredService<BookifyHotelDbContext>();
         Console.WriteLine("Applying database migrations...");
         await dbContext.Database.MigrateAsync();
-        
-        // Just create default users
+        Console.WriteLine("✅ Migrations applied successfully");
+
+        // Step 3: Add missing columns that exist in the model but not in any migration
+        try
+        {
+            await dbContext.Database.ExecuteSqlRawAsync(@"
+                IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('RoomTypes') AND name = 'Capacity')
+                BEGIN
+                    ALTER TABLE RoomTypes ADD Capacity int NOT NULL DEFAULT 2
+                END");
+            Console.WriteLine("✅ Schema patches applied");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Schema patch warning: {ex.Message}");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ FATAL: Database migration failed: {ex.Message}");
+        Console.WriteLine($"   Inner: {ex.InnerException?.Message}");
+        Console.WriteLine($"   Stack: {ex.StackTrace}");
+        throw; // App cannot work without a database
+    }
+
+    // Step 4: Seed data (non-fatal - app can start without seed data)
+    try
+    {
         await CreateDefaultUsersAndRoles(services);
         await CreateSampleData(services);
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌ Error during initialization: {ex.Message}");
-        Console.WriteLine($"   Stack: {ex.StackTrace}");
+        Console.WriteLine($"⚠️ Seeding warning (non-fatal): {ex.Message}");
+        Console.WriteLine($"   Inner: {ex.InnerException?.Message}");
     }
 }
 
@@ -549,4 +585,64 @@ app.MapControllers();
 
 app.Run();
 
+// Helper: Connect to 'master' database to create BookifyHotelDb if it doesn't exist.
+// This avoids SQL error 4060 where EF Core tries to connect to a non-existent database.
+async Task EnsureDatabaseExistsAsync(string connString)
+{
+    var csBuilder = new SqlConnectionStringBuilder(connString);
+    var databaseName = csBuilder.InitialCatalog;
+    csBuilder.InitialCatalog = "master"; // Connect to master instead
 
+    Console.WriteLine($"🔍 Ensuring database '{databaseName}' exists...");
+
+    // Retry connecting to master for up to 60 seconds (SQL Server may still be starting)
+    for (int attempt = 1; attempt <= 30; attempt++)
+    {
+        try
+        {
+            using var connection = new SqlConnection(csBuilder.ConnectionString);
+            await connection.OpenAsync();
+
+            // Create the database if it doesn't exist
+            using var createCmd = connection.CreateCommand();
+            createCmd.CommandText = $@"
+                IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'{databaseName}')
+                BEGIN
+                    CREATE DATABASE [{databaseName}]
+                END";
+            await createCmd.ExecuteNonQueryAsync();
+            Console.WriteLine($"✅ Database '{databaseName}' created/verified");
+
+            // Wait for the database to come fully online
+            Console.WriteLine($"⏳ Waiting for database '{databaseName}' to come online...");
+            for (int waitAttempt = 1; waitAttempt <= 30; waitAttempt++)
+            {
+                using var checkConn = new SqlConnection(connString);
+                try
+                {
+                    await checkConn.OpenAsync();
+                    Console.WriteLine($"✅ Database '{databaseName}' is online and ready");
+                    return;
+                }
+                catch
+                {
+                    Console.WriteLine($"   Waiting for database to be ready... {waitAttempt}/30");
+                    await Task.Delay(2000);
+                }
+            }
+
+            Console.WriteLine($"✅ Database '{databaseName}' created, proceeding...");
+            return;
+        }
+        catch (SqlException ex)
+        {
+            Console.WriteLine($"⏳ Waiting for SQL Server... attempt {attempt}/30 (Error: {ex.Number})");
+            if (attempt == 30)
+            {
+                Console.WriteLine($"❌ Could not connect to SQL Server after 30 attempts");
+                throw;
+            }
+            await Task.Delay(2000);
+        }
+    }
+}

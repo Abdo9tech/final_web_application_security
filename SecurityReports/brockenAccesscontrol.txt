@@ -1,0 +1,101 @@
+PS F:\New folder\SecurityReports> curl "http://192.168.1.6:5280/admin" -UseBasicParsing
+
+                                                                                                                                                         
+StatusCode        : 200                                                                                                                                  
+StatusDescription : OK                                                                                                                                   
+Content           : <!DOCTYPE html>                                                                                                                      
+                    <html lang="en">
+                    <head>
+                        <meta charset="utf-8" />
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                        <meta name="description" content="Bookify Hot...
+RawContent        : HTTP/1.1 200 OK
+                    Pragma: no-cache
+                    Transfer-Encoding: chunked
+                    X-Content-Type-Options: nosniff
+                    X-Frame-Options: SAMEORIGIN
+                    X-XSS-Protection: 1; mode=block
+                    Referrer-Policy: strict-origin-when-cross-...
+Forms             : 
+Headers           : {[Pragma, no-cache], [Transfer-Encoding, chunked], [X-Content-Type-Options, nosniff], [X-Frame-Options, SAMEORIGIN]...}
+Images            : {}
+InputFields       : {@{outerHTML=<input name="__RequestVerificationToken" type="hidden" value="CfDJ8KpH-Mire7VKhjNGzqlWlqkKCp87KlaUYUKA12GoYvUzOlctVqjqn 
+                    -J-F7XqXtS_Fa_YELvVjzfTsmP8CJ0HS6UKMlfvrPscLIzp5LfYBSDhGYwdeVJItbtzT3FxzKoaTkX07COxhc_tOu9gizdvNh0" />; tagName=INPUT;               
+                    name=__RequestVerificationToken; type=hidden; value=CfDJ8KpH-Mire7VKhjNGzqlWlqkKCp87KlaUYUKA12GoYvUzOlctVqjqn-J-F7XqXtS_Fa_YELvVjzfT 
+                    smP8CJ0HS6UKMlfvrPscLIzp5LfYBSDhGYwdeVJItbtzT3FxzKoaTkX07COxhc_tOu9gizdvNh0}}                                                        
+Links             : {@{outerHTML=<a href="/" class="flex items-center space-x-3 group">
+                                            <span class="text-3xl font-black text-white group-hover:text-blue-100 transition-colors tracking-tight">
+                                                Bookify<span class="text-[#febb02]">.com</span>
+                                            </span>
+                                        </a>; tagName=A; href=/; class=flex items-center space-x-3 group}, @{outerHTML=<a href="/" class="px-4 py-2 
+                    rounded-md font-bold text-white hover:bg-white/10 transition-all duration-200 flex items-center">
+                                            <i class="fas fa-bed mr-2"></i>
+                                            Stays
+                                        </a>; tagName=A; href=/; class=px-4 py-2 rounded-md font-bold text-white hover:bg-white/10 transition-all 
+                    duration-200 flex items-center}, @{outerHTML=<a href="/Room" class="px-4 py-2 rounded-md font-medium text-white hover:bg-white/10 
+                    transition-all duration-200 flex items-center opacity-90 hover:opacity-100">
+                                            <i class="fas fa-search mr-2"></i>
+                                            Find Rooms
+                                        </a>; tagName=A; href=/Room; class=px-4 py-2 rounded-md font-medium text-white hover:bg-white/10 transition-all 
+                    duration-200 flex items-center opacity-90 hover:opacity-100}, @{outerHTML=<a href="/About" class="px-4 py-2 rounded-md font-medium 
+                    text-white hover:bg-white/10 transition-all duration-200 flex items-center opacity-90 hover:opacity-100">
+                                            <i class="fas fa-info-circle mr-2"></i>
+                                            About
+                                        </a>; tagName=A; href=/About; class=px-4 py-2 rounded-md font-medium text-white hover:bg-white/10 
+                    transition-all duration-200 flex items-center opacity-90 hover:opacity-100}...}
+ParsedHtml        : 
+RawContentLength  : 21870
+
+
+
+PS F:\New folder\SecurityReports> curl "http://192.168.1.6:5280/Admin" -UseBasicParsing
+
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="utf-8" />
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                        <meta name="description" content="Bookify Hot...
+RawContent        : HTTP/1.1 200 OK
+                    Pragma: no-cache
+                    Transfer-Encoding: chunked
+                    X-Content-Type-Options: nosniff
+                    X-Frame-Options: SAMEORIGIN
+                    X-XSS-Protection: 1; mode=block
+                    Referrer-Policy: strict-origin-when-cross-...
+Forms             : 
+Headers           : {[Pragma, no-cache], [Transfer-Encoding, chunked], [X-Content-Type-Options, nosniff], [X-Frame-Options, SAMEORIGIN]...}
+Images            : {}
+InputFields       : {@{outerHTML=<input name="__RequestVerificationToken" type="hidden" value="CfDJ8KpH-Mire7VKhjNGzqlWlqkU4wb-GbUBeBx1tICYQB8Y5-NHRuI0d
+                    48kTZKa0GvL3SDe2x5uPE-4a95eowcFSQgEbKVxvCqlVYA6ipK-zYzmy7PbZ0iexsXEjMw61-yaaBKJwf5bo9LXrxyKyRzNpng" />; tagName=INPUT; 
+                    name=__RequestVerificationToken; type=hidden; value=CfDJ8KpH-Mire7VKhjNGzqlWlqkU4wb-GbUBeBx1tICYQB8Y5-NHRuI0d48kTZKa0GvL3SDe2x5uPE-4
+                    a95eowcFSQgEbKVxvCqlVYA6ipK-zYzmy7PbZ0iexsXEjMw61-yaaBKJwf5bo9LXrxyKyRzNpng}}
+Links             : {@{outerHTML=<a href="/" class="flex items-center space-x-3 group">
+                                            <span class="text-3xl font-black text-white group-hover:text-blue-100 transition-colors tracking-tight">
+                                                Bookify<span class="text-[#febb02]">.com</span>
+                                            </span>
+                                        </a>; tagName=A; href=/; class=flex items-center space-x-3 group}, @{outerHTML=<a href="/" class="px-4 py-2 
+                    rounded-md font-bold text-white hover:bg-white/10 transition-all duration-200 flex items-center">
+                                            <i class="fas fa-bed mr-2"></i>
+                                            Stays
+                                        </a>; tagName=A; href=/; class=px-4 py-2 rounded-md font-bold text-white hover:bg-white/10 transition-all 
+                    duration-200 flex items-center}, @{outerHTML=<a href="/Room" class="px-4 py-2 rounded-md font-medium text-white hover:bg-white/10 
+                    transition-all duration-200 flex items-center opacity-90 hover:opacity-100">
+                                            <i class="fas fa-search mr-2"></i>
+                                            Find Rooms
+                                        </a>; tagName=A; href=/Room; class=px-4 py-2 rounded-md font-medium text-white hover:bg-white/10 transition-all 
+                    duration-200 flex items-center opacity-90 hover:opacity-100}, @{outerHTML=<a href="/About" class="px-4 py-2 rounded-md font-medium 
+                    text-white hover:bg-white/10 transition-all duration-200 flex items-center opacity-90 hover:opacity-100">
+                                            <i class="fas fa-info-circle mr-2"></i>
+                                            About
+                                        </a>; tagName=A; href=/About; class=px-4 py-2 rounded-md font-medium text-white hover:bg-white/10 
+                    transition-all duration-200 flex items-center opacity-90 hover:opacity-100}...}
+ParsedHtml        : 
+RawContentLength  : 21870
+
+
+
+PS F:\New folder\SecurityReports> 

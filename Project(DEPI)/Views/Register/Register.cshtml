@@ -24,6 +24,16 @@
                     </div>
 
                     <div>
+                        <label asp-for="PhoneNumber" class="block text-sm font-bold text-gray-900 mb-1">
+                            Phone Number
+                        </label>
+                        <input asp-for="PhoneNumber" type="tel"
+                               class="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:border-booking-600 focus:ring-2 focus:ring-booking-100 outline-none text-sm font-medium transition-all placeholder:text-gray-400"
+                               placeholder="Enter your phone number">
+                        <span asp-validation-for="PhoneNumber" class="text-red-600 text-xs mt-1 block"></span>
+                    </div>
+
+                    <div>
                         <label asp-for="Email" class="block text-sm font-bold text-gray-900 mb-1">
                             Email address
                         </label>

