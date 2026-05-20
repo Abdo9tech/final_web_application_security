@@ -1,4 +1,4 @@
-﻿using BookifyHotel.Data;
+using BookifyHotel.Data;
 using BookifyHotel.Model;
 using DAL.ViewModel;
 using Microsoft.AspNetCore.Authorization;
@@ -137,7 +137,7 @@ namespace Project_DEPI_.Controllers
                 var currentUser = await _userManager.GetUserAsync(User);
                 if (currentUser == null)
                 {
-                    return RedirectToAction("Login", "Account");
+                    return RedirectToAction("Login", "Login");
                 }
 
                 var isAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
@@ -213,7 +213,7 @@ namespace Project_DEPI_.Controllers
                     var currentUser = await _userManager.GetUserAsync(User);
                     if (currentUser == null)
                     {
-                        return RedirectToAction("Login", "Account");
+                        return RedirectToAction("Login", "Login");
                     }
 
                     var isAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
@@ -234,7 +234,7 @@ namespace Project_DEPI_.Controllers
                     if (userProfile.IdentityUserId == currentUser.Id)
                     {
                         TempData["Warning"] = "Please edit your own profile from your account settings, not from admin panel.";
-                        return RedirectToAction("Profile", "Account");
+                        return RedirectToAction("Index", "Profile");
                     }
 
                     // ✅ التحقق: لا يمكن تحويل Admin آخر إلى User (مستوى أقل)

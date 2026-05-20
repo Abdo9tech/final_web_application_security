@@ -88,8 +88,9 @@ namespace Project_DEPI_.Controllers
                 // and data formats defined in the ViewModel before any processing occurs.
                 if (!ModelState.IsValid)
                 {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                     model.PublishableKey = _paymentService.GetPublishableKey();
-                    TempData["Error"] = "Please fill in all required fields correctly.";
+                    TempData["Error"] = "Please fill in all required fields correctly. Details: " + string.Join(", ", errors);
                     return View("Index", model);
                 }
 

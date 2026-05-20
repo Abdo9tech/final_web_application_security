@@ -11,9 +11,9 @@ namespace Project_DEPI.ViewModels
         public string RoomNumber { get; set; } = string.Empty;
         public string RoomType { get; set; } = string.Empty;
         public decimal PricePerNight { get; set; }
-        public string RoomDescription { get; set; } = string.Empty;
-        public List<string> RoomAmenities { get; set; } = new();
-        public string RoomImageUrl { get; set; } = string.Empty;
+        public string? RoomDescription { get; set; }
+        public List<string>? RoomAmenities { get; set; }
+        public string? RoomImageUrl { get; set; }
         // SECURITY [Data Annotation Validation]: Strict validation rules are applied at the
         // model level to ensure valid input types, mandatory values, and limits (e.g., Dates, ranges).
         [Required(ErrorMessage = "Check-in date is required")]

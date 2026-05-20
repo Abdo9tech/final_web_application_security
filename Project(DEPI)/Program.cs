@@ -60,6 +60,7 @@ builder.Services.AddScoped<BookingService>();
 builder.Services.AddScoped<ProfileService>();
 
 builder.Services.AddScoped<IPaymentService, StripePaymentService>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 // SECURITY [Secure Payment Key Storage]: Stripe secret key is read from configuration.
 // In production, set the 'Stripe:SecretKey' value via an environment variable or
@@ -99,7 +100,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 
     // SECURITY [Broken Authentication Mitigation]: Unique email prevents duplicate account abuse.
     options.User.RequireUniqueEmail = true;
-    options.SignIn.RequireConfirmedAccount = false;
+    options.SignIn.RequireConfirmedAccount = true;
 
     // SECURITY [Account Lockout / Brute Force Protection]: Lock out after 5 failed attempts for 15 minutes.
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
@@ -108,6 +109,13 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<BookifyHotelDbContext>()
 .AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "YOUR_GOOGLE_CLIENT_ID";
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "YOUR_GOOGLE_CLIENT_SECRET";
+    });
 
 // SECURITY [HttpOnly Cookies]: HttpOnly prevents JavaScript from accessing the auth cookie,
 //   defending against XSS-based session hijacking.

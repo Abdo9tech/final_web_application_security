@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.Tasks;
+using System.Security.Claims;
+using BookifyHotel.Data;
 
 namespace Project_DEPI_.Controllers
 {
@@ -11,6 +13,7 @@ namespace Project_DEPI_.Controllers
     {
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
+        private readonly BookifyHotelDbContext _context;
 
         // SECURITY [Security Event Logging]: ILogger is injected to log all authentication
         // events (success, failure, lockout) for security monitoring and incident response.
@@ -19,10 +22,12 @@ namespace Project_DEPI_.Controllers
         public LoginController(
             SignInManager<AppUser> signInManager,
             UserManager<AppUser> userManager,
+            BookifyHotelDbContext context,
             ILogger<LoginController> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _context = context;
             _logger = logger;
         }
 
@@ -152,6 +157,132 @@ namespace Project_DEPI_.Controllers
                 ? new string('*', local.Length)
                 : local[0] + new string('*', local.Length - 2) + local[^1];
             return $"{maskedLocal}@{parts[1]}";
+        }
+
+        // SECURITY [Google OAuth Challenge]: Initiates the external authentication challenge
+        // using Google provider. CSRF verification is performed implicitly on challenge.
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ExternalLogin(string provider, string? returnUrl = null)
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Login", new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+
+        // SECURITY [Google OAuth Callback]: Processes the external login callback.
+        // If the user already has an account, logs them in. If they don't, registers them.
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
+        {
+            if (remoteError != null)
+            {
+                TempData["ErrorMessage"] = $"Error from Google: {remoteError}";
+                return RedirectToAction("Login");
+            }
+
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                TempData["ErrorMessage"] = "Failed to load Google account information.";
+                return RedirectToAction("Login");
+            }
+
+            // Attempt to sign in the user if they've linked this provider already
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("[SECURITY] User logged in via Google Provider: {Email}", MaskEmail(info.Principal.FindFirstValue(ClaimTypes.Email) ?? "unknown"));
+                
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (result.IsLockedOut)
+            {
+                TempData["ErrorMessage"] = "This account has been locked out.";
+                return RedirectToAction("Login");
+            }
+
+            // User doesn't have an associated login. We must sign them up or link their existing account.
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var fullName = info.Principal.FindFirstValue(ClaimTypes.Name) ?? email;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                TempData["ErrorMessage"] = "Could not retrieve email from your Google account.";
+                return RedirectToAction("Login");
+            }
+
+            // Check if user already exists
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                // Register a new user
+                user = new AppUser
+                {
+                    UserName = email,
+                    Email = email,
+                    EmailConfirmed = true // External authentication verified the email already
+                };
+
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    TempData["ErrorMessage"] = "Error creating account via Google.";
+                    return RedirectToAction("Login");
+                }
+
+                // Assign default role "User" in Identity
+                await _userManager.AddToRoleAsync(user, "User");
+
+                // Create custom UserProfile
+                var profile = new UserProfile
+                {
+                    IdentityUserId = user.Id,
+                    FullName = fullName,
+                    Email = email,
+                    PhoneNumber = "",
+                    Address = "",
+                    City = "",
+                    Country = "",
+                    CreatedDate = DateTime.Now,
+                    ProfilePhotoPath = ""
+                };
+                _context.UserProfiles.Add(profile);
+                await _context.SaveChangesAsync();
+
+                // Create custom User_Role association
+                var role = _context.Roles.FirstOrDefault(r => r.Name == "User");
+                if (role != null)
+                {
+                    var customUserRole = new User_Role
+                    {
+                        UserProfileId = profile.Id,
+                        RoleId = role.Id
+                    };
+                    _context.User_Roles.Add(customUserRole);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            // Link Google external login to user account
+            var addLoginResult = await _userManager.AddLoginAsync(user, info);
+            if (addLoginResult.Succeeded)
+            {
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                _logger.LogInformation("[SECURITY] User registered and logged in via Google: {Email}", MaskEmail(email));
+                
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+                return RedirectToAction("Index", "Home");
+            }
+
+            TempData["ErrorMessage"] = "Failed to link Google account.";
+            return RedirectToAction("Login");
         }
     }
 }

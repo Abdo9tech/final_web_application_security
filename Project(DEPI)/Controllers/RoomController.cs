@@ -483,9 +483,9 @@ namespace Project_DEPI_.Controllers
                 }
 
                 // Set default ImageUrl if empty
-                if (string.IsNullOrWhiteSpace(room.ImageUrl))
+                if (string.IsNullOrWhiteSpace(room.ImageUrl) || room.ImageUrl == "/images/default-room.jpg")
                 {
-                    room.ImageUrl = "/images/default-room.jpg";
+                    room.ImageUrl = "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1000&auto=format&fit=crop";
                 }
 
                 if (!ModelState.IsValid)

@@ -48,14 +48,18 @@
 
             <div class="mt-6 border-t pt-6">
                 <p class="text-center text-sm text-gray-600 mb-4">Or sign in with</p>
-                <div class="grid grid-cols-3 gap-3">
-                    <button class="flex justify-center items-center py-2 border border-gray-300 rounded-sm hover:bg-gray-50">
+                <div class="grid grid-cols-3 gap-3 items-center">
+                    <button type="button" class="flex justify-center items-center py-2 border border-gray-300 rounded-sm opacity-50 cursor-not-allowed bg-gray-50">
                         <i class="fab fa-facebook text-blue-600 text-lg"></i>
                     </button>
-                    <button class="flex justify-center items-center py-2 border border-gray-300 rounded-sm hover:bg-gray-50">
-                        <i class="fab fa-google text-red-500 text-lg"></i>
-                    </button>
-                    <button class="flex justify-center items-center py-2 border border-gray-300 rounded-sm hover:bg-gray-50">
+                    
+                    <form asp-action="ExternalLogin" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" class="w-full h-full flex items-center justify-center">
+                        <button type="submit" name="provider" value="Google" class="flex justify-center items-center py-2 border border-gray-300 rounded-sm hover:bg-gray-50 w-full h-full">
+                            <i class="fab fa-google text-red-500 text-lg"></i>
+                        </button>
+                    </form>
+                    
+                    <button type="button" class="flex justify-center items-center py-2 border border-gray-300 rounded-sm opacity-50 cursor-not-allowed bg-gray-50">
                         <i class="fab fa-apple text-black text-lg"></i>
                     </button>
                 </div>

@@ -23,7 +23,7 @@
                 </div>
                 <h1 class="text-2xl font-bold text-gray-900">Room @Model.RoomNumber - @(Model.RoomType?.Name ?? "Luxury Suite")</h1>
                 <p class="text-sm text-blue-600 flex items-center mt-1">
-                    <i class="fas fa-map-marker-alt mr-1"></i> 123 Luxury Avenue, Manchester, M1 1BE, United Kingdom – <span class="underline cursor-pointer">Excellent location – show map</span>
+                    <i class="fas fa-map-marker-alt mr-1"></i> @(string.IsNullOrEmpty(Model.Location) ? "Manchester, United Kingdom" : Model.Location) – <a href="#map-section" class="underline cursor-pointer font-bold hover:text-blue-850">Excellent location – show map</a>
                 </p>
             </div>
             <div class="flex items-center space-x-4">
@@ -79,6 +79,15 @@
                         <span class="flex items-center"><i class="fas fa-utensils mr-1"></i> Restaurant</span>
                     </div>
                 </div>
+            </div>
+
+            <!-- Map Location Card -->
+            <div id="map-section" class="bg-white border rounded-sm p-6 mb-8 scroll-mt-24">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Location</h3>
+                <p class="text-sm text-gray-600 mb-4">
+                    <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>@(string.IsNullOrEmpty(Model.Location) ? "Manchester, United Kingdom" : Model.Location)
+                </p>
+                <div id="map" class="w-full h-80 rounded-sm border" style="min-height: 320px; z-index: 10;"></div>
             </div>
         </div>
 
@@ -138,7 +147,42 @@
 
 
 @section Scripts {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var locationText = "@(Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(string.IsNullOrEmpty(Model.Location) ? "Manchester, United Kingdom" : Model.Location)))";
+            
+            var defaultLat = 53.4808;
+            var defaultLng = -2.2426;
+
+            var map = L.map('map').setView([defaultLat, defaultLng], 13);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var marker = L.marker([defaultLat, defaultLng]).addTo(map)
+                .bindPopup("<b>Room Location</b><br>" + locationText)
+                .openPopup();
+
+            fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(locationText))
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data && data.length > 0) {
+                        var lat = parseFloat(data[0].lat);
+                        var lon = parseFloat(data[0].lon);
+                        map.setView([lat, lon], 14);
+                        marker.setLatLng([lat, lon]);
+                        marker.getPopup().setContent("<b>Room Location</b><br>" + locationText).update();
+                    }
+                })
+                .catch(function(err) {
+                    console.log("Geocoding failed, using default coordinates: ", err);
+                });
+        });
+
         async function toggleFavorite(roomId, button) {
             if (!@(User.Identity?.IsAuthenticated == true ? "true" : "false")) {
                 window.location.href = '/Login/Login?returnUrl=' + encodeURIComponent(window.location.pathname);

@@ -1,0 +1,115 @@
+@model DAL.ViewModels.Enable2faViewModel
+@{
+    ViewData["Title"] = "Configure Authenticator App";
+}
+
+<div class="bg-gray-50 min-h-screen py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Manage account</h1>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Settings Sidebar -->
+            <aside class="lg:w-64 flex-shrink-0">
+                <nav class="bg-white border rounded-sm overflow-hidden">
+                    <a asp-controller="Profile" asp-action="Index" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 text-sm border-l-4 border-transparent">
+                        <i class="far fa-user mr-3 w-5"></i> Personal details
+                    </a>
+                    <a asp-controller="Profile" asp-action="Security" class="flex items-center px-4 py-3 bg-blue-50 border-l-4 border-blue-600 text-blue-600 font-bold text-sm">
+                        <i class="fas fa-shield-alt mr-3 w-5"></i> Security
+                    </a>
+                    <a href="/Booking/MyBookings" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 text-sm border-l-4 border-transparent">
+                        <i class="fas fa-suitcase mr-3 w-5"></i> Bookings
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 text-sm border-l-4 border-transparent">
+                        <i class="far fa-heart mr-3 w-5"></i> Saved lists
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- 2FA Setup Form -->
+            <div class="flex-1">
+                <div class="bg-white border rounded-sm p-6 md:p-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Configure Authenticator App</h2>
+                    <p class="text-sm text-gray-600 mb-8 border-b pb-6">To use an authenticator app, go through the following steps.</p>
+
+                    <div class="space-y-8">
+                        <!-- Step 1 -->
+                        <div>
+                            <h3 class="text-sm font-bold text-gray-800 mb-2">1. Download an authenticator app</h3>
+                            <p class="text-sm text-gray-600">
+                                Download a verification app like <strong>Google Authenticator</strong> or <strong>Microsoft Authenticator</strong> from the Google Play Store or Apple App Store.
+                            </p>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div>
+                            <h3 class="text-sm font-bold text-gray-800 mb-3">2. Scan the QR code or enter the key manually</h3>
+                            <div class="flex flex-col md:flex-row items-center gap-8 bg-gray-50 p-6 rounded-sm border">
+                                <!-- QR Code -->
+                                <div class="bg-white p-4 border rounded-sm flex items-center justify-center">
+                                    <div id="qrcode" class="w-[180px] h-[180px] flex items-center justify-center"></div>
+                                </div>
+                                <!-- Manual Key -->
+                                <div class="flex-1 space-y-3">
+                                    <p class="text-xs text-gray-500 font-medium">CAN'T SCAN THE QR CODE?</p>
+                                    <p class="text-sm text-gray-600">
+                                        Enter this secret key manually into your authenticator app (spaces don't matter):
+                                    </p>
+                                    <div class="p-3 bg-white border font-mono text-sm font-bold tracking-wider text-gray-800 rounded-sm text-center md:text-left select-all">
+                                        @Model.SharedKey
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div>
+                            <h3 class="text-sm font-bold text-gray-800 mb-4">3. Enter verification code</h3>
+                            <form asp-action="Enable2fa" method="post" class="space-y-6">
+                                <div asp-validation-summary="ModelOnly" class="text-red-600 text-xs mb-4"></div>
+
+                                <div class="max-w-xs">
+                                    <label asp-for="Code" class="block text-sm font-bold text-gray-700 mb-2">Verification Code</label>
+                                    <input asp-for="Code" autocomplete="off" 
+                                           class="w-full px-3 py-2.5 border border-gray-400 rounded-sm focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none text-sm font-mono text-center tracking-widest"
+                                           placeholder="000 000" maxlength="7">
+                                    <span asp-validation-for="Code" class="text-red-600 text-[10px]"></span>
+                                </div>
+
+                                <div class="pt-6 border-t flex flex-col md:flex-row gap-4">
+                                    <button type="submit" 
+                                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-8 rounded-sm transition-colors text-sm">
+                                        Verify & Enable
+                                    </button>
+                                    <a asp-action="Security" 
+                                       class="bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 font-bold py-2.5 px-8 rounded-sm transition-colors text-sm text-center">
+                                        Cancel
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var authUri = "@(Html.Raw(Model.AuthenticatorUri))";
+            new QRCode(document.getElementById("qrcode"), {
+                text: authUri,
+                width: 180,
+                height: 180,
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        });
+    </script>
+}

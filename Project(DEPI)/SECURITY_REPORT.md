@@ -52,5 +52,3 @@
 ## Notes & assumptions
 - This is an observational report based on the repository tree and filenames. No runtime verification occurred. For concrete verification I can point to exact lines if you want a file-by-file walkthrough.
 
----
-If you want, I can now: (A) produce a file-by-file checklist with exact line references to inspect, or (B) run a secrets grep and list suspicious matches. Which do you prefer?
