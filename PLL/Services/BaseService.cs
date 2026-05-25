@@ -37,16 +37,34 @@ namespace PLL.Services
             _repo.Save();
         }
 
+        public async Task CreateAsync(T entity)
+        {
+            _repo.Add(entity);
+            await _repo.SaveAsync();
+        }
+
         public void Update(T entity)
         {
             _repo.Update(entity);
             _repo.Save();
         }
 
+        public async Task UpdateAsync(T entity)
+        {
+            _repo.Update(entity);
+            await _repo.SaveAsync();
+        }
+
         public void Delete(int id)
         {
             _repo.Delete(id);
             _repo.Save();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            _repo.Delete(id);
+            await _repo.SaveAsync();
         }
     }
 

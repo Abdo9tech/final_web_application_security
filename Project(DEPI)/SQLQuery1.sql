@@ -26,3 +26,4 @@ INSERT INTO [dbo].[Rooms] ([RoomNumber], [Floor], [Status], [RoomTypeId], [IsAva
 (403, 4, 'Available', 1, 1, 'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800', 'Thailand'),
 (404, 4, 'Available', 5, 1, 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800', 'South Africa'),
 (405, 4, 'Available', 9, 1, 'https://images.unsplash.com/photo-1584132915807-fd1f5fbc078f?auto=format&fit=crop&w=800', 'South Korea');
+

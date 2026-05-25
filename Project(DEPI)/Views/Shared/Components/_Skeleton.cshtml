@@ -1,0 +1,105 @@
+@*
+    Skeleton Loader Component - Shimmer Animation 2026
+    
+    Usage:
+    <partial name="Components/_Skeleton" model='new { 
+        Type = "text",
+        Width = "100%",
+        Height = "20px",
+        Count = 1,
+        Class = "additional-classes"
+    }' />
+    
+    Types: text, circle, rectangle, card
+    Width/Height: any CSS value (px, %, rem, etc.)
+    Count: number of skeleton elements to render
+*@
+
+@{
+    var skeletonModel = Model as dynamic;
+    var type = skeletonModel?.Type ?? "text";
+    var width = skeletonModel?.Width ?? "100%";
+    var height = skeletonModel?.Height ?? "20px";
+    var count = skeletonModel?.Count ?? 1;
+    var additionalClass = skeletonModel?.Class ?? "";
+    
+    // Base classes with shimmer animation
+    var baseClasses = "skeleton-loader bg-gradient-to-r from-neutral-200 via-neutral-300 to-neutral-200 dark:from-neutral-800 dark:via-neutral-700 dark:to-neutral-800 animate-shimmer bg-[length:200%_100%]";
+    
+    // Type-specific classes
+    var typeClasses = type switch
+    {
+        "circle" => "rounded-full",
+        "text" => "rounded-md",
+        "rectangle" => "rounded-lg",
+        "card" => "rounded-2xl",
+        _ => "rounded-md"
+    };
+    
+    var allClasses = $"{baseClasses} {typeClasses} {additionalClass}";
+}
+
+@for (int i = 0; i < count; i++)
+{
+    @if (type == "card")
+    {
+        <!-- Card Skeleton -->
+        <div class="@allClasses" style="width: @width; height: @height;">
+            <div class="p-6 space-y-4">
+                <div class="skeleton-loader h-48 rounded-lg"></div>
+                <div class="skeleton-loader h-6 w-3/4 rounded-md"></div>
+                <div class="skeleton-loader h-4 w-full rounded-md"></div>
+                <div class="skeleton-loader h-4 w-5/6 rounded-md"></div>
+                <div class="flex justify-between items-center mt-4">
+                    <div class="skeleton-loader h-8 w-24 rounded-md"></div>
+                    <div class="skeleton-loader h-10 w-32 rounded-lg"></div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Simple Skeleton -->
+        <div class="@allClasses" style="width: @width; height: @height;"></div>
+    }
+    
+    @if (i < count - 1)
+    {
+        <div class="my-3"></div>
+    }
+}
+
+<style>
+    @@keyframes shimmer {
+        0% {
+            background-position: -200% 0;
+        }
+        100% {
+            background-position: 200% 0;
+        }
+    }
+    
+    .animate-shimmer {
+        animation: shimmer 2s infinite linear;
+    }
+    
+    .skeleton-loader {
+        background: linear-gradient(
+            90deg,
+            var(--neutral-200) 0%,
+            var(--neutral-300) 50%,
+            var(--neutral-200) 100%
+        );
+        background-size: 200% 100%;
+    }
+    
+    [data-theme="dark"] .skeleton-loader {
+        background: linear-gradient(
+            90deg,
+            var(--neutral-800) 0%,
+            var(--neutral-700) 50%,
+            var(--neutral-800) 100%
+        );
+        background-size: 200% 100%;
+    }
+</style>

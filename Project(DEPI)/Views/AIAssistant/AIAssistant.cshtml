@@ -1,0 +1,547 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "AI Hotel Assistant | Bookify";
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f0c29, #1a1a3e, #24243e);
+            --glass: rgba(255,255,255,0.07);
+            --glass-border: rgba(255,255,255,0.12);
+            --accent: #7c3aed;
+            --accent-light: #a855f7;
+            --user-bubble: linear-gradient(135deg, #7c3aed, #5b21b6);
+            --bot-bubble: rgba(255,255,255,0.08);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --card-bg: rgba(255,255,255,0.06);
+            --shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .ai-page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 70px);
+        }
+
+        /* --- Header --- */
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .ai-header-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 6px 24px rgba(124,58,237,0.4);
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+        @@keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 6px 24px rgba(124,58,237,0.4); }
+            50% { box-shadow: 0 8px 36px rgba(124,58,237,0.7); }
+        }
+        .ai-header-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #fff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .ai-header-text p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        .status-dot {
+            display: inline-block;
+            width: 7px; height: 7px;
+            background: #22c55e;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: blink 1.8s ease-in-out infinite;
+        }
+        @@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        /* --- Main layout --- */
+        .ai-main {
+            display: flex;
+            gap: 1.5rem;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* --- Chat Panel --- */
+        .chat-panel {
+            flex: 1;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .chat-panel-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #msgBox {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(124,58,237,0.4) transparent;
+        }
+        #msgBox::-webkit-scrollbar { width: 4px; }
+        #msgBox::-webkit-scrollbar-track { background: transparent; }
+        #msgBox::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.4); border-radius: 4px; }
+
+        /* --- Messages --- */
+        .message-wrap {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.6rem;
+            animation: slideIn 0.3s ease;
+        }
+        .message-wrap.user { flex-direction: row-reverse; }
+        @@keyframes slideIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+        .avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        .avatar.bot { background: linear-gradient(135deg, var(--accent), var(--accent-light)); }
+        .avatar.user { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
+
+        .bubble {
+            max-width: 72%;
+            padding: 0.8rem 1rem;
+            border-radius: 16px;
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+        .bubble.user {
+            background: var(--user-bubble);
+            border-bottom-right-radius: 4px;
+            color: #fff;
+        }
+        .bubble.bot {
+            background: var(--bot-bubble);
+            border: 1px solid var(--glass-border);
+            border-bottom-left-radius: 4px;
+            color: var(--text-primary);
+        }
+        .bubble.bot p { margin-bottom: 0.4rem; }
+        .bubble.bot strong { color: var(--accent-light); }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0.7rem 1rem;
+        }
+        .typing-dot {
+            width: 7px; height: 7px;
+            background: var(--accent-light);
+            border-radius: 50%;
+            animation: typing 1.2s ease-in-out infinite;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @@keyframes typing { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+        /* Room cards inside chat */
+        .room-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+        .room-card-mini {
+            background: rgba(124,58,237,0.12);
+            border: 1px solid rgba(124,58,237,0.25);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+        .room-card-mini:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-light);
+        }
+        .room-card-mini img {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+        }
+        .room-card-mini-body {
+            padding: 0.6rem;
+        }
+        .room-card-mini-body .room-name {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        .room-card-mini-body .room-price {
+            font-size: 0.75rem;
+            color: #a855f7;
+            font-weight: 600;
+        }
+        .room-card-mini-body .room-loc {
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* --- Input area --- */
+        .input-area {
+            padding: 1rem;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            align-items: flex-end;
+            gap: 0.75rem;
+        }
+        .input-area textarea {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            padding: 0.75rem 1rem;
+            resize: none;
+            max-height: 120px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .input-area textarea:focus { border-color: var(--accent); }
+        .input-area textarea::placeholder { color: var(--text-secondary); }
+        #sendBtn {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 16px rgba(124,58,237,0.35);
+            flex-shrink: 0;
+        }
+        #sendBtn:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(124,58,237,0.55); }
+        #sendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* --- Suggestions Panel --- */
+        .suggestions-panel {
+            width: 260px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .suggestions-box {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.2rem;
+            box-shadow: var(--shadow);
+        }
+        .suggestions-box h3 {
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+        }
+        .suggestion-chip {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 0.5rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .suggestion-chip:hover {
+            background: rgba(124,58,237,0.2);
+            border-color: var(--accent);
+        }
+        .suggestion-chip:last-child { margin-bottom: 0; }
+
+        .stats-box {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.2rem;
+            box-shadow: var(--shadow);
+        }
+        .stats-box h3 {
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: 0.8rem;
+        }
+        .stat-item:last-child { border-bottom: none; }
+        .stat-value { font-weight: 600; color: var(--accent-light); }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .suggestions-panel { display: none; }
+            .ai-main { flex-direction: column; }
+        }
+    </style>
+}
+
+<div class="ai-page">
+
+    <!-- Header -->
+    <div class="ai-header">
+        <div class="ai-header-icon">🤖</div>
+        <div class="ai-header-text">
+            <h1>Bookify AI Assistant</h1>
+            <p><span class="status-dot"></span>Online — powered by Google Gemini</p>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="ai-main">
+
+        <!-- Chat Panel -->
+        <div class="chat-panel">
+            <div class="chat-panel-header">
+                🔒 Your conversation is private &nbsp;•&nbsp; Ask me anything about rooms, prices, or availability
+            </div>
+
+            <div id="msgBox">
+                <!-- Welcome message -->
+                <div class="message-wrap">
+                    <div class="avatar bot">🤖</div>
+                    <div class="bubble bot">
+                        <p>Hello! 👋 I'm the <strong>Bookify AI Assistant</strong>.</p>
+                        <p>I can help you find the perfect room — just ask me about room types, budgets, locations, or any special requirements. What are you looking for today?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <textarea id="userInput" rows="1" placeholder="e.g. Show me deluxe rooms under $200..."></textarea>
+                <button id="sendBtn" onclick="sendMessage()" title="Send message">&#9658;</button>
+            </div>
+        </div>
+
+        <!-- Suggestions Panel -->
+        <div class="suggestions-panel">
+            <div class="suggestions-box">
+                <h3>💡 Quick Suggestions</h3>
+                <button class="suggestion-chip" onclick="fillAndSend(this)">Show all available rooms</button>
+                <button class="suggestion-chip" onclick="fillAndSend(this)">What are your cheapest rooms?</button>
+                <button class="suggestion-chip" onclick="fillAndSend(this)">Show me deluxe rooms</button>
+                <button class="suggestion-chip" onclick="fillAndSend(this)">I need a suite for 4 people</button>
+                <button class="suggestion-chip" onclick="fillAndSend(this)">Rooms under $150 per night</button>
+                <button class="suggestion-chip" onclick="fillAndSend(this)">What's the most luxurious option?</button>
+            </div>
+
+            <div class="stats-box">
+                <h3>📊 Hotel Info</h3>
+                <div class="stat-item"><span>Location</span><span class="stat-value">Manchester</span></div>
+                <div class="stat-item"><span>Room Types</span><span class="stat-value">3</span></div>
+                <div class="stat-item"><span>Check-in</span><span class="stat-value">2 PM</span></div>
+                <div class="stat-item"><span>Check-out</span><span class="stat-value">11 AM</span></div>
+                <div class="stat-item"><span>WiFi</span><span class="stat-value">✅ Free</span></div>
+                <div class="stat-item"><span>Parking</span><span class="stat-value">✅ Included</span></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const msgBox = document.getElementById('msgBox');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    // Auto-resize textarea
+    userInput.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    function appendMessage(text, type) {
+        const wrap = document.createElement('div');
+        wrap.className = 'message-wrap ' + type;
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar ' + (type === 'user' ? 'user' : 'bot');
+        avatar.textContent = type === 'user' ? '👤' : '🤖';
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble ' + (type === 'user' ? 'user' : 'bot');
+        bubble.innerHTML = text;
+        wrap.appendChild(avatar);
+        wrap.appendChild(bubble);
+        msgBox.appendChild(wrap);
+        msgBox.scrollTop = msgBox.scrollHeight;
+        return bubble;
+    }
+
+    function showTyping() {
+        const wrap = document.createElement('div');
+        wrap.className = 'message-wrap';
+        wrap.id = 'typingWrap';
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar bot';
+        avatar.textContent = '🤖';
+        const indicator = document.createElement('div');
+        indicator.className = 'bubble bot typing-indicator';
+        indicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+        wrap.appendChild(avatar);
+        wrap.appendChild(indicator);
+        msgBox.appendChild(wrap);
+        msgBox.scrollTop = msgBox.scrollHeight;
+    }
+
+    function hideTyping() {
+        const el = document.getElementById('typingWrap');
+        if (el) el.remove();
+    }
+
+    function buildRoomCards(rooms) {
+        if (!rooms || rooms.length === 0) return '';
+        const cards = rooms.map(r => `
+            <a href="/BookNow/Room/${r.id}" class="room-card-mini">
+                <img src="${r.img}" alt="${r.name}" onerror="this.src='https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=300'">
+                <div class="room-card-mini-body">
+                    <div class="room-name">${r.name}</div>
+                    <div class="room-price">$${r.price}/night</div>
+                    <div class="room-loc">📍 ${r.location || 'Manchester'}</div>
+                </div>
+            </a>`).join('');
+        return `<div class="room-cards-grid">${cards}</div>`;
+    }
+
+    async function sendMessage() {
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        appendMessage(escapeHtml(message), 'user');
+        userInput.value = '';
+        userInput.style.height = 'auto';
+        sendBtn.disabled = true;
+        showTyping();
+
+        try {
+            const resp = await fetch('/aiAssistant/ai-chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+
+            hideTyping();
+
+            if (!resp.ok) {
+                appendMessage('⚠️ The assistant is temporarily unavailable. Please try again shortly.', 'bot');
+                return;
+            }
+
+            const data = await resp.json();
+            const replyText = data.reply || 'I could not process that. Please try rephrasing.';
+            const rooms = data.recommendedRooms || [];
+
+            // Convert markdown-lite to HTML
+            const formattedReply = replyText
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+
+            const html = `<p>${formattedReply}</p>${buildRoomCards(rooms)}`;
+            appendMessage(html, 'bot');
+
+        } catch (e) {
+            hideTyping();
+            appendMessage('❌ Error connecting to assistant. Please check your connection.', 'bot');
+        } finally {
+            sendBtn.disabled = false;
+            userInput.focus();
+        }
+    }
+
+    function fillAndSend(btn) {
+        userInput.value = btn.textContent.trim();
+        sendMessage();
+    }
+
+    function escapeHtml(text) {
+        return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // Send on Enter (Shift+Enter = new line)
+    userInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+</script>
+}

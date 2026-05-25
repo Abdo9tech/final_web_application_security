@@ -2,6 +2,7 @@ using BookifyHotel.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PLL.Services;
+using RoomService = PLL.Services.RoomService;
 using System;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;

@@ -8,6 +8,7 @@ using PLL.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Project_DEPI.ViewModels;
+using DAL.Constants;
 
 namespace Project_DEPI_.Controllers
 {
@@ -43,11 +44,22 @@ namespace Project_DEPI_.Controllers
         // Administrative actions are restricted strictly to users with Admin or Manager roles.
         // The default fallback policy also requires authentication.
         [Authorize(Roles = "Admin,Manager")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-             
-            var Booking = _bookingService.GetAll(); 
-            return View(Booking);
+            const int pageSize = 20;
+            var bookings = await _context.Bookings
+                .Include(b => b.UserProfile)
+                .Include(b => b.Room).ThenInclude(r => r.RoomType)
+                .OrderByDescending(b => b.BookingDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.Page = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(
+                await _context.Bookings.CountAsync() / (double)pageSize);
+
+            return View(bookings);
         }
 
         [Authorize(Roles = "Admin,Manager")]
@@ -61,8 +73,10 @@ namespace Project_DEPI_.Controllers
             return View(booking);
         }
         
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var booking = _bookingService.GetById(id);
             if (booking == null)
@@ -71,7 +85,7 @@ namespace Project_DEPI_.Controllers
             }
             else
            {
-                _bookingService.Delete(id);
+                await _bookingService.DeleteAsync(id);
                 return RedirectToAction("Index");
             }
 
@@ -173,7 +187,8 @@ namespace Project_DEPI_.Controllers
 
                     // التحقق من تعارض التواريخ مع حجوزات أخرى
                     var conflictingBooking = await _context.Bookings
-                        .Where(b => b.RoomId == booking.RoomId && b.Status != "Cancelled")
+                        .Where(b => b.RoomId == booking.RoomId && 
+                                   (b.Status == "Confirmed" || b.Status == "Completed"))
                         .Where(b => (booking.CheckInDate >= b.CheckInDate && booking.CheckInDate < b.CheckOutDate) ||
                                    (booking.CheckOutDate > b.CheckInDate && booking.CheckOutDate <= b.CheckOutDate) ||
                                    (booking.CheckInDate <= b.CheckInDate && booking.CheckOutDate >= b.CheckOutDate))
@@ -187,18 +202,20 @@ namespace Project_DEPI_.Controllers
 
                     // حساب السعر الكلي
                     var nights = (int)Math.Ceiling((booking.CheckOutDate - booking.CheckInDate).TotalDays);
+                    if (nights < 1) nights = 1; // Minimum 1 night
+                    
                     booking.TotalPrice = room.RoomType.PricePerNight * nights;
                     booking.BookingDate = DateTime.Now;
-                    booking.Status = booking.Status ?? "Pending";
+                    booking.Status = BookingStatus.Normalize(booking.Status ?? BookingStatus.Pending);
 
                     // حفظ الحجز
-                    _bookingService.Create(booking);
+                    await _bookingService.CreateAsync(booking);
 
                     // تحديث حالة الغرفة إذا كانت الحجز مؤكدة
-                    if (booking.Status == "Confirmed")
+                    if (BookingStatus.IsConfirmed(booking.Status))
                     {
                         room.IsAvailable = false;
-                        room.Status = "Booked";
+                        room.Status = RoomStatus.Booked;
                         await _context.SaveChangesAsync();
                     }
 
@@ -299,7 +316,7 @@ namespace Project_DEPI_.Controllers
                     // الحصول على الحجز الحالي
                     var existingBooking = await _context.Bookings
                         .Include(b => b.Room)
-                        .ThenInclude(r => r.RoomTypes)
+                        .ThenInclude(r => r.RoomType)
                         .FirstOrDefaultAsync(b => b.BookingId == booking.BookingId);
 
                     if (existingBooking == null)
@@ -324,7 +341,8 @@ namespace Project_DEPI_.Controllers
 
                     // التحقق من تعارض التواريخ
                     var conflictingBooking = await _context.Bookings
-                        .Where(b => b.BookingId != booking.BookingId && b.RoomId == booking.RoomId && b.Status != "Cancelled")
+                        .Where(b => b.BookingId != booking.BookingId && b.RoomId == booking.RoomId && 
+                                   (b.Status == "Confirmed" || b.Status == "Completed"))
                         .Where(b => (booking.CheckInDate >= b.CheckInDate && booking.CheckInDate < b.CheckOutDate) ||
                                    (booking.CheckOutDate > b.CheckInDate && booking.CheckOutDate <= b.CheckOutDate) ||
                                    (booking.CheckInDate <= b.CheckInDate && booking.CheckOutDate >= b.CheckOutDate))
@@ -337,11 +355,13 @@ namespace Project_DEPI_.Controllers
                     }
 
                     // تحديث بيانات الحجز
+                    var oldRoomId = existingBooking.RoomId;
+                    
                     existingBooking.UserProfileId = booking.UserProfileId;
                     existingBooking.RoomId = booking.RoomId;
                     existingBooking.CheckInDate = booking.CheckInDate;
                     existingBooking.CheckOutDate = booking.CheckOutDate;
-                    existingBooking.Status = booking.Status;
+                    existingBooking.Status = BookingStatus.Normalize(booking.Status);
 
                     // حساب السعر الجديد
                     var room = await _context.Rooms
@@ -351,14 +371,27 @@ namespace Project_DEPI_.Controllers
                     if (room != null)
                     {
                         var nights = (int)Math.Ceiling((booking.CheckOutDate - booking.CheckInDate).TotalDays);
+                        if (nights < 1) nights = 1; // Minimum 1 night
                         existingBooking.TotalPrice = room.RoomType.PricePerNight * nights;
                     }
 
                     // تحديث حالة الغرف
-                    await UpdateRoomStatus(existingBooking.RoomId, booking.Status);
+                    // إذا تغيرت الغرفة، نحتاج لتحديث كلا الغرفتين
+                    if (oldRoomId != booking.RoomId)
+                    {
+                        // تحرير الغرفة القديمة
+                        await UpdateRoomStatus(oldRoomId, BookingStatus.Cancelled);
+                        // حجز الغرفة الجديدة
+                        await UpdateRoomStatus(booking.RoomId, existingBooking.Status);
+                    }
+                    else
+                    {
+                        // نفس الغرفة، فقط تحديث الحالة
+                        await UpdateRoomStatus(booking.RoomId, existingBooking.Status);
+                    }
 
                     // حفظ التعديلات
-                    _bookingService.Update(existingBooking);
+                    await _bookingService.UpdateAsync(existingBooking);
 
                     TempData["Success"] = "Booking updated successfully!";
                     return RedirectToAction("Details", new { id = booking.BookingId });
@@ -420,7 +453,7 @@ namespace Project_DEPI_.Controllers
             var existingBooking = await _context.Bookings
                 .Include(b => b.UserProfile)
                 .Include(b => b.Room)
-                .ThenInclude(r => r.RoomTypes)
+                .ThenInclude(r => r.RoomType)
                 .FirstOrDefaultAsync(b => b.BookingId == booking.BookingId);
 
             if (existingBooking == null)
@@ -448,13 +481,13 @@ namespace Project_DEPI_.Controllers
             }).ToList();
 
             var rooms = await _context.Rooms
-                .Include(r => r.RoomTypes)
+                .Include(r => r.RoomType)
                 .Select(r => new
                 {
                     r.RoomId,
                     r.RoomNumber,
-                    RoomType = r.RoomTypes.Name,
-                    PricePerNight = r.RoomTypes.PricePerNight,
+                    RoomType = r.RoomType.Name,
+                    PricePerNight = r.RoomType.PricePerNight,
                     IsAvailable = r.IsAvailable
                 })
                 .ToListAsync();
@@ -477,24 +510,37 @@ namespace Project_DEPI_.Controllers
             return View(existingBooking);
         }
 
-        // دالة لتحديث حالة الغرفة
+        // دالة لتحديث حالة الغرفة بناءً على حالة الحجز
         private async Task UpdateRoomStatus(int roomId, string bookingStatus)
         {
             var room = await _context.Rooms.FindAsync(roomId);
-            if (room != null)
+            if (room == null) return;
+
+            bookingStatus = BookingStatus.Normalize(bookingStatus);
+
+            if (bookingStatus == BookingStatus.Confirmed)
             {
-                if (bookingStatus == "Confirmed")
-                {
-                    room.IsAvailable = false;
-                    room.Status = "Booked";
-                }
-                else if (bookingStatus == "Cancelled" || bookingStatus == "Completed")
+                room.IsAvailable = false;
+                room.Status = RoomStatus.Booked;
+            }
+            else if (bookingStatus == BookingStatus.Cancelled || bookingStatus == BookingStatus.Completed)
+            {
+                // Only release if no other active confirmed bookings right now
+                var hasActiveBookings = await _context.Bookings
+                    .AnyAsync(b => b.RoomId == roomId &&
+                                   b.Status == "Confirmed" &&
+                                   b.CheckInDate <= DateTime.Now &&
+                                   b.CheckOutDate >= DateTime.Now);
+
+                if (!hasActiveBookings)
                 {
                     room.IsAvailable = true;
-                    room.Status = "Available";
+                    room.Status = RoomStatus.Available;
                 }
-                await _context.SaveChangesAsync();
             }
+            // Pending: leave room available
+
+            await _context.SaveChangesAsync();
         }
         #endregion
 

@@ -22,7 +22,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 
 # Create the keys directory and assign ownership to the app user
-RUN mkdir -p /app/keys && chown -R app:app /app/keys
+RUN mkdir -p /app/keys /app/App_Data && chown -R app:app /app/keys /app/App_Data
 
 # Create and switch to non-root user (MINIMAL CHANGE)
 USER app

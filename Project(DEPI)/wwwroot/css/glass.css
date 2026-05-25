@@ -1,0 +1,57 @@
+:root {
+  --primary: #0d47a1; /* deep blue */
+  --secondary: #ff6f61; /* coral accent */
+  --bg-glass: rgba(255,255,255,0.25);
+  --surface-glass: rgba(255,255,255,0.15);
+  --text-color: #ffffff;
+  --radius: 12px;
+}
+
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--text-color);
+  padding: 1rem;
+}
+
+/* Loading spinner style */
+.loading-spinner {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  animation: pulse 1.5s infinite ease-in-out;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Optional utility classes */
+.glass-bg {
+  background: var(--bg-glass);
+  backdrop-filter: blur(8px);
+}
+.glass-surface {
+  background: var(--surface-glass);
+  backdrop-filter: blur(8px);
+}
+
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--text-color);
+  padding: 1rem;
+}
+
+/* Optional utility classes */
+.glass-bg {
+  background: var(--bg-glass);
+  backdrop-filter: blur(8px);
+}
+.glass-surface {
+  background: var(--surface-glass);
+  backdrop-filter: blur(8px);
+}

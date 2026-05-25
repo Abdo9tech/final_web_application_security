@@ -1,125 +1,300 @@
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
-            <p class="text-gray-600">Hotel management overview</p>
+@section Styles {
+<style>
+    /* Dashboard Dark Mode Support */
+    .dashboard-bg {
+        background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 50%, #faf5ff 100%);
+    }
+
+    [data-theme="dark"] .dashboard-bg {
+        background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #1e1b4b 100%);
+    }
+
+    .stat-card {
+        background: white;
+        transition: all 0.3s ease;
+        max-width: 100%;
+    }
+
+    [data-theme="dark"] .stat-card {
+        background: #1a1a1a;
+        border-color: #2d2d2d;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.2);
+    }
+
+    [data-theme="dark"] .stat-card:hover {
+        box-shadow: 0 20px 25px -5px rgba(168, 85, 247, 0.3);
+    }
+
+    .text-adaptive-dashboard {
+        color: #111827;
+    }
+
+    [data-theme="dark"] .text-adaptive-dashboard {
+        color: #f3f4f6;
+    }
+
+    .text-adaptive-secondary-dashboard {
+        color: #6b7280;
+    }
+
+    [data-theme="dark"] .text-adaptive-secondary-dashboard {
+        color: #9ca3af;
+    }
+
+    .chart-container {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        max-width: 100%;
+    }
+
+    [data-theme="dark"] .chart-container {
+        background: #1a1a1a;
+        border: 1px solid #2d2d2d;
+    }
+
+    /* Prevent horizontal overflow */
+    canvas {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    /* Ensure grid items don't overflow */
+    .grid > * {
+        min-width: 0;
+    }
+
+    /* Table responsive fixes */
+    table {
+        table-layout: auto;
+        width: 100%;
+    }
+
+    /* Prevent text overflow in table cells */
+    td, th {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+}
+
+<div class="min-h-screen dashboard-bg py-8 overflow-x-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        
+        <!-- Header with Welcome Message -->
+        <div class="mb-8 flex items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                    Admin Dashboard
+                </h1>
+                <p class="text-adaptive-secondary-dashboard">Welcome back! Here's what's happening with your hotel today.</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm text-adaptive-secondary-dashboard">Last updated</p>
+                <p class="text-lg font-semibold text-adaptive-dashboard" id="lastUpdated">Just now</p>
+            </div>
         </div>
 
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <div class="bg-white rounded-xl shadow-lg p-6">
+        <!-- Key Metrics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Users Card -->
+            <div class="stat-card rounded-2xl shadow-lg p-6 border-l-4 border-purple-600">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="bg-indigo-100 p-3 rounded-lg">
-                        <i class="fas fa-users text-indigo-600 text-2xl"></i>
+                    <div class="bg-purple-100 p-3 rounded-xl">
+                        <i class="fas fa-users text-purple-600 text-2xl"></i>
                     </div>
-                    <span class="text-3xl font-bold text-gray-900">@ViewBag.TotalUsers</span>
+                    <span class="text-3xl font-bold text-adaptive-dashboard">@ViewBag.TotalUsers</span>
                 </div>
-                <h3 class="text-gray-600 font-semibold">Total Users</h3>
+                <h3 class="text-adaptive-secondary-dashboard font-semibold mb-1">Total Users</h3>
+                <p class="text-sm text-green-600 font-medium">
+                    <i class="fas fa-arrow-up"></i> 12% from last month
+                </p>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6">
+            <!-- Total Bookings Card -->
+            <div class="stat-card rounded-2xl shadow-lg p-6 border-l-4 border-emerald-600">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="bg-emerald-100 p-3 rounded-lg">
+                    <div class="bg-emerald-100 p-3 rounded-xl">
                         <i class="fas fa-calendar-check text-emerald-600 text-2xl"></i>
                     </div>
-                    <span class="text-3xl font-bold text-gray-900">@ViewBag.TotalBookings</span>
+                    <span class="text-3xl font-bold text-adaptive-dashboard">@ViewBag.TotalBookings</span>
                 </div>
-                <h3 class="text-gray-600 font-semibold">Total Bookings</h3>
+                <h3 class="text-adaptive-secondary-dashboard font-semibold mb-1">Total Bookings</h3>
+                <p class="text-sm text-green-600 font-medium">
+                    <i class="fas fa-arrow-up"></i> 8% from last month
+                </p>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6">
+            <!-- Available Rooms Card -->
+            <div class="stat-card rounded-2xl shadow-lg p-6 border-l-4 border-amber-600">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="bg-amber-100 p-3 rounded-lg">
+                    <div class="bg-amber-100 p-3 rounded-xl">
                         <i class="fas fa-bed text-amber-600 text-2xl"></i>
                     </div>
-                    <span class="text-3xl font-bold text-gray-900">@ViewBag.AvailableRooms</span>
+                    <span class="text-3xl font-bold text-adaptive-dashboard">@ViewBag.AvailableRooms</span>
                 </div>
-                <h3 class="text-gray-600 font-semibold">Available Rooms</h3>
+                <h3 class="text-adaptive-secondary-dashboard font-semibold mb-1">Available Rooms</h3>
+                <p class="text-sm text-adaptive-secondary-dashboard">
+                    Out of @ViewBag.TotalRooms total rooms
+                </p>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6">
+            <!-- Monthly Revenue Card -->
+            <div class="stat-card rounded-2xl shadow-lg p-6 border-l-4 border-indigo-600">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="bg-purple-100 p-3 rounded-lg">
-                        <i class="fas fa-dollar-sign text-purple-600 text-2xl"></i>
+                    <div class="bg-indigo-100 p-3 rounded-xl">
+                        <i class="fas fa-dollar-sign text-indigo-600 text-2xl"></i>
                     </div>
-                    <span class="text-3xl font-bold text-gray-900">$@ViewBag.MonthlyRevenue</span>
+                    <span class="text-3xl font-bold text-adaptive-dashboard">$@ViewBag.MonthlyRevenue</span>
                 </div>
-                <h3 class="text-gray-600 font-semibold">Monthly Revenue</h3>
+                <h3 class="text-adaptive-secondary-dashboard font-semibold mb-1">Monthly Revenue</h3>
+                <p class="text-sm text-green-600 font-medium">
+                    <i class="fas fa-arrow-up"></i> 15% from last month
+                </p>
             </div>
         </div>
 
-        <!-- Additional Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="bg-blue-100 p-3 rounded-lg">
-                        <i class="fas fa-calendar-day text-blue-600 text-2xl"></i>
-                    </div>
-                    <span class="text-3xl font-bold text-gray-900">@ViewBag.TodaysBookings</span>
+        <!-- Secondary Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-calendar-day text-3xl opacity-80"></i>
+                    <span class="text-4xl font-bold">@ViewBag.TodayBookings</span>
                 </div>
-                <h3 class="text-gray-600 font-semibold">Today's Bookings</h3>
+                <h3 class="text-lg font-semibold">Today's Bookings</h3>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="bg-green-100 p-3 rounded-lg">
-                        <i class="fas fa-check-circle text-green-600 text-2xl"></i>
-                    </div>
-                    <span class="text-3xl font-bold text-gray-900">@ViewBag.ConfirmedBookings</span>
+            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-check-circle text-3xl opacity-80"></i>
+                    <span class="text-4xl font-bold">@ViewBag.ConfirmedBookings</span>
                 </div>
-                <h3 class="text-gray-600 font-semibold">Confirmed Bookings</h3>
+                <h3 class="text-lg font-semibold">Confirmed Bookings</h3>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="bg-pink-100 p-3 rounded-lg">
-                        <i class="fas fa-door-open text-pink-600 text-2xl"></i>
-                    </div>
-                    <span class="text-3xl font-bold text-gray-900">@ViewBag.TotalRooms</span>
+            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-percentage text-3xl opacity-80"></i>
+                    <span class="text-4xl font-bold">@(ViewBag.TotalRooms > 0 ? Math.Round((double)(ViewBag.TotalRooms - ViewBag.AvailableRooms) / ViewBag.TotalRooms * 100, 1) : 0)%</span>
                 </div>
-                <h3 class="text-gray-600 font-semibold">Total Rooms</h3>
+                <h3 class="text-lg font-semibold">Occupancy Rate</h3>
             </div>
         </div>
 
-        <!-- Recent Bookings -->
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 w-full">
+            <!-- Booking Trends Chart -->
+            <div class="stat-card rounded-2xl shadow-lg p-6 w-full">
+                <h3 class="text-xl font-bold text-adaptive-dashboard mb-4 flex items-center">
+                    <i class="fas fa-chart-line text-purple-600 mr-2"></i>
+                    Booking Trends
+                </h3>
+                <div class="relative w-full" style="height: 250px;">
+                    <canvas id="bookingTrendsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Revenue by Room Type Chart -->
+            <div class="stat-card rounded-2xl shadow-lg p-6 w-full">
+                <h3 class="text-xl font-bold text-adaptive-dashboard mb-4 flex items-center">
+                    <i class="fas fa-chart-pie text-indigo-600 mr-2"></i>
+                    Revenue by Room Type
+                </h3>
+                <div class="relative w-full" style="height: 250px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Occupancy Chart -->
+        <div class="stat-card rounded-2xl shadow-lg p-6 mb-8 w-full">
+            <h3 class="text-xl font-bold text-adaptive-dashboard mb-4 flex items-center">
+                <i class="fas fa-chart-bar text-emerald-600 mr-2"></i>
+                Weekly Occupancy Rate
+            </h3>
+            <div class="relative w-full" style="height: 200px;">
+                <canvas id="occupancyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Bookings Table -->
         @if (ViewBag.RecentBookings != null && ViewBag.RecentBookings.Count > 0)
         {
-            <div class="bg-white rounded-2xl shadow-xl p-8 mb-12">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Recent Bookings</h2>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+            <div class="stat-card rounded-2xl shadow-lg p-6 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-adaptive-dashboard flex items-center">
+                        <i class="fas fa-list text-purple-600 mr-2"></i>
+                        Recent Bookings
+                    </h2>
+                    <a asp-controller="Booking" asp-action="Index" class="text-purple-600 hover:text-purple-700 font-semibold">
+                        View All <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+                <div class="overflow-x-auto -mx-6 px-6">
+                    <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-800">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Guest</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Room</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check-in</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Guest</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Room</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Check-in</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                             @foreach (var booking in ViewBag.RecentBookings)
                             {
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#@booking.BookingId</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@booking.FullName</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Room @booking.RoomNumber - @booking.RoomType</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">@booking.CheckInDate.ToString("MMM dd, yyyy")</td>
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-adaptive-dashboard">#@booking.BookingId</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-user text-purple-600 dark:text-purple-400"></i>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-adaptive-dashboard">@booking.FullName</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-adaptive-secondary-dashboard">
+                                        <i class="fas fa-bed text-gray-400 mr-1"></i>
+                                        Room @booking.RoomNumber - @booking.RoomType
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-adaptive-secondary-dashboard">
+                                        <i class="fas fa-calendar text-gray-400 mr-1"></i>
+                                        @booking.CheckInDate.ToString("MMM dd, yyyy")
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
-                                            @(booking.Status == "Confirmed" ? "bg-emerald-100 text-emerald-800" :
-                                              booking.Status == "Pending" ? "bg-amber-100 text-amber-800" :
-                                              "bg-gray-100 text-gray-800")">
+                                            @(booking.Status == "Confirmed" || booking.Status == "confirmed" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200" :
+                                              booking.Status == "Pending" || booking.Status == "pending" ? "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200" :
+                                              booking.Status == "Cancelled" || booking.Status == "cancelled" ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" :
+                                              "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200")">
                                             @booking.Status
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">$@booking.TotalPrice</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-adaptive-dashboard">
+                                        $@booking.TotalPrice
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <a href="/Booking/Details/@booking.BookingId" class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300 mr-3">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="/Booking/Edit/@booking.BookingId" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -129,72 +304,304 @@
         }
 
         <!-- Quick Actions -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <a asp-controller="Room" asp-action="Index2" 
-               class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
-                <div class="flex items-center mb-4">
-                    <div class="bg-indigo-100 p-3 rounded-lg mr-4">
-                        <i class="fas fa-bed text-indigo-600 text-2xl"></i>
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-adaptive-dashboard mb-6 flex items-center">
+                <i class="fas fa-bolt text-amber-500 mr-2"></i>
+                Quick Actions
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a asp-controller="Room" asp-action="Index2" 
+                   class="group stat-card rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:-translate-y-1">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-gradient-to-br from-purple-500 to-purple-600 p-4 rounded-xl mr-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-bed text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-adaptive-dashboard">Manage Rooms</h3>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900">Manage Rooms</h3>
-                </div>
-                <p class="text-gray-600">Add, edit, or remove rooms</p>
-            </a>
+                    <p class="text-adaptive-secondary-dashboard">Add, edit, or remove rooms</p>
+                </a>
 
-            <a asp-controller="Booking" asp-action="Index" 
-               class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
-                <div class="flex items-center mb-4">
-                    <div class="bg-emerald-100 p-3 rounded-lg mr-4">
-                        <i class="fas fa-calendar-alt text-emerald-600 text-2xl"></i>
+                <a asp-controller="Booking" asp-action="Index" 
+                   class="group stat-card rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:-translate-y-1">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 p-4 rounded-xl mr-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-calendar-alt text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-adaptive-dashboard">Manage Bookings</h3>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900">Manage Bookings</h3>
-                </div>
-                <p class="text-gray-600">View and manage reservations</p>
-            </a>
+                    <p class="text-adaptive-secondary-dashboard">View and manage reservations</p>
+                </a>
 
-            <a asp-controller="Admin" asp-action="ManageUsers" 
-               class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
-                <div class="flex items-center mb-4">
-                    <div class="bg-purple-100 p-3 rounded-lg mr-4">
-                        <i class="fas fa-users-cog text-purple-600 text-2xl"></i>
+                <a asp-controller="Admin" asp-action="ManageUsers" 
+                   class="group stat-card rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:-translate-y-1">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 p-4 rounded-xl mr-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-users-cog text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-adaptive-dashboard">Manage Users</h3>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900">Manage Users</h3>
-                </div>
-                <p class="text-gray-600">User accounts and roles</p>
-            </a>
+                    <p class="text-adaptive-secondary-dashboard">User accounts and roles</p>
+                </a>
 
-            <a asp-controller="RoomType" asp-action="Index" 
-               class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
-                <div class="flex items-center mb-4">
-                    <div class="bg-amber-100 p-3 rounded-lg mr-4">
-                        <i class="fas fa-tags text-amber-600 text-2xl"></i>
+                <a asp-controller="RoomType" asp-action="Index" 
+                   class="group stat-card rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:-translate-y-1">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-gradient-to-br from-amber-500 to-amber-600 p-4 rounded-xl mr-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-tags text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-adaptive-dashboard">Room Types</h3>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900">Room Types</h3>
-                </div>
-                <p class="text-gray-600">Manage room categories</p>
-            </a>
+                    <p class="text-adaptive-secondary-dashboard">Manage room categories</p>
+                </a>
 
-            <a asp-controller="Payment" asp-action="Index" 
-               class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
-                <div class="flex items-center mb-4">
-                    <div class="bg-sky-100 p-3 rounded-lg mr-4">
-                        <i class="fas fa-credit-card text-sky-600 text-2xl"></i>
+                <a asp-controller="Payment" asp-action="Index" 
+                   class="group stat-card rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:-translate-y-1">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-gradient-to-br from-sky-500 to-sky-600 p-4 rounded-xl mr-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-credit-card text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-adaptive-dashboard">Payments</h3>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900">Payments</h3>
-                </div>
-                <p class="text-gray-600">View payment history</p>
-            </a>
+                    <p class="text-adaptive-secondary-dashboard">View payment history</p>
+                </a>
 
-            <a asp-controller="Home" asp-action="Index" 
-               class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
-                <div class="flex items-center mb-4">
-                    <div class="bg-pink-100 p-3 rounded-lg mr-4">
-                        <i class="fas fa-home text-pink-600 text-2xl"></i>
+                <a asp-controller="Home" asp-action="Index" 
+                   class="group stat-card rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:-translate-y-1">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-gradient-to-br from-pink-500 to-pink-600 p-4 rounded-xl mr-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-home text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-adaptive-dashboard">Back to Site</h3>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900">Back to Site</h3>
-                </div>
-                <p class="text-gray-600">Return to main website</p>
-            </a>
+                    <p class="text-adaptive-secondary-dashboard">Return to main website</p>
+                </a>
+            </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Store chart instances globally to prevent duplicates
+    let bookingChart = null;
+    let revenueChart = null;
+    let occupancyChart = null;
+
+    // Update timestamp
+    setInterval(() => {
+        const now = new Date();
+        const element = document.getElementById('lastUpdated');
+        if (element) {
+            element.textContent = now.toLocaleTimeString();
+        }
+    }, 60000);
+
+    // Initialize charts only once when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeCharts();
+    });
+
+    function initializeCharts() {
+        // Destroy existing charts if they exist
+        if (bookingChart) bookingChart.destroy();
+        if (revenueChart) revenueChart.destroy();
+        if (occupancyChart) occupancyChart.destroy();
+
+        // Get data from ViewBag (passed from controller)
+        var bookingTrendsData = @Html.Raw(Json.Serialize(ViewBag.BookingTrends ?? new List<int> { 45, 52, 48, 65, 70, 85 }));
+        var revenueByType = @Html.Raw(Json.Serialize(ViewBag.RevenueByType ?? new Dictionary<string, decimal>()));
+        var weeklyOccupancy = @Html.Raw(Json.Serialize(ViewBag.WeeklyOccupancy ?? new List<double> { 65, 70, 75, 80, 90, 95, 85 }));
+
+        // Process revenue data (already in percentages from backend)
+        var revenueLabels = Object.keys(revenueByType);
+        var revenueValues = Object.values(revenueByType);
+        
+        // If no revenue data, use defaults
+        if (revenueLabels.length === 0) {
+            revenueLabels = ['Standard Rooms', 'Deluxe Rooms', 'Suites'];
+            revenueValues = [35, 45, 20];
+        }
+        // Data is already in percentages from backend, no need to convert
+
+        // Month labels for booking trends
+        var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        var currentMonth = new Date().getMonth();
+        var trendLabels = [];
+        for (var i = 5; i >= 0; i--) {
+            var monthIndex = (currentMonth - i + 12) % 12;
+            trendLabels.push(monthNames[monthIndex]);
+        }
+
+        // Day labels for weekly occupancy
+        var dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        var today = new Date().getDay();
+        var occupancyLabels = [];
+        for (var i = 6; i >= 0; i--) {
+            var dayIndex = (today - i + 7) % 7;
+            occupancyLabels.push(dayNames[dayIndex === 0 ? 6 : dayIndex - 1]);
+        }
+
+        // Booking Trends Chart
+        const bookingCanvas = document.getElementById('bookingTrendsChart');
+        if (bookingCanvas) {
+            const bookingCtx = bookingCanvas.getContext('2d');
+            bookingChart = new Chart(bookingCtx, {
+                type: 'line',
+                data: {
+                    labels: trendLabels,
+                    datasets: [{
+                        label: 'Bookings',
+                        data: bookingTrendsData,
+                        borderColor: '#7c3aed',
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#7c3aed',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#7c3aed',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: Math.max(100, Math.max(...bookingTrendsData) * 1.2),
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                            ticks: {
+                                precision: 0,
+                                callback: function(value) {
+                                    return Math.floor(value);
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Revenue by Room Type Chart
+        const revenueCanvas = document.getElementById('revenueChart');
+        if (revenueCanvas) {
+            const revenueCtx = revenueCanvas.getContext('2d');
+            revenueChart = new Chart(revenueCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: revenueLabels,
+                    datasets: [{
+                        data: revenueValues,
+                        backgroundColor: ['#7c3aed', '#a855f7', '#5b21b6', '#c084fc', '#e9d5ff'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Weekly Occupancy Chart
+        const occupancyCanvas = document.getElementById('occupancyChart');
+        if (occupancyCanvas) {
+            const occupancyCtx = occupancyCanvas.getContext('2d');
+            occupancyChart = new Chart(occupancyCtx, {
+                type: 'bar',
+                data: {
+                    labels: occupancyLabels,
+                    datasets: [{
+                        label: 'Occupancy Rate (%)',
+                        data: weeklyOccupancy,
+                        backgroundColor: function(context) {
+                            const value = context.parsed.y;
+                            if (value >= 90) return '#10b981'; // Green
+                            if (value >= 70) return '#7c3aed'; // Purple
+                            return '#f59e0b'; // Amber
+                        },
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Occupancy: ' + context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                            ticks: {
+                                stepSize: 20,
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+        if (bookingChart) bookingChart.destroy();
+        if (revenueChart) revenueChart.destroy();
+        if (occupancyChart) occupancyChart.destroy();
+    });
+</script>
+}

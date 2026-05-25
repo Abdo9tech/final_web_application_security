@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bookify Hotel - Search & Price Alert Dashboard</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      --accent-gradient: linear-gradient(135deg, #ff6f61 0%, #ff4b91 100%);
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-highlight: rgba(255, 255, 255, 0.05);
+      
+      --color-text-main: #f8fafc;
+      --color-text-muted: #94a3b8;
+      --color-accent: #ff6f61;
+      --color-accent-hover: #ff4b91;
+      --color-success: #10b981;
+      
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--primary-gradient);
+      color: var(--color-text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 2rem;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    .brand i {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .user-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .email-tracker {
+      display: flex;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      padding: 0.25rem;
+      transition: var(--transition);
+    }
+
+    .email-tracker:focus-within {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 15px rgba(255, 111, 97, 0.2);
+    }
+
+    .email-tracker input {
+      background: transparent;
+      border: none;
+      color: var(--color-text-main);
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      outline: none;
+      width: 220px;
+      font-family: inherit;
+    }
+
+    .email-tracker button {
+      background: var(--accent-gradient);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 0.5rem 1.25rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .email-tracker button:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+
+    .back-link {
+      color: var(--color-text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .back-link:hover {
+      color: var(--color-text-main);
+    }
+
+    /* Main Container */
+    .dashboard-container {
+      display: flex;
+      flex: 1;
+      padding: 2rem;
+      gap: 2rem;
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+      height: calc(100vh - 80px);
+      box-sizing: border-box;
+    }
+
+    /* Left Panel: Search and Grid */
+    .left-panel {
+      flex: 1.6;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow: hidden;
+    }
+
+    .search-section {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      backdrop-filter: blur(12px);
+      position: relative;
+    }
+
+    .search-wrapper {
+      position: relative;
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .search-wrapper i {
+      position: absolute;
+      left: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-muted);
+      font-size: 1.1rem;
+    }
+
+    .search-wrapper input {
+      width: 100%;
+      padding: 1rem 1rem 1rem 3rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text-main);
+      font-size: 1rem;
+      outline: none;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+
+    .search-wrapper input:focus {
+      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .search-wrapper button {
+      background: var(--glass-highlight);
+      border: 1px solid var(--glass-border);
+      color: var(--color-text-main);
+      padding: 0 1.5rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .search-wrapper button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Suggestions dropdown */
+    .search-suggestions {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 1.5rem;
+      right: 1.5rem;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      z-index: 50;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      max-height: 250px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .suggestion-group-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+      padding: 0.75rem 1rem 0.25rem 1rem;
+      font-weight: 700;
+    }
+
+    .suggestion-item {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    .suggestion-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--color-accent);
+    }
+
+    /* Room Grid */
+    .rooms-scroll-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+
+    .rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .room-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+      backdrop-filter: blur(8px);
+      position: relative;
+    }
+
+    .room-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .room-img-container {
+      height: 180px;
+      position: relative;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .room-price-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.5rem 0.8rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .room-price-badge span {
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--color-text-muted);
+    }
+
+    .room-details {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 0.75rem;
+    }
+
+    .room-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .room-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    .room-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .room-amenities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0.25rem 0;
+    }
+
+    .amenity-tag {
+      font-size: 0.7rem;
+      padding: 0.25rem 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      color: var(--color-text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .room-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: auto;
+      padding-top: 0.75rem;
+    }
+
+    .btn-book {
+      flex: 1;
+      background: var(--accent-gradient);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: var(--transition);
+      box-shadow: 0 4px 10px rgba(255, 111, 97, 0.25);
+    }
+
+    .btn-book:hover {
+      opacity: 0.95;
+      box-shadow: 0 4px 15px rgba(255, 111, 97, 0.4);
+    }
+
+    .btn-watch {
+      background: var(--glass-highlight);
+      border: 1px solid var(--glass-border);
+      color: var(--color-text-main);
+      width: 42px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .btn-watch:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+
+    .btn-watch.watching {
+      background: rgba(255, 111, 97, 0.1);
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+
+    /* Right Panel: Tabs, Chat, Alerts */
+    .right-panel {
+      flex: 1;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(15, 23, 42, 0.25);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 1.25rem;
+      background: transparent;
+      border: none;
+      color: var(--color-text-muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: inherit;
+    }
+
+    .tab-btn:hover {
+      color: var(--color-text-main);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .tab-btn.active {
+      color: var(--color-accent);
+      border-bottom: 2px solid var(--color-accent);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .tab-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 1.25rem;
+    }
+
+    /* Tab: Chat */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding-right: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .chat-msg {
+      max-width: 85%;
+      padding: 0.9rem 1.1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .chat-msg.user {
+      align-self: flex-end;
+      background: var(--accent-gradient);
+      color: white;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 10px rgba(255, 111, 97, 0.15);
+    }
+
+    .chat-msg.bot {
+      align-self: flex-start;
+      background: var(--glass-highlight);
+      border: 1px solid var(--glass-border);
+      color: var(--color-text-main);
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-msg-time {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.35);
+      margin-top: 0.4rem;
+      display: block;
+      text-align: right;
+    }
+
+    .chat-msg.user .chat-msg-time {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .chat-input-area {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .chat-input-area input {
+      flex: 1;
+      padding: 0.9rem 1.25rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+
+    .chat-input-area input:focus {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .chat-send-btn {
+      background: var(--accent-gradient);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      width: 50px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .chat-send-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Embedded card inside chatbot messages */
+    .embedded-rooms {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+      width: 100%;
+      min-width: 260px;
+    }
+
+    .embedded-room-card {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .embedded-room-img {
+      width: 60px;
+      height: 60px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 4px;
+    }
+
+    .embedded-room-info {
+      flex: 1;
+    }
+
+    .embedded-room-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .embedded-room-price {
+      font-size: 0.8rem;
+      color: var(--color-accent);
+      font-weight: 700;
+      margin-top: 0.15rem;
+    }
+
+    .embedded-room-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .embedded-room-actions a {
+      font-size: 0.75rem;
+      background: var(--color-accent);
+      color: white;
+      text-decoration: none;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* Tab: Alerts */
+    .alerts-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .alerts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .alert-card {
+      background: var(--glass-highlight);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .alert-card.price-dropped {
+      border-color: var(--color-success);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+    }
+
+    .alert-card.price-dropped::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--color-success);
+    }
+
+    .alert-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .alert-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .alert-percent-badge {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--color-success);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid rgba(16, 185, 129, 0.1);
+    }
+
+    .alert-price-comparison {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 0.25rem 0;
+    }
+
+    .price-compare {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .price-compare-label {
+      font-size: 0.7rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+    }
+
+    .price-compare-val {
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .price-compare-val.original {
+      text-decoration: line-through;
+      color: var(--color-text-muted);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .price-compare-val.current {
+      color: var(--color-success);
+    }
+
+    .price-arrow {
+      color: var(--color-text-muted);
+      font-size: 1.1rem;
+    }
+
+    .alert-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.25rem;
+      font-size: 0.8rem;
+    }
+
+    .alert-email {
+      color: var(--color-text-muted);
+    }
+
+    .alert-btn-book {
+      background: var(--color-success);
+      color: white;
+      border: none;
+      padding: 0.4rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .alert-btn-book:hover {
+      opacity: 0.9;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--color-text-muted);
+      gap: 1rem;
+      height: 100%;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      background: var(--glass-highlight);
+      padding: 1.5rem;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      color: var(--color-text-muted);
+    }
+
+    .empty-state h3 {
+      color: var(--color-text-main);
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .empty-state p {
+      font-size: 0.85rem;
+      max-width: 250px;
+    }
+
+    /* System status banner */
+    .status-banner {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--color-success);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .status-banner .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--color-success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="header">
+    <a href="/" class="brand">
+      <i class="fa-solid fa-hotel"></i> Bookify Hotel
+    </a>
+    
+    <div class="user-actions">
+      <!-- Live Tracker Setup -->
+      <div class="email-tracker">
+        <input type="email" id="userEmail" placeholder="Enter email to track alerts..." />
+        <button id="trackBtn">Track Alerts</button>
+      </div>
+
+      <a href="/Room" class="back-link">
+        <i class="fa-solid fa-arrow-left-long"></i> Back to Hotel
+      </a>
+    </div>
+  </header>
+
+  <!-- Dashboard Main Layout -->
+  <main class="dashboard-container">
+    
+    <!-- Left panel: Search rooms, display cards -->
+    <section class="left-panel">
+      
+      <!-- Search card -->
+      <div class="search-section">
+        <div class="status-banner">
+          <div class="dot"></div> Price Drop Engine Online. Simulated checks run every 60s.
+        </div>
+
+        <div class="search-wrapper">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="Search rooms by type or location (e.g. Manchester, Suite, Deluxe)..." autocomplete="off" />
+          <button id="searchBtn">Search</button>
+        </div>
+
+        <!-- Suggestion Dropdown -->
+        <div id="suggestions" class="search-suggestions"></div>
+      </div>
+
+      <!-- Scrollable grid area -->
+      <div class="rooms-scroll-wrapper">
+        <div id="roomsGrid" class="rooms-grid">
+          <!-- Rooms will load here dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Right panel: Tabs (Assistant Chat, Active Alerts) -->
+    <section class="right-panel">
+      <!-- Tabs header -->
+      <nav class="panel-tabs">
+        <button class="tab-btn active" id="tabChat">
+          <i class="fa-solid fa-robot"></i> AI Assistant
+        </button>
+        <button class="tab-btn" id="tabAlerts">
+          <i class="fa-solid fa-bell"></i> Alerts <span id="alertCountBadge" style="display:none; background:var(--color-accent); color:white; font-size:0.7rem; padding: 0.1rem 0.35rem; border-radius:10px;">0</span>
+        </button>
+      </nav>
+
+      <!-- Tab Content: Chatbot -->
+      <div class="tab-content" id="chatContent">
+        <div class="chat-container">
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-msg bot">
+              Hi! I'm your Bookify Assistant. I can help you find rooms, check details, or search prices.
+              <br/><br/>
+              Try asking:
+              <ul style="margin-left: 1.25rem; margin-top: 0.5rem; font-size: 0.85rem;">
+                <li>"show me deluxe rooms"</li>
+                <li>"find rooms in Manchester"</li>
+                <li>"what rooms are under $200?"</li>
+              </ul>
+              <span class="chat-msg-time">Just now</span>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Type a message..." />
+            <button class="chat-send-btn" id="chatSendBtn">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Price Alerts -->
+      <div class="tab-content" id="alertsContent" style="display: none;">
+        <div class="alerts-container">
+          <div id="alertsList" class="alerts-list">
+            <!-- Active alerts will load here dynamically -->
+            <div class="empty-state">
+              <i class="fa-regular fa-bell-slash"></i>
+              <h3>No Alerts Tracked</h3>
+              <p>Enter your email at the top to track your existing price drop subscriptions!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // State management
+    let roomsData = [];
+    let watchedData = [];
+    let activeTab = 'chat';
+    let userEmail = localStorage.getItem('trackedEmail') || '';
+
+    // Elements
+    const searchInput = document.getElementById('searchInput');
+    const suggestions = document.getElementById('suggestions');
+    const roomsGrid = document.getElementById('roomsGrid');
+    const emailInput = document.getElementById('userEmail');
+    const trackBtn = document.getElementById('trackBtn');
+    
+    const tabChat = document.getElementById('tabChat');
+    const tabAlerts = document.getElementById('tabAlerts');
+    const chatContent = document.getElementById('chatContent');
+    const alertsContent = document.getElementById('alertsContent');
+    const alertBadge = document.getElementById('alertCountBadge');
+    
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+    const alertsList = document.getElementById('alertsList');
+
+    // Init UI
+    if (userEmail) {
+      emailInput.value = userEmail;
+    }
+
+    // Load rooms from backend
+    async function loadRooms(query = '') {
+      try {
+        roomsGrid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--color-text-muted);">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+            <p>Loading available rooms...</p>
+          </div>`;
+          
+        const response = await fetch(`/dashboard/rooms?query=${encodeURIComponent(query)}`);
+        if (!response.ok) throw new Error("Failed to fetch rooms");
+        
+        roomsData = await response.json();
+        renderRooms(roomsData);
+      } catch (err) {
+        console.error(err);
+        roomsGrid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--color-accent);">
+            <i class="fa-solid fa-circle-exclamation" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+            <p>Error loading rooms. Please make sure the service is up.</p>
+          </div>`;
+      }
+    }
+
+    // Render rooms to left grid
+    function renderRooms(rooms) {
+      if (rooms.length === 0) {
+        roomsGrid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--color-text-muted);">
+            <i class="fa-regular fa-face-frown" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+            <h3>No Rooms Found</h3>
+            <p>Try searching for a different location or room type.</p>
+          </div>`;
+        return;
+      }
+
+      roomsGrid.innerHTML = rooms.map(room => {
+        const isCurrentlyWatching = watchedData.some(w => w.hotelId === room.id);
+        
+        return `
+          <div class="room-card" data-id="${room.id}">
+            <div class="room-img-container" style="background-image: url('${room.img}')">
+              <div class="room-price-badge">$${room.price} <span>/ night</span></div>
+            </div>
+            <div class="room-details">
+              <div class="room-name">${room.name}</div>
+              <div class="room-meta">
+                <span><i class="fa-solid fa-location-dot"></i> ${room.location}</span>
+                <span><i class="fa-solid fa-users"></i> Up to ${room.capacity}</span>
+              </div>
+              <div class="room-amenities">
+                ${room.amenities.map(a => `<span class="amenity-tag">${a}</span>`).join('')}
+              </div>
+              <div class="room-actions">
+                <a href="/BookNow/Room/${room.id}" target="_blank" class="btn-book">Book Now</a>
+                <button onclick="toggleWatch(${room.id}, '${room.name.replace(/'/g, "\\'")}', ${room.price})" 
+                        class="btn-watch ${isCurrentlyWatching ? 'watching' : ''}" 
+                        title="${isCurrentlyWatching ? 'Watching' : 'Watch price drop'}">
+                  <i class="fa-${isCurrentlyWatching ? 'solid' : 'regular'} fa-bell"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Setup autocomplete suggestions based on fetched data
+    function renderSuggestions(query) {
+      if (!query) {
+        suggestions.style.display = 'none';
+        return;
+      }
+
+      // Collect unique locations and room types matching query
+      const matchQuery = query.toLowerCase();
+      
+      const matchedLocations = [...new Set(roomsData.map(r => r.location))]
+        .filter(loc => loc.toLowerCase().includes(matchQuery));
+        
+      const matchedTypes = [...new Set(roomsData.map(r => r.name.split(' ')[0]))]
+        .filter(type => type.toLowerCase().includes(matchQuery));
+
+      if (matchedLocations.length === 0 && matchedTypes.length === 0) {
+        suggestions.style.display = 'none';
+        return;
+      }
+
+      let html = '';
+      if (matchedLocations.length > 0) {
+        html += `<div class="suggestion-group-title">Locations</div>`;
+        matchedLocations.forEach(loc => {
+          html += `
+            <div class="suggestion-item" onclick="selectSuggestion('${loc.replace(/'/g, "\\'")}')">
+              <i class="fa-solid fa-location-dot" style="color:var(--color-text-muted);"></i>
+              <span>${loc}</span>
+            </div>`;
+        });
+      }
+
+      if (matchedTypes.length > 0) {
+        html += `<div class="suggestion-group-title">Room Types</div>`;
+        matchedTypes.forEach(type => {
+          html += `
+            <div class="suggestion-item" onclick="selectSuggestion('${type.replace(/'/g, "\\'")}')">
+              <i class="fa-solid fa-bed" style="color:var(--color-text-muted);"></i>
+              <span>${type} Rooms</span>
+            </div>`;
+        });
+      }
+
+      suggestions.innerHTML = html;
+      suggestions.style.display = 'block';
+    }
+
+    function selectSuggestion(val) {
+      searchInput.value = val;
+      suggestions.style.display = 'none';
+      loadRooms(val);
+    }
+
+    // Watch price drops
+    async function toggleWatch(roomId, name, price) {
+      if (!userEmail) {
+        const email = prompt("Please enter your email to receive price alerts:");
+        if (email) {
+          userEmail = email.trim();
+          localStorage.setItem('trackedEmail', userEmail);
+          emailInput.value = userEmail;
+        } else {
+          return;
+        }
+      }
+
+      const isCurrentlyWatching = watchedData.some(w => w.hotelId === roomId);
+      if (isCurrentlyWatching) {
+        alert("You are already watching this room! Check 'Alerts' tab for details.");
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/Watch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            hotelId: roomId,
+            hotelName: name,
+            price: price,
+            email: userEmail
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          alert(`🔔 Alerts active for "${name}". We will send an email to ${userEmail} if the price drops!`);
+          fetchWatches();
+        } else {
+          alert("Failed to subscribe to alerts.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error connecting to watch API.");
+      }
+    }
+
+    // Retrieve active watches
+    async function fetchWatches() {
+      if (!userEmail) return;
+      try {
+        const response = await fetch(`/api/Watch?email=${encodeURIComponent(userEmail)}`);
+        if (!response.ok) throw new Error("Failed to fetch watches");
+        
+        watchedData = await response.json();
+        renderAlerts(watchedData);
+        
+        // Refresh rooms to update watch icon states
+        renderRooms(roomsData);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Render alert list on right tab
+    function renderAlerts(watches) {
+      if (watches.length === 0) {
+        alertBadge.style.display = 'none';
+        alertsList.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-regular fa-bell-slash"></i>
+            <h3>No Active Alerts</h3>
+            <p>Click the bell icon on any room card to subscribe to live price drop notifications.</p>
+          </div>`;
+        return;
+      }
+
+      alertBadge.textContent = watches.length;
+      alertBadge.style.display = 'inline-block';
+
+      alertsList.innerHTML = `
+        <div class="alerts-list">
+          ${watches.map(item => {
+            const hasDropped = item.currentPrice < item.originalPrice;
+            const dropPct = Math.round(((item.originalPrice - item.currentPrice) / item.originalPrice) * 100);
+            
+            return `
+              <div class="alert-card ${hasDropped ? 'price-dropped' : ''}">
+                <div class="alert-header">
+                  <span class="alert-title">${item.name}</span>
+                  ${hasDropped ? `<span class="alert-percent-badge">${dropPct}% OFF</span>` : '<span class="alert-percent-badge" style="background:rgba(255,255,255,0.05); color:var(--color-text-muted);">Active</span>'}
+                </div>
+                <div class="alert-price-comparison">
+                  <div class="price-compare">
+                    <span class="price-compare-label">Original</span>
+                    <span class="price-compare-val original">$${item.originalPrice}</span>
+                  </div>
+                  <i class="fa-solid fa-right-long price-arrow"></i>
+                  <div class="price-compare">
+                    <span class="price-compare-label">Current</span>
+                    <span class="price-compare-val ${hasDropped ? 'current' : ''}">$${item.currentPrice}</span>
+                  </div>
+                </div>
+                <div class="alert-footer">
+                  <span class="alert-email">${item.userEmail}</span>
+                  <a href="/BookNow/Room/${item.hotelId}" target="_blank" class="alert-btn-book">Book Now</a>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>`;
+    }
+
+    // Chatbot response generator
+    function addChatMessage(text, isUser = false, isHtml = false) {
+      const div = document.createElement('div');
+      div.className = `chat-msg ${isUser ? 'user' : 'bot'}`;
+      
+      if (isHtml) {
+        div.innerHTML = text;
+      } else {
+        div.textContent = text;
+      }
+
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'chat-msg-time';
+      timeSpan.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      div.appendChild(timeSpan);
+
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    async function handleBotMessage(message) {
+      // Add thinking state
+      const thinkingDiv = document.createElement('div');
+      thinkingDiv.className = 'chat-msg bot';
+      thinkingDiv.innerHTML = '<i class="fa-solid fa-ellipsis fa-bounce"></i>';
+      chatMessages.appendChild(thinkingDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      try {
+        const response = await fetch('/aiAssistant/ai-chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ message: message })
+        });
+
+        thinkingDiv.remove();
+
+        if (!response.ok) {
+          throw new Error("Failed to communicate with AI backend");
+        }
+
+        const data = await response.json();
+        
+        let htmlContent = `<div>${data.reply}</div>`;
+        if (data.recommendedRooms && data.recommendedRooms.length > 0) {
+          htmlContent += `<div class="embedded-rooms">`;
+          data.recommendedRooms.forEach(room => {
+            htmlContent += `
+              <div class="embedded-room-card">
+                <div class="embedded-room-img" style="background-image:url('${room.img}')"></div>
+                <div class="embedded-room-info">
+                  <div class="embedded-room-name">${room.name}</div>
+                  <div class="embedded-room-price">$${room.price}/night</div>
+                </div>
+                <div class="embedded-room-actions">
+                  <a href="/BookNow/Room/${room.id}" target="_blank">Book</a>
+                </div>
+              </div>`;
+          });
+          htmlContent += `</div>`;
+        }
+
+        addChatMessage(htmlContent, false, true);
+      } catch (err) {
+        console.error(err);
+        thinkingDiv.remove();
+        addChatMessage("I'm sorry, I encountered an error communicating with my intelligence unit. Please try again soon!", false, false);
+      }
+    }
+
+    // Event Listeners
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim();
+      renderSuggestions(q);
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const q = searchInput.value.trim();
+        suggestions.style.display = 'none';
+        loadRooms(q);
+      }
+    });
+
+    document.getElementById('searchBtn').onclick = () => {
+      const q = searchInput.value.trim();
+      suggestions.style.display = 'none';
+      loadRooms(q);
+    };
+
+    // Close suggestions on blur / outside click
+    document.addEventListener('click', (e) => {
+      if (!searchInput.contains(e.target) && !suggestions.contains(e.target)) {
+        suggestions.style.display = 'none';
+      }
+    });
+
+    // Alert email tracking
+    trackBtn.onclick = () => {
+      const val = emailInput.value.trim();
+      if (!val) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+      userEmail = val;
+      localStorage.setItem('trackedEmail', userEmail);
+      alert(`Success! Tracking price alerts for: ${userEmail}`);
+      fetchWatches();
+    };
+
+    // Tabs navigation
+    tabChat.onclick = () => {
+      tabChat.classList.add('active');
+      tabAlerts.classList.remove('active');
+      chatContent.style.display = 'block';
+      alertsContent.style.display = 'none';
+      activeTab = 'chat';
+    };
+
+    tabAlerts.onclick = () => {
+      tabAlerts.classList.add('active');
+      tabChat.classList.remove('active');
+      alertsContent.style.display = 'block';
+      chatContent.style.display = 'none';
+      activeTab = 'alerts';
+      fetchWatches(); // Refresh watches list when opening tab
+    };
+
+    // Chat messaging
+    chatSendBtn.onclick = () => {
+      const val = chatInput.value.trim();
+      if (!val) return;
+      
+      addChatMessage(val, true);
+      chatInput.value = '';
+      handleBotMessage(val);
+    };
+
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        chatSendBtn.click();
+      }
+    });
+
+    // Initialization lifecycle
+    window.onload = async () => {
+      await loadRooms();
+      if (userEmail) {
+        fetchWatches();
+        // Setup simple polling every 15s to update watches and show live price drops
+        setInterval(fetchWatches, 15000);
+      }
+    };
+  </script>
+</body>
+</html>

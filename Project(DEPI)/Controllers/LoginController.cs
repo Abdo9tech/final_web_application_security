@@ -81,11 +81,11 @@ namespace Project_DEPI_.Controllers
                     // Identity role. Admin users go to the dashboard; regular users go to Home.
                     if (await _userManager.IsInRoleAsync(user, "Admin"))
                     {
-                        return RedirectToAction("Index", "Dashboard");
+                        return Redirect("/dashboard");
                     }
                     else if (await _userManager.IsInRoleAsync(user, "User"))
                     {
-                        return RedirectToAction("Index", "Home");
+                        return Redirect("/aiAssistant");
                     }
                 }
 

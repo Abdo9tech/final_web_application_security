@@ -19,6 +19,8 @@ namespace DAL.DataBase
         void Delete(int id);
 
         int Save();
+        
+        Task<int> SaveAsync();
     }
 
 }

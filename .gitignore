@@ -9,3 +9,18 @@
 /**/obj
 *.user
 *.suo
+
+# Credentials and Secrets
+**/credentials/*.json
+**/credentials/*.key
+google-credentials.json
+appsettings.Development.json
+appsettings.Local.json
+*.pfx
+*.p12
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production

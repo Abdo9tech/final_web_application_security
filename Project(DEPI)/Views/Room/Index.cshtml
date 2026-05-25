@@ -3,8 +3,8 @@
     ViewData["Title"] = "Available Rooms";
 }
 
-<!-- Enhanced Booking.com Style Hero Section -->
-<div class="bg-[#003580] py-16 relative overflow-hidden border-b border-white/10">
+<!-- Modern Bookify Hero Section -->
+<div class="bg-gradient-hero py-16 relative overflow-hidden border-b border-white/10">
     <!-- Background Pattern -->
     <div class="absolute inset-0 opacity-10">
         <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
@@ -22,18 +22,18 @@
     </div>
 </div>
 
-<!-- Enhanced Booking.com Style Search Section -->
-<div class="bg-[#febb02] py-4 shadow-md -mt-8 relative z-20 mx-4 lg:mx-auto max-w-7xl rounded-md">
+<!-- Modern Bookify Search Section -->
+<div class="bg-gradient-primary py-4 shadow-md -mt-8 relative z-20 mx-4 lg:mx-auto max-w-7xl rounded-md">
     <div class="px-4">
         <form asp-action="Index" method="get" class="flex flex-col md:flex-row gap-1">
-            <div class="flex-1 bg-white rounded-sm flex items-center px-3 py-2 border border-transparent focus-within:border-blue-600">
+            <div class="flex-1 bg-white rounded-sm flex items-center px-3 py-2 border border-transparent focus-within:border-bookify-600">
                 <i class="fas fa-bed text-gray-400 mr-2 text-sm"></i>
                 <input type="text" name="location" value="@Context.Request.Query["location"]" 
                        placeholder="Where are you going?" 
                        class="w-full text-sm text-gray-900 placeholder-gray-500 focus:outline-none bg-transparent">
             </div>
             
-            <div class="md:w-64 bg-white rounded-sm flex items-center px-3 py-2 border border-transparent focus-within:border-blue-600">
+            <div class="md:w-64 bg-white rounded-sm flex items-center px-3 py-2 border border-transparent focus-within:border-bookify-600">
                 <i class="fas fa-calendar text-gray-400 mr-2 text-sm"></i>
                 <div class="flex items-center text-xs text-gray-500 w-full">
                     <input type="date" name="checkIn" value="@Context.Request.Query["checkIn"]"
@@ -44,7 +44,7 @@
                 </div>
             </div>
             
-            <div class="md:w-48 bg-white rounded-sm flex items-center px-3 py-2 border border-transparent focus-within:border-blue-600">
+            <div class="md:w-48 bg-white rounded-sm flex items-center px-3 py-2 border border-transparent focus-within:border-bookify-600">
                 <i class="fas fa-user text-gray-400 mr-2 text-sm"></i>
                 <select name="guests" class="w-full text-xs text-gray-900 focus:outline-none bg-transparent appearance-none">
                     <option value="">Guests</option>
@@ -56,7 +56,7 @@
             </div>
             
             <button type="submit" 
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-2 rounded-sm transition-colors text-sm">
+                    class="btn-bookify text-sm px-8 py-2">
                 Search
             </button>
         </form>
@@ -71,9 +71,9 @@
                 <h3 class="font-semibold text-gray-900 mb-3">Price Range</h3>
                 <div class="space-y-2">
                     <input type="number" name="minPrice" placeholder="Min price" 
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-booking-500">
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-bookify-500">
                     <input type="number" name="maxPrice" placeholder="Max price" 
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-booking-500">
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-bookify-500">
                 </div>
             </div>
             
@@ -81,15 +81,15 @@
                 <h3 class="font-semibold text-gray-900 mb-3">Room Type</h3>
                 <div class="space-y-2">
                     <label class="flex items-center">
-                        <input type="checkbox" name="roomType" value="standard" class="mr-2 text-booking-500 focus:ring-booking-500">
+                        <input type="checkbox" name="roomType" value="standard" class="mr-2 text-bookify-500 focus:ring-bookify-500">
                         <span class="text-gray-700">Standard Room</span>
                     </label>
                     <label class="flex items-center">
-                        <input type="checkbox" name="roomType" value="deluxe" class="mr-2 text-booking-500 focus:ring-booking-500">
+                        <input type="checkbox" name="roomType" value="deluxe" class="mr-2 text-bookify-500 focus:ring-bookify-500">
                         <span class="text-gray-700">Deluxe Room</span>
                     </label>
                     <label class="flex items-center">
-                        <input type="checkbox" name="roomType" value="suite" class="mr-2 text-booking-500 focus:ring-booking-500">
+                        <input type="checkbox" name="roomType" value="suite" class="mr-2 text-bookify-500 focus:ring-bookify-500">
                         <span class="text-gray-700">Suite</span>
                     </label>
                 </div>
@@ -99,15 +99,15 @@
                 <h3 class="font-semibold text-gray-900 mb-3">Amenities</h3>
                 <div class="space-y-2">
                     <label class="flex items-center">
-                        <input type="checkbox" name="wifi" class="mr-2 text-booking-500 focus:ring-booking-500">
+                        <input type="checkbox" name="wifi" class="mr-2 text-bookify-500 focus:ring-bookify-500">
                         <span class="text-gray-700">Free WiFi</span>
                     </label>
                     <label class="flex items-center">
-                        <input type="checkbox" name="breakfast" class="mr-2 text-booking-500 focus:ring-booking-500">
+                        <input type="checkbox" name="breakfast" class="mr-2 text-bookify-500 focus:ring-bookify-500">
                         <span class="text-gray-700">Breakfast Included</span>
                     </label>
                     <label class="flex items-center">
-                        <input type="checkbox" name="parking" class="mr-2 text-booking-500 focus:ring-booking-500">
+                        <input type="checkbox" name="parking" class="mr-2 text-bookify-500 focus:ring-bookify-500">
                         <span class="text-gray-700">Free Parking</span>
                     </label>
                 </div>
@@ -250,7 +250,7 @@
                                                         <div class="text-sm font-bold text-gray-900">Exceptional</div>
                                                         <div class="text-[10px] text-gray-500">1,234 reviews</div>
                                                     </div>
-                                                    <div class="w-8 h-8 bg-booking-900 rounded-tr-lg rounded-bl-lg rounded-tl-lg flex items-center justify-center text-white font-bold text-sm">
+                                                    <div class="w-8 h-8 bg-bookify-900 rounded-tr-lg rounded-bl-lg rounded-tl-lg flex items-center justify-center text-white font-bold text-sm">
                                                         9.5
                                                     </div>
                                                 </div>
@@ -276,7 +276,7 @@
                                             <div class="text-2xl font-bold text-gray-900">US$@(room.RoomType?.PricePerNight ?? 0)</div>
                                             <div class="text-[10px] text-gray-500 mb-2">+US$22 taxes and charges</div>
                                             <a asp-action="Details" asp-route-id="@room.RoomId" 
-                                               class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-sm text-sm transition-colors">
+                                               class="btn-bookify text-sm py-2.5 px-4">
                                                 See availability <i class="fas fa-chevron-right ml-1 text-[10px]"></i>
                                             </a>
                                         </div>

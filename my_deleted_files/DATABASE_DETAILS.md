@@ -23,7 +23,7 @@ This document provides a comprehensive overview of the database engine, ORM, sch
 A lightweight database management GUI is included in the stack.
 - **URL:** [http://localhost:8082](http://localhost:8082)
 - **System:** `MS SQL`
-- **Server:** `sqlserver` (use the container name inside Docker)
+- **Server:** `` (use the container name inside Docker)
 - **Username:** `sa`
 - **Password:** `BookifyHotel@2024!`
 - **Database:** `BookifyHotelDb`

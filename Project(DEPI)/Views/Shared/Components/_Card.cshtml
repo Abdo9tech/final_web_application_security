@@ -1,0 +1,73 @@
+@*
+    Card Component - Glassmorphic Design 2026
+    
+    Usage:
+    <partial name="Components/_Card" model='new { 
+        Title = "Card Title",
+        Content = "Card content here",
+        Footer = "Footer content",
+        Variant = "glass",
+        Hover = true,
+        Class = "additional-classes"
+    }' />
+    
+    Variants: glass, solid, bordered, elevated
+    Hover: true/false (adds hover effects)
+*@
+
+@{
+    var cardModel = Model as dynamic;
+    var title = cardModel?.Title ?? "";
+    var content = cardModel?.Content ?? "";
+    var footer = cardModel?.Footer ?? "";
+    var variant = cardModel?.Variant ?? "glass";
+    var hover = cardModel?.Hover ?? true;
+    var additionalClass = cardModel?.Class ?? "";
+    
+    // Base classes
+    var baseClasses = "rounded-2xl overflow-hidden transition-all duration-300";
+    
+    // Variant classes
+    var variantClasses = variant switch
+    {
+        "glass" => "glass backdrop-blur-lg bg-white/70 dark:bg-neutral-900/70 border border-white/30 dark:border-neutral-700/30",
+        "solid" => "bg-white dark:bg-neutral-900 shadow-md",
+        "bordered" => "bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-700",
+        "elevated" => "bg-white dark:bg-neutral-900 shadow-xl",
+        _ => "glass backdrop-blur-lg bg-white/70 dark:bg-neutral-900/70 border border-white/30 dark:border-neutral-700/30"
+    };
+    
+    // Hover classes
+    var hoverClasses = hover ? "hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-1" : "";
+    
+    var allClasses = $"{baseClasses} {variantClasses} {hoverClasses} {additionalClass}";
+}
+
+<div class="@allClasses">
+    @if (!string.IsNullOrEmpty(title))
+    {
+        <div class="px-6 py-4 border-b border-neutral-200/50 dark:border-neutral-700/50">
+            <h3 class="text-xl font-bold text-neutral-900 dark:text-neutral-100">@title</h3>
+        </div>
+    }
+    
+    @if (!string.IsNullOrEmpty(content))
+    {
+        <div class="px-6 py-4">
+            <div class="text-neutral-700 dark:text-neutral-300">
+                @Html.Raw(content)
+            </div>
+        </div>
+    }
+    else
+    {
+        @RenderBody()
+    }
+    
+    @if (!string.IsNullOrEmpty(footer))
+    {
+        <div class="px-6 py-4 border-t border-neutral-200/50 dark:border-neutral-700/50 bg-neutral-50/50 dark:bg-neutral-800/50">
+            @Html.Raw(footer)
+        </div>
+    }
+</div>

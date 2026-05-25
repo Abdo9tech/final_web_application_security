@@ -1,71 +1,121 @@
 @model Project_DEPI_.Models.HomeViewModel
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Home - Bookify Hotel";
 }
 
-<!-- Booking.com Style Hero Section -->
-<section class="bg-[#003580] pt-12 pb-20 relative overflow-hidden">
-    <!-- Decorative background elements -->
-    <div class="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-96 h-96 bg-booking-400/10 rounded-full blur-3xl"></div>
+@section Styles {
+<style>
+    /* Hero Section with Beautiful Hotel Background */
+    .hero-bookify-bg {
+        background: linear-gradient(135deg, rgba(91, 33, 182, 0.85) 0%, rgba(79, 70, 229, 0.85) 50%, rgba(124, 58, 237, 0.85) 100%),
+                    url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=2000') center/cover;
+        min-height: 85vh;
+        position: relative;
+        overflow: hidden;
+        background-attachment: fixed;
+    }
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="mb-10 text-center md:text-left">
-            <h1 class="text-5xl md:text-6xl font-black text-white mb-6 tracking-tight leading-tight">
-                Find your next stay
+    [data-theme="dark"] .hero-bookify-bg {
+        background: linear-gradient(135deg, rgba(30, 27, 75, 0.9) 0%, rgba(49, 46, 129, 0.9) 50%, rgba(76, 29, 149, 0.9) 100%),
+                    url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=2000') center/cover;
+        background-attachment: fixed;
+    }
+
+    @@media (max-width: 768px) {
+        .hero-bookify-bg {
+            background-attachment: scroll;
+        }
+    }
+</style>
+}
+
+<!-- Hero Section with Background Image -->
+<section class="hero-bookify-bg flex items-center">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-20 right-10 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute bottom-20 left-10 w-80 h-80 bg-white/10 rounded-full blur-3xl" style="animation: pulse 3s ease-in-out infinite; animation-delay: 1s;"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
+        <div class="max-w-4xl mx-auto text-center mb-12">
+            <h1 class="text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 tracking-tight leading-tight drop-shadow-2xl">
+                Your Perfect Stay
+                <span class="block bg-gradient-to-r from-pink-300 to-purple-200 bg-clip-text text-transparent">
+                    Awaits
+                </span>
             </h1>
-            <p class="text-xl md:text-2xl text-white font-bold max-w-2xl drop-shadow-sm">
-                Search deals on hotels, homes, and much more...
+            <p class="text-xl md:text-2xl text-white font-medium max-w-2xl mx-auto drop-shadow-lg">
+                Discover extraordinary accommodations tailored to your journey
             </p>
         </div>
 
-        <!-- Signature Booking.com Search Bar -->
-        <div class="relative transform -translate-y-4 md:translate-y-0">
-            <form asp-controller="Room" asp-action="Index" method="get" 
-                  class="bg-[#febb02] p-1.5 rounded-lg shadow-2xl flex flex-col md:flex-row gap-1 border-4 border-[#febb02]">
-                
-                <!-- Destination -->
-                <div class="flex-1 bg-white rounded-md flex items-center px-4 py-4 group focus-within:ring-2 focus-within:ring-blue-500 transition-all">
-                    <i class="fas fa-bed text-gray-400 mr-3 text-lg group-focus-within:text-blue-500 transition-colors"></i>
-                    <input type="text" 
-                           id="location" 
-                           name="location" 
-                           placeholder="Where are you going?" 
-                           class="w-full text-base font-medium text-gray-950 placeholder-gray-400 focus:outline-none bg-transparent">
-                </div>
+        <!-- Modern Search Card -->
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-white/95 dark:bg-gray-900/90 backdrop-blur-xl p-6 md:p-8 rounded-2xl shadow-2xl border border-white/20">
+                <form asp-controller="Room" asp-action="Index" method="get">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <!-- Destination -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                                <i class="fas fa-map-marker-alt mr-2 text-purple-600"></i>
+                                Destination
+                            </label>
+                            <input type="text" 
+                                   name="location" 
+                                   placeholder="Where would you like to go?" 
+                                   class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-purple-600 focus:ring-2 focus:ring-purple-200 outline-none transition-all text-sm">
+                        </div>
 
-                <!-- Dates -->
-                <div class="md:w-80 bg-white rounded-md flex items-center px-4 py-4 group focus-within:ring-2 focus-within:ring-blue-500 transition-all">
-                    <i class="fas fa-calendar text-gray-400 mr-3 text-lg group-focus-within:text-blue-500 transition-colors"></i>
-                    <div class="flex items-center text-sm font-bold text-gray-950 w-full">
-                        <input type="date" id="checkIn" name="checkIn" 
-                               min="@DateTime.Now.ToString("yyyy-MM-dd")"
-                               class="focus:outline-none bg-transparent w-full">
-                        <span class="mx-2 text-gray-300">—</span>
-                        <input type="date" id="checkOut" name="checkOut" 
-                               min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")"
-                               class="focus:outline-none bg-transparent w-full">
+                        <!-- Guests -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                                <i class="fas fa-users mr-2 text-purple-600"></i>
+                                Guests
+                            </label>
+                            <select name="guests" class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-purple-600 focus:ring-2 focus:ring-purple-200 outline-none transition-all text-sm">
+                                <option value="1">1 Guest</option>
+                                <option value="2">2 Guests</option>
+                                <option value="3">3 Guests</option>
+                                <option value="4">4 Guests</option>
+                                <option value="5">5+ Guests</option>
+                            </select>
+                        </div>
+
+                        <!-- Check-in -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                                <i class="fas fa-calendar-check mr-2 text-purple-600"></i>
+                                Check-in
+                            </label>
+                            <input type="date" 
+                                   id="checkIn"
+                                   name="checkIn" 
+                                   min="@DateTime.Now.ToString("yyyy-MM-dd")"
+                                   class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-purple-600 focus:ring-2 focus:ring-purple-200 outline-none transition-all text-sm">
+                        </div>
+
+                        <!-- Check-out -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                                <i class="fas fa-calendar-times mr-2 text-purple-600"></i>
+                                Check-out
+                            </label>
+                            <input type="date" 
+                                   id="checkOut"
+                                   name="checkOut" 
+                                   min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")"
+                                   class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-purple-600 focus:ring-2 focus:ring-purple-200 outline-none transition-all text-sm">
+                        </div>
                     </div>
-                </div>
 
-                <!-- Guests/Rooms -->
-                <div class="md:w-72 bg-white rounded-md flex items-center px-4 py-4 group focus-within:ring-2 focus-within:ring-blue-500 transition-all">
-                    <i class="fas fa-user text-gray-400 mr-3 text-lg group-focus-within:text-blue-500 transition-colors"></i>
-                    <select id="guests" name="guests" 
-                            class="w-full text-sm font-bold text-gray-950 focus:outline-none bg-transparent appearance-none">
-                        <option value="1">1 adult · 0 children · 1 room</option>
-                        <option value="2">2 adults · 0 children · 1 room</option>
-                        <option value="3">3 adults · 0 children · 1 room</option>
-                        <option value="4">4 adults · 0 children · 1 room</option>
-                    </select>
-                </div>
-
-                <!-- Search Button -->
-                <button type="submit" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-black px-10 py-4 rounded-md transition-all text-xl shadow-inner active:scale-95">
-                    Search
-                </button>
-            </form>
+                    <!-- Search Button -->
+                    <button type="submit" class="btn-bookify w-full text-base py-4 group">
+                        <span>Search Available Rooms</span>
+                        <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </section>
@@ -133,7 +183,7 @@
                 <div class="flex-1">
                     <h3 class="text-lg font-bold mb-2">Fly away to your dream holiday</h3>
                     <p class="text-sm text-gray-600 mb-4">Get inspired, compare and book flights with more flexibility</p>
-                    <a href="/Room" class="bg-blue-600 text-white px-4 py-2 rounded-sm text-sm font-bold hover:bg-blue-700 transition-colors">Search flights</a>
+                    <a href="/Room" class="btn-bookify text-sm">Search flights</a>
                 </div>
                 <div class="ml-6 hidden sm:block">
                     <img src="https://images.unsplash.com/photo-1436491865332-7a61a109c0f3?auto=format&fit=crop&q=80&w=200" class="w-32 h-32 object-cover rounded-lg" alt="Offer">
@@ -144,7 +194,7 @@
                 <div class="flex-1">
                     <h3 class="text-lg font-bold mb-2">Seize the moment</h3>
                     <p class="text-sm text-gray-600 mb-4">Save 15% or more when you book and stay before 1 October 2024</p>
-                    <a href="/Room" class="bg-blue-600 text-white px-4 py-2 rounded-sm text-sm font-bold hover:bg-blue-700 transition-colors">Find Getaway Deals</a>
+                    <a href="/Room" class="btn-bookify text-sm">Find Getaway Deals</a>
                 </div>
                 <div class="ml-6 hidden sm:block">
                     <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=200" class="w-32 h-32 object-cover rounded-lg" alt="Offer">

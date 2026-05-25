@@ -1,9 +1,10 @@
 @model BookifyHotel.Model.Room
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     ViewData["Title"] = $"Room {Model.RoomNumber} Details";
 }
 
-<div class="bg-gray-50 border-b">
+<div class="bg-gray-50 border-b glass-card">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <nav class="flex text-xs text-blue-600 mb-4" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
@@ -82,7 +83,7 @@
             </div>
 
             <!-- Map Location Card -->
-            <div id="map-section" class="bg-white border rounded-sm p-6 mb-8 scroll-mt-24">
+            <div id="map-section" class="bg-white border rounded-sm p-6 mb-8 scroll-mt-24 glass-card">
                 <h3 class="text-lg font-bold text-gray-900 mb-4">Location</h3>
                 <p class="text-sm text-gray-600 mb-4">
                     <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>@(string.IsNullOrEmpty(Model.Location) ? "Manchester, United Kingdom" : Model.Location)
@@ -93,7 +94,7 @@
 
         <!-- Sticky Sidebar Booking Box -->
         <div class="lg:col-span-1">
-            <div id="booking-section" class="bg-blue-50 border border-blue-200 rounded-md p-4 sticky top-24">
+            <div id="booking-section" class="bg-blue-50 border border-blue-200 rounded-md p-4 sticky top-24 glass-card">
                 <h3 class="font-bold text-gray-900 mb-4">Property Highlights</h3>
                 <div class="space-y-4 mb-6">
                     <div class="flex items-start">
@@ -147,8 +148,7 @@
 
 
 @section Scripts {
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=@(Configuration["GoogleMaps:ApiKey"] ?? "YOUR_GOOGLE_MAPS_API_KEY")&libraries=places"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var locationText = "@(Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(string.IsNullOrEmpty(Model.Location) ? "Manchester, United Kingdom" : Model.Location)))";
@@ -156,31 +156,42 @@
             var defaultLat = 53.4808;
             var defaultLng = -2.2426;
 
-            var map = L.map('map').setView([defaultLat, defaultLng], 13);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            var marker = L.marker([defaultLat, defaultLng]).addTo(map)
-                .bindPopup("<b>Room Location</b><br>" + locationText)
-                .openPopup();
-
-            fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(locationText))
-                .then(function(response) { return response.json(); })
-                .then(function(data) {
-                    if (data && data.length > 0) {
-                        var lat = parseFloat(data[0].lat);
-                        var lon = parseFloat(data[0].lon);
-                        map.setView([lat, lon], 14);
-                        marker.setLatLng([lat, lon]);
-                        marker.getPopup().setContent("<b>Room Location</b><br>" + locationText).update();
-                    }
-                })
-                .catch(function(err) {
-                    console.log("Geocoding failed, using default coordinates: ", err);
+            var mapDiv = document.getElementById('map');
+            if (mapDiv && typeof google !== 'undefined') {
+                var mapOptions = {
+                    zoom: 13,
+                    center: { lat: defaultLat, lng: defaultLng }
+                };
+                var map = new google.maps.Map(mapDiv, mapOptions);
+                var marker = new google.maps.Marker({
+                    position: { lat: defaultLat, lng: defaultLng },
+                    map: map,
+                    title: "Room Location"
                 });
+                var infoWindow = new google.maps.InfoWindow({
+                    content: "<b>Room Location</b><br>" + locationText
+                });
+                
+                marker.addListener('click', function() {
+                    infoWindow.open(map, marker);
+                });
+                
+                infoWindow.open(map, marker);
+
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ 'address': locationText }, function(results, status) {
+                    if (status === 'OK' && results[0]) {
+                        var loc = results[0].geometry.location;
+                        map.setCenter(loc);
+                        map.setZoom(14);
+                        marker.setPosition(loc);
+                    } else {
+                        console.log("Google Geocoding failed, status: " + status);
+                    }
+                });
+            } else {
+                console.log("Google Maps API not loaded or map container not found.");
+            }
         });
 
         async function toggleFavorite(roomId, button) {

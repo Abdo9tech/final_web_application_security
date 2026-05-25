@@ -1,0 +1,36 @@
+﻿# Bookify Hotel Cleanup Log
+# Format: MOVED;;OriginalPath;;ArchivedPath;;Size;;LastModified;;Reason
+# Restore: .\clean.ps1 -Undo
+#
+# Run: 2026-05-24 08:33:55
+MOVED;;F:\New folder\ACCESS_GUIDE.md;;F:\New folder\my_deleted_files\ACCESS_GUIDE.md;;4.75 KB;;2026-05-24 02:09;;unused file type
+MOVED;;F:\New folder\APPLICATION_STATUS.md;;F:\New folder\my_deleted_files\APPLICATION_STATUS.md;;9.26 KB;;2026-05-24 07:36;;unused file type
+MOVED;;F:\New folder\BOOKING_SAVECHANGES_FINAL_FIX.md;;F:\New folder\my_deleted_files\BOOKING_SAVECHANGES_FINAL_FIX.md;;13.36 KB;;2026-05-24 07:42;;unused file type
+MOVED;;F:\New folder\CHART_LOGIC_FIXES_COMPLETE.md;;F:\New folder\my_deleted_files\CHART_LOGIC_FIXES_COMPLETE.md;;10.78 KB;;2026-05-24 06:53;;unused file type
+MOVED;;F:\New folder\CREDENTIALS_SETUP_COMPLETE.md;;F:\New folder\my_deleted_files\CREDENTIALS_SETUP_COMPLETE.md;;6.32 KB;;2026-05-24 07:46;;unused file type
+MOVED;;F:\New folder\DASHBOARD_ALL_FIXES_COMPLETE.md;;F:\New folder\my_deleted_files\DASHBOARD_ALL_FIXES_COMPLETE.md;;9.38 KB;;2026-05-24 06:06;;unused file type
+MOVED;;F:\New folder\DASHBOARD_CHARTS_FIX.md;;F:\New folder\my_deleted_files\DASHBOARD_CHARTS_FIX.md;;6.80 KB;;2026-05-24 05:59;;unused file type
+MOVED;;F:\New folder\DASHBOARD_FIX_SUMMARY.md;;F:\New folder\my_deleted_files\DASHBOARD_FIX_SUMMARY.md;;4.00 KB;;2026-05-24 06:00;;unused file type
+MOVED;;F:\New folder\DASHBOARD_INFINITE_GROWTH_FINAL_FIX.md;;F:\New folder\my_deleted_files\DASHBOARD_INFINITE_GROWTH_FINAL_FIX.md;;7.82 KB;;2026-05-24 06:08;;unused file type
+MOVED;;F:\New folder\DASHBOARD_LAYOUT_FIX.md;;F:\New folder\my_deleted_files\DASHBOARD_LAYOUT_FIX.md;;8.81 KB;;2026-05-24 06:25;;unused file type
+MOVED;;F:\New folder\DASHBOARD_LOGIC_TEST_RESULTS.md;;F:\New folder\my_deleted_files\DASHBOARD_LOGIC_TEST_RESULTS.md;;10.70 KB;;2026-05-24 06:11;;unused file type
+MOVED;;F:\New folder\DASHBOARD_UI_FIX_COMPLETE.md;;F:\New folder\my_deleted_files\DASHBOARD_UI_FIX_COMPLETE.md;;7.39 KB;;2026-05-24 06:26;;unused file type
+MOVED;;F:\New folder\DATABASE_DETAILS.md;;F:\New folder\my_deleted_files\DATABASE_DETAILS.md;;5.36 KB;;2026-05-21 17:45;;unused file type
+MOVED;;F:\New folder\ENDPOINT_TEST_REPORT.md;;F:\New folder\my_deleted_files\ENDPOINT_TEST_REPORT.md;;6.42 KB;;2026-05-23 21:34;;unused file type
+MOVED;;F:\New folder\FINAL_STATUS.md;;F:\New folder\my_deleted_files\FINAL_STATUS.md;;0 B;;2026-05-24 07:14;;unused file type
+MOVED;;F:\New folder\FRONTEND_ENHANCEMENT_PLAN.md;;F:\New folder\my_deleted_files\FRONTEND_ENHANCEMENT_PLAN.md;;3.66 KB;;2026-05-24 04:40;;unused file type
+MOVED;;F:\New folder\GOOGLE_CLOUD_SETUP.md;;F:\New folder\my_deleted_files\GOOGLE_CLOUD_SETUP.md;;6.61 KB;;2026-05-24 07:45;;unused file type
+MOVED;;F:\New folder\HOMEPAGE_COMPLETE_STATUS.md;;F:\New folder\my_deleted_files\HOMEPAGE_COMPLETE_STATUS.md;;0 B;;2026-05-24 05:55;;unused file type
+MOVED;;F:\New folder\LOGIC_AND_ROUTING_FIXES.md;;F:\New folder\my_deleted_files\LOGIC_AND_ROUTING_FIXES.md;;7.74 KB;;2026-05-23 21:27;;unused file type
+MOVED;;F:\New folder\NAVBAR_AI_ASSISTANT.md;;F:\New folder\my_deleted_files\NAVBAR_AI_ASSISTANT.md;;5.10 KB;;2026-05-24 04:34;;unused file type
+MOVED;;F:\New folder\NAVIGATION_PROPERTY_FIX_FINAL.md;;F:\New folder\my_deleted_files\NAVIGATION_PROPERTY_FIX_FINAL.md;;6.35 KB;;2026-05-24 07:24;;unused file type
+MOVED;;F:\New folder\prompt.md;;F:\New folder\my_deleted_files\prompt.md;;59.56 KB;;2026-05-23 21:44;;unused file type
+MOVED;;F:\New folder\QA_REPORT.md;;F:\New folder\my_deleted_files\QA_REPORT.md;;6.00 KB;;2026-05-24 08:23;;unused file type
+MOVED;;F:\New folder\report.md;;F:\New folder\my_deleted_files\report.md;;5.70 KB;;2026-05-19 16:43;;unused file type
+MOVED;;F:\New folder\build_errors_utf8.txt;;F:\New folder\my_deleted_files\build_errors_utf8.txt;;1.05 KB;;2026-05-09 22:47;;unused file type
+MOVED;;F:\New folder\build_errors_utf8_v2.txt;;F:\New folder\my_deleted_files\build_errors_utf8_v2.txt;;86 B;;2026-05-09 22:47;;unused file type
+MOVED;;F:\New folder\build_output.txt;;F:\New folder\my_deleted_files\build_output.txt;;79.46 KB;;2026-05-09 22:47;;unused file type
+MOVED;;F:\New folder\cradintials.txt;;F:\New folder\my_deleted_files\cradintials.txt;;3.15 KB;;2026-05-16 02:43;;unused file type
+MOVED;;F:\New folder\errors.txt;;F:\New folder\my_deleted_files\errors.txt;;903 B;;2026-05-09 22:47;;unused file type
+MOVED;;F:\New folder\migration_log.txt;;F:\New folder\my_deleted_files\migration_log.txt;;2.44 KB;;2026-05-09 22:47;;unused file type
+MOVED;;F:\New folder\build_full.log;;F:\New folder\my_deleted_files\build_full.log;;969 B;;2026-05-09 22:47;;unused file type

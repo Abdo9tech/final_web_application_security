@@ -22,7 +22,7 @@ namespace BookifyHotel.Model
         public DateTime CheckOutDate { get; set; }
 
         [Required]
-        public string Status { get; set; } = "pending"; // pending, confirmed, cancelled, completed
+        public string Status { get; set; } = "Pending"; // Pending, Confirmed, Cancelled, Completed
 
         public DateTime BookingDate { get; set; } = DateTime.UtcNow;
         
@@ -30,6 +30,7 @@ namespace BookifyHotel.Model
         
         public int NumberOfGuests { get; set; } = 1;
         
+        [MaxLength(1000)]
         public string? SpecialRequests { get; set; }
         
         public string? PaymentIntentId { get; set; } // For Stripe integration
@@ -40,9 +41,11 @@ namespace BookifyHotel.Model
         public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
         // Computed properties
-        public int NumberOfNights => (int)(CheckOutDate - CheckInDate).TotalDays;
-        public bool IsActive => Status == "confirmed" || Status == "pending";
-        public bool CanBeCancelled => Status == "confirmed" && CheckInDate > DateTime.UtcNow.AddDays(1);
+        public int NumberOfNights => (CheckOutDate - CheckInDate).Days;
+        public bool IsActive => Status.Equals("Confirmed", StringComparison.OrdinalIgnoreCase) ||
+                                Status.Equals("Pending", StringComparison.OrdinalIgnoreCase);
+        public bool CanBeCancelled => Status.Equals("Confirmed", StringComparison.OrdinalIgnoreCase) &&
+                                      CheckInDate > DateTime.UtcNow.AddDays(1);
         
         // Compatibility property for existing code
         public int UserId { get; set; }

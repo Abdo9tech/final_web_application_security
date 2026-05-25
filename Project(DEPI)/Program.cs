@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 using System.IO;
 using Microsoft.AspNetCore.DataProtection;
-
+using RoomService = PLL.Services.RoomService;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -51,7 +51,8 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RoomService>();
 builder.Services.AddScoped<RoomTypeService>();
-builder.Services.AddScoped<RolePermissionService>();
+builder.Services.AddScoped<IAgentReportService, AgentReportService>();
+builder.Services.AddScoped<ISmartSearchService, SmartSearchService>();
 builder.Services.AddScoped<UserRoleService>();
 builder.Services.AddScoped<PermissionService>();
 builder.Services.AddScoped<ReservationCartService>();
@@ -61,6 +62,8 @@ builder.Services.AddScoped<ProfileService>();
 
 builder.Services.AddScoped<IPaymentService, StripePaymentService>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddSingleton<PriceDropService>();
+builder.Services.AddHostedService(provider => provider.GetRequiredService<PriceDropService>());
 
 // SECURITY [Secure Payment Key Storage]: Stripe secret key is read from configuration.
 // In production, set the 'Stripe:SecretKey' value via an environment variable or
@@ -654,3 +657,4 @@ async Task EnsureDatabaseExistsAsync(string connString)
         }
     }
 }
+

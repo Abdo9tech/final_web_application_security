@@ -1,0 +1,120 @@
+@*
+    Input Component - Floating Label Design 2026
+    
+    Usage:
+    <partial name="Components/_Input" model='new { 
+        Name = "email",
+        Label = "Email Address",
+        Type = "email",
+        Value = "",
+        Placeholder = "Enter your email",
+        Required = true,
+        Error = "Error message",
+        Icon = "fas fa-envelope",
+        Class = "additional-classes"
+    }' />
+    
+    Types: text, email, password, number, tel, url, date, time
+    States: default, error, success
+*@
+
+@{
+    var inputModel = Model as dynamic;
+    var name = inputModel?.Name ?? "input";
+    var label = inputModel?.Label ?? "";
+    var type = inputModel?.Type ?? "text";
+    var value = inputModel?.Value ?? "";
+    var placeholder = inputModel?.Placeholder ?? " ";
+    var required = inputModel?.Required ?? false;
+    var error = inputModel?.Error ?? "";
+    var success = inputModel?.Success ?? "";
+    var icon = inputModel?.Icon ?? "";
+    var additionalClass = inputModel?.Class ?? "";
+    var disabled = inputModel?.Disabled ?? false;
+    
+    var hasError = !string.IsNullOrEmpty(error);
+    var hasSuccess = !string.IsNullOrEmpty(success);
+    
+    // Container classes
+    var containerClasses = $"relative {additionalClass}";
+    
+    // Input classes
+    var baseInputClasses = "peer w-full px-4 py-3 border-2 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-transparent focus:outline-none focus:ring-0 transition-all duration-200";
+    
+    var stateClasses = hasError 
+        ? "border-red-500 focus:border-red-600" 
+        : hasSuccess 
+            ? "border-green-500 focus:border-green-600"
+            : "border-neutral-300 dark:border-neutral-700 focus:border-primary-500";
+    
+    var iconPadding = !string.IsNullOrEmpty(icon) ? "pl-11" : "";
+    
+    var inputClasses = $"{baseInputClasses} {stateClasses} {iconPadding}";
+    
+    // Label classes
+    var labelClasses = "absolute left-4 -top-2.5 bg-white dark:bg-neutral-900 px-2 text-sm font-medium transition-all duration-200 peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:text-neutral-500 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-primary-600 dark:peer-focus:text-primary-400";
+    
+    if (hasError)
+    {
+        labelClasses += " text-red-600 dark:text-red-400";
+    }
+    else if (hasSuccess)
+    {
+        labelClasses += " text-green-600 dark:text-green-400";
+    }
+    else
+    {
+        labelClasses += " text-neutral-700 dark:text-neutral-300";
+    }
+}
+
+<div class="@containerClasses">
+    @if (!string.IsNullOrEmpty(icon))
+    {
+        <div class="absolute left-4 top-3.5 text-neutral-400 dark:text-neutral-500">
+            <i class="@icon"></i>
+        </div>
+    }
+    
+    <input 
+        type="@type" 
+        name="@name" 
+        id="@name" 
+        value="@value"
+        placeholder="@placeholder"
+        class="@inputClasses"
+        @(required ? "required" : "")
+        @(disabled ? "disabled" : "")
+    />
+    
+    @if (!string.IsNullOrEmpty(label))
+    {
+        <label for="@name" class="@labelClasses">
+            @label @(required ? "*" : "")
+        </label>
+    }
+    
+    @if (hasError)
+    {
+        <div class="mt-1.5 flex items-center text-sm text-red-600 dark:text-red-400">
+            <i class="fas fa-exclamation-circle mr-1.5"></i>
+            <span>@error</span>
+        </div>
+    }
+    
+    @if (hasSuccess)
+    {
+        <div class="mt-1.5 flex items-center text-sm text-green-600 dark:text-green-400">
+            <i class="fas fa-check-circle mr-1.5"></i>
+            <span>@success</span>
+        </div>
+    }
+</div>
+
+<style>
+    /* Floating label animation */
+    input:not(:placeholder-shown) + label {
+        top: -0.625rem;
+        font-size: 0.875rem;
+    }
+</style>

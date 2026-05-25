@@ -1,0 +1,75 @@
+@*
+    Button Component - Modern 2026 Design
+    
+    Usage:
+    <partial name="Components/_Button" model='new { 
+        Text = "Click Me", 
+        Variant = "primary", 
+        Size = "md",
+        Type = "button",
+        Icon = "fas fa-check",
+        Href = "/path",
+        Class = "additional-classes"
+    }' />
+    
+    Variants: primary, secondary, ghost, danger, success
+    Sizes: sm, md, lg
+    Types: button, submit, reset
+*@
+
+@{
+    var buttonModel = Model as dynamic;
+    var text = buttonModel?.Text ?? "Button";
+    var variant = buttonModel?.Variant ?? "primary";
+    var size = buttonModel?.Size ?? "md";
+    var type = buttonModel?.Type ?? "button";
+    var icon = buttonModel?.Icon ?? "";
+    var href = buttonModel?.Href ?? "";
+    var additionalClass = buttonModel?.Class ?? "";
+    var disabled = buttonModel?.Disabled ?? false;
+    
+    // Base classes
+    var baseClasses = "inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+    
+    // Size classes
+    var sizeClasses = size switch
+    {
+        "sm" => "px-3 py-1.5 text-sm",
+        "lg" => "px-6 py-3 text-lg",
+        _ => "px-4 py-2 text-base"
+    };
+    
+    // Variant classes
+    var variantClasses = variant switch
+    {
+        "primary" => "bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-md hover:shadow-lg focus:ring-primary-500",
+        "secondary" => "bg-neutral-100 hover:bg-neutral-200 text-neutral-900 shadow-sm hover:shadow-md focus:ring-neutral-500 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-100",
+        "ghost" => "bg-transparent hover:bg-neutral-100 text-neutral-700 focus:ring-neutral-500 dark:hover:bg-neutral-800 dark:text-neutral-300",
+        "danger" => "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-md hover:shadow-lg focus:ring-red-500",
+        "success" => "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-md hover:shadow-lg focus:ring-green-500",
+        _ => "bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-md hover:shadow-lg focus:ring-primary-500"
+    };
+    
+    var allClasses = $"{baseClasses} {sizeClasses} {variantClasses} {additionalClass}";
+}
+
+@if (!string.IsNullOrEmpty(href))
+{
+    <a href="@href" class="@allClasses">
+        @if (!string.IsNullOrEmpty(icon))
+        {
+            <i class="@icon mr-2"></i>
+        }
+        @text
+    </a>
+}
+else
+{
+    <button type="@type" class="@allClasses" @(disabled ? "disabled" : "")>
+        @if (!string.IsNullOrEmpty(icon))
+        {
+            <i class="@icon mr-2"></i>
+        }
+        @text
+    </button>
+}

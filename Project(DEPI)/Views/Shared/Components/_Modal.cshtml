@@ -1,0 +1,151 @@
+@*
+    Modal Component - Smooth Animations 2026
+    
+    Usage:
+    <partial name="Components/_Modal" model='new { 
+        Id = "myModal",
+        Title = "Modal Title",
+        Content = "Modal content here",
+        Size = "md",
+        ShowClose = true,
+        Footer = "Footer content"
+    }' />
+    
+    Sizes: sm, md, lg, xl, full
+    
+    JavaScript to open/close:
+    document.getElementById('myModal').classList.remove('hidden');
+    document.getElementById('myModal').classList.add('hidden');
+*@
+
+@{
+    var modalModel = Model as dynamic;
+    var id = modalModel?.Id ?? "modal";
+    var title = modalModel?.Title ?? "";
+    var content = modalModel?.Content ?? "";
+    var footer = modalModel?.Footer ?? "";
+    var size = modalModel?.Size ?? "md";
+    var showClose = modalModel?.ShowClose ?? true;
+    
+    // Size classes
+    var sizeClasses = size switch
+    {
+        "sm" => "max-w-md",
+        "lg" => "max-w-3xl",
+        "xl" => "max-w-5xl",
+        "full" => "max-w-7xl",
+        _ => "max-w-2xl"
+    };
+}
+
+<!-- Modal Backdrop -->
+<div id="@id" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="@(id)-title" role="dialog" aria-modal="true">
+    <!-- Backdrop overlay -->
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300" 
+         onclick="document.getElementById('@id').classList.add('hidden')"></div>
+    
+    <!-- Modal container -->
+    <div class="flex min-h-screen items-center justify-center p-4">
+        <!-- Modal content -->
+        <div class="relative @sizeClasses w-full transform transition-all duration-300 ease-out">
+            <div class="glass backdrop-blur-xl bg-white/90 dark:bg-neutral-900/90 rounded-2xl shadow-2xl border border-white/30 dark:border-neutral-700/30 overflow-hidden">
+                <!-- Modal header -->
+                @if (!string.IsNullOrEmpty(title) || showClose)
+                {
+                    <div class="flex items-center justify-between px-6 py-4 border-b border-neutral-200/50 dark:border-neutral-700/50">
+                        @if (!string.IsNullOrEmpty(title))
+                        {
+                            <h3 id="@(id)-title" class="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+                                @title
+                            </h3>
+                        }
+                        
+                        @if (showClose)
+                        {
+                            <button type="button" 
+                                    class="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                    onclick="document.getElementById('@id').classList.add('hidden')"
+                                    aria-label="Close modal">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        }
+                    </div>
+                }
+                
+                <!-- Modal body -->
+                <div class="px-6 py-6">
+                    @if (!string.IsNullOrEmpty(content))
+                    {
+                        <div class="text-neutral-700 dark:text-neutral-300">
+                            @Html.Raw(content)
+                        </div>
+                    }
+                    else
+                    {
+                        @RenderBody()
+                    }
+                </div>
+                
+                <!-- Modal footer -->
+                @if (!string.IsNullOrEmpty(footer))
+                {
+                    <div class="px-6 py-4 border-t border-neutral-200/50 dark:border-neutral-700/50 bg-neutral-50/50 dark:bg-neutral-800/50">
+                        @Html.Raw(footer)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Modal helper functions
+    window.openModal = function(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            // Animate in
+            setTimeout(() => {
+                modal.querySelector('.transform').classList.add('scale-100', 'opacity-100');
+                modal.querySelector('.transform').classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+    };
+    
+    window.closeModal = function(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            // Animate out
+            modal.querySelector('.transform').classList.add('scale-95', 'opacity-0');
+            modal.querySelector('.transform').classList.remove('scale-100', 'opacity-100');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+    };
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modals = document.querySelectorAll('[role="dialog"]:not(.hidden)');
+            modals.forEach(modal => closeModal(modal.id));
+        }
+    });
+</script>
+
+<style>
+    /* Initial state for animation */
+    [role="dialog"] .transform {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    
+    [role="dialog"]:not(.hidden) .transform {
+        opacity: 1;
+        transform: scale(1);
+    }
+</style>

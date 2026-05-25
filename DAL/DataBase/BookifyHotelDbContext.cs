@@ -1,4 +1,4 @@
-﻿using BookifyHotel.Configuration;
+using BookifyHotel.Configuration;
 using BookifyHotel.Model;
 using BookifyHotel.ModelConfiguration;
 using DAL.DataBase;
@@ -21,6 +21,7 @@ namespace BookifyHotel.Data
         }
 
         public DbSet<UserProfile> UserProfiles { get; set; }    // جدولك المستقل
+        public DbSet<WatchedHotel> WatchedHotels { get; set; }
         //public DbSet<Role> AppRoles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<User_Role> User_Roles { get; set; }
@@ -32,6 +33,9 @@ namespace BookifyHotel.Data
         public DbSet<ReservationCart> ReservationCarts { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<FavoriteRoom> FavoriteRooms { get; set; }
+        public DbSet<AgentReport> AgentReports { get; set; }
+        public DbSet<SearchHistory> SearchHistories { get; set; }
+        public DbSet<SearchCounter> SearchCounters { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); // مهم: يهيئ جداول AspNetUsers وغيرها

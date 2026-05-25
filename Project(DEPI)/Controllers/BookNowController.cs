@@ -7,9 +7,11 @@ using Project_DEPI.Services;
 using Project_DEPI.ViewModels;
 using BookifyHotel.Data;
 using BookifyHotel.Model;
-using PLL.Services;
+using DAL.Constants;
+using BookingService = PLL.Services.BookingService;
+using RoomService = PLL.Services.RoomService;
 
-namespace Project_DEPI_.Controllers
+namespace Project_DEPI.Controllers
 {
     [Authorize]
     public class BookNowController : Controller
@@ -18,20 +20,23 @@ namespace Project_DEPI_.Controllers
         private readonly BookifyHotelDbContext _context;
         private readonly RoomService _roomService;
         private readonly BookingService _bookingService;
+        private readonly ILogger<BookNowController> _logger;
 
         public BookNowController(
-            IPaymentService paymentService, 
+            IPaymentService paymentService,
             BookifyHotelDbContext context,
             RoomService roomService,
-            BookingService bookingService)
+            BookingService bookingService,
+            ILogger<BookNowController> logger)
         {
             _paymentService = paymentService;
             _context = context;
             _roomService = roomService;
             _bookingService = bookingService;
+            _logger = logger;
         }
 
-        // GET: BookNow/Index/{id} or BookNow/Index?roomId={id} - Main booking page
+        // GET: BookNow/Index/{id} or BookNow/Index?roomId={id}
         [HttpGet]
         public async Task<IActionResult> Index(int? id, int? roomId)
         {
@@ -44,7 +49,7 @@ namespace Project_DEPI_.Controllers
             return await Room(actualRoomId);
         }
 
-        // GET: BookNow/Room/{id} - Main booking page
+        // GET: BookNow/Room/{id}
         [HttpGet]
         public async Task<IActionResult> Room(int id)
         {
@@ -73,110 +78,100 @@ namespace Project_DEPI_.Controllers
             return View(viewModel);
         }
 
-        // SECURITY [Server-Side Input Validation / Overposting Protection]:
-        // ViewModels are used defensively (ViewModel Isolation). 
-        // Only fields explicitly defined in BookNowViewModel bind to the model, preventing
-        // attackers from overposting malicious data to alter entity properties.
-        // SECURITY [CSRF Protection]: ValidateAntiForgeryToken is active globally and explicitly.
+        // POST: BookNow/ProcessBooking
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProcessBooking(BookNowViewModel model)
         {
             try
             {
-                // SECURITY [Data Annotation Validation]: Validates required fields, explicit date ranges,
-                // and data formats defined in the ViewModel before any processing occurs.
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                     model.PublishableKey = _paymentService.GetPublishableKey();
-                    TempData["Error"] = "Please fill in all required fields correctly. Details: " + string.Join(", ", errors);
+                    TempData["Error"] = "Please fill in all required fields. " + string.Join(", ", errors);
                     return View("Index", model);
                 }
 
-            var userId = GetCurrentUserId();
-            
-            // Get user profile
-            var userProfile = await _context.UserProfiles
-                .FirstOrDefaultAsync(up => up.IdentityUserId == userId);
+                var userId = GetCurrentUserId();
+
+                // Get user profile
+                var userProfile = await _context.UserProfiles
+                    .FirstOrDefaultAsync(up => up.IdentityUserId == userId);
 
                 if (userProfile == null)
                 {
-                    ModelState.AddModelError("", "User profile not found. Please complete your profile first.");
-                    model.PublishableKey = _paymentService.GetPublishableKey();
                     TempData["Error"] = "User profile not found. Please complete your profile first.";
+                    model.PublishableKey = _paymentService.GetPublishableKey();
                     return View("Index", model);
                 }
 
-            // Re-fetch room from database to get trusted PricePerNight and ensure availability
-            var room = await _context.Rooms
-                .Include(r => r.RoomType)
-                .FirstOrDefaultAsync(r => r.RoomId == model.RoomId);
+                // Re-fetch room from DB (never trust client-submitted price)
+                var room = await _context.Rooms
+                    .Include(r => r.RoomType)
+                    .FirstOrDefaultAsync(r => r.RoomId == model.RoomId);
 
                 if (room == null || !room.IsAvailable)
                 {
-                    ModelState.AddModelError("", "Selected room is no longer available.");
-                    model.PublishableKey = _paymentService.GetPublishableKey();
                     TempData["Error"] = "Selected room is no longer available.";
-                    return View("Index", model);
-                }
-
-                // SECURITY [Server-Side Input Validation]: All business logic dates and financial 
-                // data are re-validated server-side, never trusting the client's calculations.
-                if (model.CheckOutDate <= model.CheckInDate)
-                {
-                    ModelState.AddModelError("CheckOutDate", "Check-out date must be after check-in date.");
                     model.PublishableKey = _paymentService.GetPublishableKey();
-                    TempData["Error"] = "Check-out date must be after check-in date.";
                     return View("Index", model);
                 }
 
+                // Validate dates
                 if (model.CheckInDate < DateTime.Today)
                 {
                     ModelState.AddModelError("CheckInDate", "Check-in date cannot be in the past.");
                     model.PublishableKey = _paymentService.GetPublishableKey();
-                    TempData["Error"] = "Check-in date cannot be in the past.";
                     return View("Index", model);
                 }
 
-            // Check for date conflicts
-            var hasConflict = await _context.Bookings
-                .AnyAsync(b => b.RoomId == model.RoomId && 
-                              b.Status != "Cancelled" &&
-                              ((model.CheckInDate >= b.CheckInDate && model.CheckInDate < b.CheckOutDate) ||
-                               (model.CheckOutDate > b.CheckInDate && model.CheckOutDate <= b.CheckOutDate) ||
-                               (model.CheckInDate <= b.CheckInDate && model.CheckOutDate >= b.CheckOutDate)));
+                if (model.CheckOutDate <= model.CheckInDate)
+                {
+                    ModelState.AddModelError("CheckOutDate", "Check-out date must be after check-in date.");
+                    model.PublishableKey = _paymentService.GetPublishableKey();
+                    return View("Index", model);
+                }
+
+                // Check for date conflicts - only against Confirmed bookings
+                var hasConflict = await _context.Bookings
+                    .AnyAsync(b => b.RoomId == model.RoomId &&
+                                  b.Status == "Confirmed" &&
+                                  ((model.CheckInDate >= b.CheckInDate && model.CheckInDate < b.CheckOutDate) ||
+                                   (model.CheckOutDate > b.CheckInDate && model.CheckOutDate <= b.CheckOutDate) ||
+                                   (model.CheckInDate <= b.CheckInDate && model.CheckOutDate >= b.CheckOutDate)));
 
                 if (hasConflict)
                 {
-                    ModelState.AddModelError("", "Room is not available for the selected dates.");
-                    model.PublishableKey = _paymentService.GetPublishableKey();
                     TempData["Error"] = "Room is not available for the selected dates.";
+                    model.PublishableKey = _paymentService.GetPublishableKey();
                     return View("Index", model);
                 }
 
-                // SECURITY [Data Isolation / Payment Tampering Protection]: Re-calculate
-                // price exclusively on the server side using TRUSTED database records.
-                // The client-submitted `GrandTotal` is discarded entirely to prevent price manipulation.
-                model.PricePerNight = room.RoomType?.PricePerNight ?? 0;
-                var grandTotal = model.GrandTotal; // This will use the new PricePerNight and validated dates
-                
-                // Create booking record
+                // SERVER-SIDE price calculation — never trust client
+                var pricePerNight = room.RoomType?.PricePerNight ?? 0;
+                var nights = Math.Max(1, (model.CheckOutDate - model.CheckInDate).Days);
+                var baseTotal = pricePerNight * nights;
+                var taxAmount = Math.Round(baseTotal * 0.10m, 2); // 10% tax
+                var grandTotal = baseTotal + taxAmount;
+
+                // Create booking with Pending status
                 var booking = new Booking
                 {
                     UserProfileId = userProfile.Id,
                     RoomId = model.RoomId,
                     CheckInDate = model.CheckInDate,
                     CheckOutDate = model.CheckOutDate,
+                    NumberOfGuests = model.NumberOfGuests > 0 ? model.NumberOfGuests : 1,
                     TotalPrice = grandTotal,
-                    Status = "Pending",
+                    Status = BookingStatus.Pending,
                     BookingDate = DateTime.Now
                 };
 
                 _context.Bookings.Add(booking);
                 await _context.SaveChangesAsync();
 
-                // Create payment intent
+                // Create Stripe PaymentIntent
                 var metadata = new Dictionary<string, string>
                 {
                     { "booking_id", booking.BookingId.ToString() },
@@ -191,32 +186,33 @@ namespace Project_DEPI_.Controllers
                     metadata
                 );
 
-                // Update booking with payment intent ID (if the field exists)
                 booking.PaymentIntentId = paymentIntent.Id;
                 await _context.SaveChangesAsync();
 
-                // Redirect to payment page
+                _logger.LogInformation("Booking {BookingId} created for user {UserId}, PaymentIntent {PaymentIntentId}",
+                    booking.BookingId, userId, paymentIntent.Id);
+
                 return RedirectToAction("Payment", new { bookingId = booking.BookingId });
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", $"An error occurred while processing your booking: {ex.Message}");
+                _logger.LogError(ex, "Error processing booking for user {UserId}", GetCurrentUserId());
+                TempData["Error"] = $"An error occurred while processing your booking: {ex.Message}";
                 model.PublishableKey = _paymentService.GetPublishableKey();
-                TempData["Error"] = $"An error occurred: {ex.Message}";
                 return View("Index", model);
             }
         }
 
-        // GET: BookNow/Payment/{bookingId} - Payment page
+        // GET: BookNow/Payment/{bookingId}
         [HttpGet]
         public async Task<IActionResult> Payment(int bookingId)
         {
             var userId = GetCurrentUserId();
             var booking = await _context.Bookings
                 .Include(b => b.Room)
-                .ThenInclude(r => r.RoomType)
+                    .ThenInclude(r => r.RoomType)
                 .Include(b => b.UserProfile)
-                .FirstOrDefaultAsync(b => b.BookingId == bookingId && 
+                .FirstOrDefaultAsync(b => b.BookingId == bookingId &&
                                          b.UserProfile.IdentityUserId == userId);
 
             if (booking == null)
@@ -225,45 +221,46 @@ namespace Project_DEPI_.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            if (booking.Status != "Pending")
+            // Allow access only for Pending bookings
+            if (!BookingStatus.IsPending(booking.Status))
             {
+                if (BookingStatus.IsConfirmed(booking.Status))
+                    return RedirectToAction("Success", new { bookingId });
+
                 TempData["Error"] = "This booking cannot be paid";
                 return RedirectToAction("BookingDetails", new { id = bookingId });
             }
 
-            // Retrieve or create payment intent
+            // Retrieve or recreate PaymentIntent
             PaymentIntent paymentIntent;
-            if (!string.IsNullOrEmpty(booking.PaymentIntentId))
+            try
             {
-                try
+                if (!string.IsNullOrEmpty(booking.PaymentIntentId))
                 {
                     paymentIntent = await _paymentService.GetPaymentIntentAsync(booking.PaymentIntentId);
-                    
-                    // If the amount has changed, we should update it, but for now we'll just ensure it exists
-                    // Optional: Update payment intent if booking.TotalPrice != paymentIntent.Amount / 100
+
+                    // If already succeeded, confirm the booking and redirect to success
+                    if (paymentIntent.Status == "succeeded")
+                    {
+                        await ConfirmBookingInternally(booking, paymentIntent);
+                        return RedirectToAction("Success", new { bookingId });
+                    }
+
+                    // If cancelled/expired, create a new one
+                    if (paymentIntent.Status == "canceled")
+                    {
+                        paymentIntent = await CreateNewPaymentIntent(booking);
+                    }
                 }
-                catch (Exception)
+                else
                 {
-                    // If retrieval fails (e.g. invalid ID), create a new one
-                    paymentIntent = await _paymentService.CreatePaymentIntentAsync(
-                        booking.TotalPrice,
-                        "usd",
-                        $"Hotel Booking #{booking.BookingId}"
-                    );
-                    booking.PaymentIntentId = paymentIntent.Id;
-                    await _context.SaveChangesAsync();
+                    paymentIntent = await CreateNewPaymentIntent(booking);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                // Create a new payment intent
-                paymentIntent = await _paymentService.CreatePaymentIntentAsync(
-                    booking.TotalPrice,
-                    "usd",
-                    $"Hotel Booking #{booking.BookingId}"
-                );
-                booking.PaymentIntentId = paymentIntent.Id;
-                await _context.SaveChangesAsync();
+                _logger.LogWarning(ex, "PaymentIntent retrieval failed for booking {BookingId}, creating new one", bookingId);
+                paymentIntent = await CreateNewPaymentIntent(booking);
             }
 
             var viewModel = new PaymentViewModel
@@ -274,7 +271,7 @@ namespace Project_DEPI_.Controllers
                 RoomType = booking.Room.RoomType?.Name ?? "Standard",
                 CheckInDate = booking.CheckInDate,
                 CheckOutDate = booking.CheckOutDate,
-                NumberOfNights = (booking.CheckOutDate - booking.CheckInDate).Days,
+                NumberOfNights = Math.Max(1, (booking.CheckOutDate - booking.CheckInDate).Days),
                 PricePerNight = booking.Room.RoomType?.PricePerNight ?? 0,
                 PublishableKey = _paymentService.GetPublishableKey(),
                 PaymentIntentId = paymentIntent.Id,
@@ -284,6 +281,7 @@ namespace Project_DEPI_.Controllers
             return View(viewModel);
         }
 
+        // POST: BookNow/ConfirmPayment - Called by Stripe JS after payment
         [HttpPost]
         public async Task<IActionResult> ConfirmPayment([FromBody] PaymentRequestDto request)
         {
@@ -293,71 +291,63 @@ namespace Project_DEPI_.Controllers
                 var booking = await _context.Bookings
                     .Include(b => b.UserProfile)
                     .Include(b => b.Room)
-                    .FirstOrDefaultAsync(b => b.BookingId == request.BookingId && 
+                    .Include(b => b.Payments)
+                    .FirstOrDefaultAsync(b => b.BookingId == request.BookingId &&
                                              b.UserProfile.IdentityUserId == userId);
 
                 if (booking == null)
                 {
+                    _logger.LogWarning("ConfirmPayment: booking {BookingId} not found for user {UserId}",
+                        request.BookingId, userId);
                     return BadRequest(new { error = "Booking not found" });
                 }
 
-                // Verify payment with Stripe
+                // Already confirmed — idempotent response
+                if (BookingStatus.IsConfirmed(booking.Status))
+                {
+                    return Json(new { success = true, bookingId = booking.BookingId, message = "Booking already confirmed." });
+                }
+
+                // Validate payment with Stripe
                 var isValid = await _paymentService.ValidatePaymentAsync(request.PaymentIntentId);
                 if (!isValid)
                 {
-                    return BadRequest(new { error = "Payment validation failed" });
+                    _logger.LogWarning("Payment validation failed for PaymentIntent {PaymentIntentId}, booking {BookingId}",
+                        request.PaymentIntentId, request.BookingId);
+                    return BadRequest(new { error = "Payment validation failed. Please try again." });
                 }
 
                 var paymentIntent = await _paymentService.GetPaymentIntentAsync(request.PaymentIntentId);
+                await ConfirmBookingInternally(booking, paymentIntent);
 
-                // Update booking status
-                booking.Status = "Confirmed";
-                booking.PaymentIntentId = request.PaymentIntentId; // Save the ID
+                _logger.LogInformation("Booking {BookingId} confirmed via ConfirmPayment for user {UserId}",
+                    booking.BookingId, userId);
 
-                // Update room availability
-                if (booking.Room != null)
+                return Json(new
                 {
-                    booking.Room.IsAvailable = false;
-                    booking.Room.Status = "Booked";
-                }
-
-                // Create payment record
-                var payment = new Payment
-                {
-                    BookingId = booking.BookingId,
-                    Amount = paymentIntent.Amount / 100m, // Convert from cents
-                    PaymentMethod = "card",
-                    PaymentDate = DateTime.UtcNow,
-                    PaymentStatus = "succeeded",
-                    TransactionRefrence = paymentIntent.Id
-                };
-
-                _context.Payments.Add(payment);
-                await _context.SaveChangesAsync();
-
-                return Json(new { 
-                    success = true, 
+                    success = true,
                     bookingId = booking.BookingId,
                     message = "Payment successful! Your booking is confirmed."
                 });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = ex.Message });
+                _logger.LogError(ex, "Error confirming payment for booking {BookingId}", request?.BookingId);
+                return BadRequest(new { error = "An error occurred confirming your payment. Please contact support." });
             }
         }
 
-        // GET: BookNow/Success/{bookingId} - Success page
+        // GET: BookNow/Success/{bookingId} - Stripe redirects here after payment
         [HttpGet]
         public async Task<IActionResult> Success(int bookingId)
         {
             var userId = GetCurrentUserId();
             var booking = await _context.Bookings
                 .Include(b => b.Room)
-                .ThenInclude(r => r.RoomType)
+                    .ThenInclude(r => r.RoomType)
                 .Include(b => b.UserProfile)
                 .Include(b => b.Payments)
-                .FirstOrDefaultAsync(b => b.BookingId == bookingId && 
+                .FirstOrDefaultAsync(b => b.BookingId == bookingId &&
                                          b.UserProfile.IdentityUserId == userId);
 
             if (booking == null)
@@ -366,52 +356,41 @@ namespace Project_DEPI_.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Fallback confirmation if needed
-            if (booking.Status.ToLower() == "pending" && !string.IsNullOrEmpty(booking.PaymentIntentId))
+            // Auto-confirm if Stripe already processed the payment (redirect flow)
+            if (BookingStatus.IsPending(booking.Status) && !string.IsNullOrEmpty(booking.PaymentIntentId))
             {
-                var isValid = await _paymentService.ValidatePaymentAsync(booking.PaymentIntentId);
-                if (isValid)
+                try
                 {
-                    var paymentIntent = await _paymentService.GetPaymentIntentAsync(booking.PaymentIntentId);
-                    
-                    booking.Status = "Confirmed";
-                    if (booking.Room != null)
+                    var isValid = await _paymentService.ValidatePaymentAsync(booking.PaymentIntentId);
+                    if (isValid)
                     {
-                        booking.Room.IsAvailable = false;
-                        booking.Room.Status = "Booked";
-                    }
+                        var paymentIntent = await _paymentService.GetPaymentIntentAsync(booking.PaymentIntentId);
+                        await ConfirmBookingInternally(booking, paymentIntent);
 
-                    if (!booking.Payments.Any(p => p.TransactionRefrence == booking.PaymentIntentId))
-                    {
-                        var payment = new Payment
-                        {
-                            BookingId = booking.BookingId,
-                            Amount = paymentIntent.Amount / 100m,
-                            PaymentMethod = "card",
-                            PaymentDate = DateTime.UtcNow,
-                            PaymentStatus = "succeeded",
-                            TransactionRefrence = paymentIntent.Id
-                        };
-                        _context.Payments.Add(payment);
+                        _logger.LogInformation("Booking {BookingId} auto-confirmed on Success page for user {UserId}",
+                            bookingId, userId);
                     }
-                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Auto-confirm failed for booking {BookingId} on Success page", bookingId);
                 }
             }
 
             return View(booking);
         }
 
-        // GET: BookNow/BookingDetails/{id} - Booking details
+        // GET: BookNow/BookingDetails/{id}
         [HttpGet]
         public async Task<IActionResult> BookingDetails(int id)
         {
             var userId = GetCurrentUserId();
             var booking = await _context.Bookings
                 .Include(b => b.Room)
-                .ThenInclude(r => r.RoomType)
+                    .ThenInclude(r => r.RoomType)
                 .Include(b => b.UserProfile)
                 .Include(b => b.Payments)
-                .FirstOrDefaultAsync(b => b.BookingId == id && 
+                .FirstOrDefaultAsync(b => b.BookingId == id &&
                                          b.UserProfile.IdentityUserId == userId);
 
             if (booking == null)
@@ -421,6 +400,115 @@ namespace Project_DEPI_.Controllers
             }
 
             return View(booking);
+        }
+
+        // POST: BookNow/CancelBooking
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelBooking(int bookingId)
+        {
+            var userId = GetCurrentUserId();
+            var booking = await _context.Bookings
+                .Include(b => b.Room)
+                .Include(b => b.UserProfile)
+                .FirstOrDefaultAsync(b => b.BookingId == bookingId &&
+                                         b.UserProfile.IdentityUserId == userId);
+
+            if (booking == null)
+            {
+                TempData["Error"] = "Booking not found";
+                return RedirectToAction("MyBookings", "Booking");
+            }
+
+            if (BookingStatus.IsCompleted(booking.Status) || BookingStatus.IsCancelled(booking.Status))
+            {
+                TempData["Error"] = "This booking cannot be cancelled";
+                return RedirectToAction("BookingDetails", new { id = bookingId });
+            }
+
+            booking.Status = BookingStatus.Cancelled;
+            booking.UpdatedAt = DateTime.Now;
+
+            // Release the room
+            if (booking.Room != null)
+            {
+                var hasOtherActiveBookings = await _context.Bookings
+                    .AnyAsync(b => b.RoomId == booking.RoomId &&
+                                   b.BookingId != bookingId &&
+                                   b.Status == "Confirmed" &&
+                                   b.CheckInDate <= DateTime.Now &&
+                                   b.CheckOutDate >= DateTime.Now);
+
+                if (!hasOtherActiveBookings)
+                {
+                    booking.Room.IsAvailable = true;
+                    booking.Room.Status = RoomStatus.Available;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Booking cancelled successfully.";
+            return RedirectToAction("MyBookings", "Booking");
+        }
+
+        // ─── Private Helpers ────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Confirms a booking and updates room status. Idempotent.
+        /// </summary>
+        private async Task ConfirmBookingInternally(Booking booking, PaymentIntent paymentIntent)
+        {
+            // Idempotency guard
+            if (BookingStatus.IsConfirmed(booking.Status)) return;
+
+            booking.Status = BookingStatus.Confirmed;
+            booking.UpdatedAt = DateTime.Now;
+            booking.PaymentIntentId = paymentIntent.Id;
+
+            // Mark room as booked
+            if (booking.Room != null)
+            {
+                booking.Room.IsAvailable = false;
+                booking.Room.Status = RoomStatus.Booked;
+            }
+
+            // Create payment record only if not already recorded
+            var alreadyRecorded = await _context.Payments
+                .AnyAsync(p => p.PaymentIntentId == paymentIntent.Id);
+
+            if (!alreadyRecorded)
+            {
+                var payment = new Payment
+                {
+                    BookingId = booking.BookingId,
+                    Amount = paymentIntent.Amount / 100m, // Stripe stores in cents
+                    PaymentMethod = "card",
+                    PaymentDate = DateTime.UtcNow,
+                    PaymentStatus = "succeeded",
+                    PaymentIntentId = paymentIntent.Id,
+                    TransactionRefrence = paymentIntent.Id,
+                    Currency = paymentIntent.Currency ?? "usd"
+                };
+                _context.Payments.Add(payment);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Creates a new PaymentIntent for a booking and saves the ID.
+        /// </summary>
+        private async Task<PaymentIntent> CreateNewPaymentIntent(Booking booking)
+        {
+            var paymentIntent = await _paymentService.CreatePaymentIntentAsync(
+                booking.TotalPrice,
+                "usd",
+                $"Hotel Booking #{booking.BookingId}"
+            );
+            booking.PaymentIntentId = paymentIntent.Id;
+            await _context.SaveChangesAsync();
+            return paymentIntent;
         }
 
         private string GetCurrentUserId()
